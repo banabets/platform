@@ -52,6 +52,8 @@ const Logo = styled(NavLink)`
   gap: 8px;
   min-width: 0;
   text-decoration: none;
+  /* Baja el logo un poco en PC */
+  margin-top: 6px;
 
   img {
     height: 45px;
@@ -61,12 +63,14 @@ const Logo = styled(NavLink)`
   @media (max-width: 600px) {
     justify-content: center;
     width: 100%;
-    margin-bottom: 4px;
+    margin: 0 auto 8px auto; /* centra horizontalmente y da margen abajo */
+    /* Para que el logo se centre verticalmente, ajusta aquí si quieres */
+    align-items: center;
 
     img {
       height: 50px;
-      margin: 0 auto;
       display: block;
+      margin: 0 auto;
     }
   }
 `
