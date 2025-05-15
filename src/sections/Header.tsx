@@ -52,7 +52,7 @@ const Logo = styled(NavLink)`
   gap: 8px;
   min-width: 0;
   text-decoration: none;
-  margin-top: 6px; /* Baja un poco el logo en PC */
+  margin-top: 6px;
 
   img {
     height: 45px;
@@ -62,7 +62,7 @@ const Logo = styled(NavLink)`
   @media (max-width: 600px) {
     justify-content: center;
     width: 100%;
-    margin: 0 auto 8px auto; /* Centra y da espacio abajo */
+    margin: 0 auto 8px auto;
 
     img {
       height: 50px;
@@ -113,9 +113,9 @@ const JackpotBonus = styled(Bonus)`
   @media (max-width: 1024px) {
     font-size: 14px;
     padding: 6px 12px;
-    background: #1f1f1f;
-    color: #fff;
-    box-shadow: none;
+    background: linear-gradient(90deg, #fbbf24, #f59e0b);
+    color: #000;
+    box-shadow: 0 0 8px rgba(251, 191, 36, 0.8);
   }
 `
 
@@ -244,15 +244,9 @@ export default function Header() {
 
         <RightGroup>
           {pool.jackpotBalance > 0 && (
-            isDesktop ? (
-              <JackpotBonus noBackground onClick={() => setJackpotHelp(true)}>
-                💰 <TokenValue amount={pool.jackpotBalance} />
-              </JackpotBonus>
-            ) : (
-              <Bonus noBackground onClick={() => setJackpotHelp(true)}>
-                💰 <TokenValue amount={pool.jackpotBalance} />
-              </Bonus>
-            )
+            <JackpotBonus onClick={() => setJackpotHelp(true)}>
+              💰 <TokenValue amount={pool.jackpotBalance} />
+            </JackpotBonus>
           )}
           {balance.bonusBalance > 0 && (
             <Bonus onClick={() => setBonusHelp(true)}>
@@ -264,7 +258,8 @@ export default function Header() {
         </RightGroup>
       </StyledHeader>
 
-{!isDesktop && <div style={{ height: '20px' }} />}
+      {/* Espacio fantasma solo en móviles para evitar que el header tape el contenido */}
+      {!isDesktop && <div style={{ height: '20px' }} />}
     </>
   )
 }
