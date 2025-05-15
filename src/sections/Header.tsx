@@ -263,6 +263,8 @@ export default function Header() {
           <UserButton />
         </RightGroup>
       </StyledHeader>
+
+{!isDesktop && <div style={{ height: '110px' }} />}
     </>
   )
 }
