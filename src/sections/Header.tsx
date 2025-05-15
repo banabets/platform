@@ -12,24 +12,22 @@ import { Modal } from '../components/Modal'
 import { PLATFORM_JACKPOT_FEE } from '../constants'
 import TokenSelect from './TokenSelect'
 import { UserButton } from './UserButton'
-import { useMediaQuery } from '../hooks/useMediaQuery'
 
 const StyledHeader = styled.div`
   position: fixed;
-  top: 8px;
+  top: 20px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
 
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
 
   width: 90%;
   max-width: 1400px;
-  height: 100px;
-  padding: 0 32px;
+  height: 90px;
+  padding: 0 24px;
 
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(18px);
@@ -38,11 +36,6 @@ const StyledHeader = styled.div`
 
   @media (max-width: 600px) {
     width: 95%;
-    flex-direction: column;
-    height: auto;
-    padding: 8px 16px 4px 16px;
-    margin-bottom: -20px;
-    top: 12px;
   }
 `
 
@@ -50,24 +43,10 @@ const Logo = styled(NavLink)`
   display: flex;
   align-items: center;
   gap: 8px;
-  min-width: 0;
   text-decoration: none;
 
   img {
-    height: 38px;
-    transition: height 0.3s ease;
-  }
-
-  @media (max-width: 600px) {
-    justify-content: center;
-    width: 100%;
-    margin-bottom: 4px;
-
-    img {
-      height: 50px;
-      margin: 0 auto;
-      display: block;
-    }
+    height: 45px;
   }
 `
 
@@ -87,55 +66,6 @@ const Bonus = styled.button<{ noBackground?: boolean }>`
 
   &:hover {
     background-color: ${({ noBackground }) => (noBackground ? 'transparent' : '#333')};
-  }
-
-  @media (max-width: 600px) {
-    padding: 4px 8px;
-    font-size: 12px;
-  }
-`
-
-const JackpotBonus = styled(Bonus)`
-  font-size: 18px;
-  font-weight: 700;
-  padding: 8px 16px;
-  background: linear-gradient(90deg, #fbbf24, #f59e0b);
-  color: #000;
-  box-shadow: 0 0 8px rgba(251, 191, 36, 0.8);
-  border-radius: 12px;
-
-  &:hover {
-    background: linear-gradient(90deg, #f59e0b, #d97706);
-    box-shadow: 0 0 12px rgba(217, 119, 6, 1);
-  }
-
-  @media (max-width: 1024px) {
-    font-size: 14px;
-    padding: 6px 12px;
-    background: #1f1f1f;
-    color: #fff;
-    box-shadow: none;
-  }
-`
-
-const RightGroup = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-  flex-wrap: nowrap;
-  overflow-x: visible;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  @media (max-width: 600px) {
-    width: 100%;
-    justify-content: center;
-    margin-top: 0;
-    overflow-x: visible;
-    flex-wrap: nowrap;
   }
 `
 
@@ -187,8 +117,6 @@ export default function Header() {
   const pool = useCurrentPool()
   const context = useGambaPlatformContext()
   const balance = useUserBalance()
-  const isDesktop = useMediaQuery('lg')
-
   const [bonusHelp, setBonusHelp] = React.useState(false)
   const [jackpotHelp, setJackpotHelp] = React.useState(false)
   const [showDailyChest, setShowDailyChest] = React.useState(false)
@@ -218,7 +146,7 @@ export default function Header() {
             You will be paying a maximum of {(PLATFORM_JACKPOT_FEE * 100).toLocaleString(undefined, { maximumFractionDigits: 4 })}% for each wager for a chance to win.
           </p>
           <label style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span>{context.defaultJackpotFee === 0 ? 'DISABLED' : 'ENABLED'}</span>
+            {context.defaultJackpotFee === 0 ? 'DISABLED' : 'ENABLED'}
             <GambaUi.Switch
               checked={context.defaultJackpotFee > 0}
               onChange={(checked) => context.setDefaultJackpotFee(checked ? PLATFORM_JACKPOT_FEE : 0)}
@@ -237,21 +165,17 @@ export default function Header() {
       )}
 
       <StyledHeader>
-        <Logo to="/">
-          <img alt="Gamba logo" src="/logo.svg" />
-        </Logo>
+        <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+          <Logo to="/">
+            <img alt="Gamba logo" src="/logo.svg" />
+          </Logo>
+        </div>
 
-        <RightGroup>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', position: 'relative' }}>
           {pool.jackpotBalance > 0 && (
-            isDesktop ? (
-              <JackpotBonus noBackground onClick={() => setJackpotHelp(true)}>
-                💰 <TokenValue amount={pool.jackpotBalance} />
-              </JackpotBonus>
-            ) : (
-              <Bonus noBackground onClick={() => setJackpotHelp(true)}>
-                💰 <TokenValue amount={pool.jackpotBalance} />
-              </Bonus>
-            )
+            <Bonus noBackground onClick={() => setJackpotHelp(true)}>
+              💰 <TokenValue amount={pool.jackpotBalance} />
+            </Bonus>
           )}
           {balance.bonusBalance > 0 && (
             <Bonus onClick={() => setBonusHelp(true)}>
@@ -260,7 +184,7 @@ export default function Header() {
           )}
           <TokenSelect />
           <UserButton />
-        </RightGroup>
+        </div>
       </StyledHeader>
     </>
   )
