@@ -264,7 +264,7 @@ export default function Header() {
         </RightGroup>
       </StyledHeader>
 
-{!isDesktop && <div style={{ height: '35px' }} />}
+{!isDesktop && <div style={{ height: '20px' }} />}
     </>
   )
 }
