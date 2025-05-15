@@ -52,6 +52,7 @@ const Logo = styled(NavLink)`
   gap: 8px;
   min-width: 0;
   text-decoration: none;
+  margin-top: 6px; /* Baja un poco el logo en PC */
 
   img {
     height: 45px;
@@ -61,12 +62,12 @@ const Logo = styled(NavLink)`
   @media (max-width: 600px) {
     justify-content: center;
     width: 100%;
-    margin-bottom: 4px;
+    margin: 0 auto 8px auto; /* Centra y da espacio abajo */
 
     img {
       height: 50px;
-      margin: 0 auto;
       display: block;
+      margin: 0 auto;
     }
   }
 `
@@ -133,7 +134,7 @@ const RightGroup = styled.div`
   @media (max-width: 600px) {
     width: 100%;
     justify-content: center;
-    margin-top: 0;
+    margin-top: -5px;
     overflow-x: visible;
     flex-wrap: nowrap;
   }
