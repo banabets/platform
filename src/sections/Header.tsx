@@ -133,7 +133,7 @@ const RightGroup = styled.div`
   @media (max-width: 600px) {
     width: 100%;
     justify-content: center;
-    margin-top: 0;
+    margin-top: -2px;
     overflow-x: visible;
     flex-wrap: nowrap;
   }
