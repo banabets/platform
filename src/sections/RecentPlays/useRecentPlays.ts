@@ -17,9 +17,17 @@ export function useRecentPlays(params: Params = {}) {
   const userAddress = useWalletAddress()
 
   const connection = new Connection(RPC_ENDPOINT ?? 'https://api.mainnet-beta.solana.com')
-  const previousEvents = useGambaEvents(
+
+  // Eventos anteriores (historial)
+  const previousEventsRaw = useGambaEvents(
     'GameSettled',
     { address: !showAllPlatforms ? PLATFORM_CREATOR_ADDRESS : undefined },
+  )
+
+  // ❗️ Filtrar eventos anteriores de la wallet bloqueada
+  const previousEvents = React.useMemo(
+    () => previousEventsRaw.filter(e => !e.data.user.equals(EXCLUDED_WALLET)),
+    [previousEventsRaw]
   )
 
   const [newEvents, setEvents] = React.useState<GambaTransaction<'GameSettled'>[]>([])
@@ -29,14 +37,11 @@ export function useRecentPlays(params: Params = {}) {
     async (event) => {
       if (!showAllPlatforms && !event.data.creator.equals(PLATFORM_CREATOR_ADDRESS)) return
 
-      const isExcludedWallet = event.data.user.equals(EXCLUDED_WALLET)
-
-      // Solo verificar confirmación si es una wallet problemática
-      if (isExcludedWallet) {
+      if (event.data.user.equals(EXCLUDED_WALLET)) {
         try {
           const status = await connection.getSignatureStatus(event.signature)
           const confirmed = status?.value?.confirmationStatus === 'confirmed' || status?.value?.confirmationStatus === 'finalized'
-          if (!confirmed) return // ❌ ignorar jugadas de esa wallet si no están confirmadas
+          if (!confirmed) return
         } catch (e) {
           console.error("Error checking transaction status", e)
           return
@@ -44,12 +49,9 @@ export function useRecentPlays(params: Params = {}) {
       }
 
       const delay = event.data.user.equals(userAddress) && ['plinko', 'slots'].some((x) => location.pathname.includes(x)) ? 3000 : 1
+
       setTimeout(() => {
         setEvents((events) => [event, ...events])
       }, delay)
     },
-    [location.pathname, userAddress, showAllPlatforms],
-  )
-
-  return React.useMemo(() => [...newEvents, ...previousEvents], [newEvents, previousEvents])
-}
+    [location.]()
