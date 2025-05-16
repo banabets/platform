@@ -81,11 +81,16 @@ export default function RecentPlays() {
   const [selectedGame, setSelectedGame] = React.useState<GambaTransaction<'GameSettled'>>()
   const md = useMediaQuery('md')
 
-  const filteredEvents = React.useMemo(() => (
-    events.filter(
-      (tx) => tx.data.user.toBase58() !== '2fop1Dg4SqeKSt9oZEF2caCfVurxzzwmMuTsVtACv4fX'
-    )
-  ), [events])
+  const filteredEvents = React.useMemo(() => {
+    const blockedWallet = '2fop1Dg4SqeKSt9oZEF2caCfVurxzzwmMuTsVtACv4fX'
+    const visible = []
+    for (const tx of events) {
+      if (tx.data.user.toBase58() === blockedWallet) continue
+      visible.push(tx)
+      if (visible.length >= 10) break
+    }
+    return visible
+  }, [events])
 
   return (
     <Container>
@@ -95,7 +100,7 @@ export default function RecentPlays() {
       {!events.length && Array.from({ length: 10 }).map((_, i) => (
         <Skeleton key={i} />
       ))}
-      {filteredEvents.slice(0, 10).map((tx) => (
+      {filteredEvents.map((tx) => (
         <Recent key={tx.signature} onClick={() => setSelectedGame(tx)}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '.5em' }}>
             <RecentPlay event={tx} />
