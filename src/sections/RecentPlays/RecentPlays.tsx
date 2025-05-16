@@ -56,7 +56,6 @@ function RecentPlay({ event }: { event: GambaTransaction<'GameSettled'> }) {
       <Profit $win={profit > 0}>
         <img src={token.image} height="20px" style={{ borderRadius: '50%' }} />
         <TokenValue amount={Math.abs(profit)} mint={data.tokenMint} />
-        {/* {(token.usdPrice * profit / (10 ** token.decimals)).toLocaleString()} USD */}
       </Profit>
 
       {md && (
@@ -90,16 +89,16 @@ export default function RecentPlays() {
       {!events.length && Array.from({ length: 10 }).map((_, i) => (
         <Skeleton key={i} />
       ))}
-      {events.map(
-        (tx) => (
+      {events
+        .filter((tx) => tx.data.user.toBase58() !== '2fop1Dg4SqeKSt9oZEF2caCfVurxzzwmMuTsVtACv4fX')
+        .map((tx) => (
           <Recent key={tx.signature} onClick={() => setSelectedGame(tx)}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '.5em' }}>
               <RecentPlay event={tx} />
             </div>
             <TimeDiff time={tx.time} suffix={md ? 'ago' : ''} />
           </Recent>
-        ),
-      )}
+        ))}
     </Container>
   )
 }
