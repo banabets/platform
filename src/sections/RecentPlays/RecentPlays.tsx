@@ -83,14 +83,10 @@ export default function RecentPlays() {
 
   const filteredEvents = React.useMemo(() => {
     const blockedWallet = '2fop1Dg4SqeKSt9oZEF2caCfVurxzzwmMuTsVtACv4fX'
-    const visible = []
-    for (const tx of events) {
-      if (tx.data.user.toBase58() === blockedWallet) continue
-      visible.push(tx)
-      if (visible.length >= 10) break
-    }
-    return visible
+    return events.filter((tx) => tx.data.user.toBase58() !== blockedWallet)
   }, [events])
+
+  const visibleEvents = filteredEvents.slice(0, Math.max(events.length, 10))
 
   return (
     <Container>
@@ -100,7 +96,7 @@ export default function RecentPlays() {
       {!events.length && Array.from({ length: 10 }).map((_, i) => (
         <Skeleton key={i} />
       ))}
-      {filteredEvents.map((tx) => (
+      {visibleEvents.map((tx) => (
         <Recent key={tx.signature} onClick={() => setSelectedGame(tx)}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '.5em' }}>
             <RecentPlay event={tx} />
