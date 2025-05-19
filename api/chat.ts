@@ -42,3 +42,4 @@ export default async function handler(req: Request): Promise<Response> {
     return new Response('Internal Error', { status: 500 })
   }
 }
+ 
