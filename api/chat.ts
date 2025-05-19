@@ -1,10 +1,10 @@
 // api/chat.ts
 
 export const config = {
-  runtime: 'edge',
+  runtime: 'edge', // Ensure this runs as an edge function
 }
 
-import { kv } from '@vercel/kv/edge'  // ✅ Importación corregida
+import { kv } from '@vercel/kv/edge' // ✅ Correct import
 
 type Msg = {
   user: string
@@ -26,9 +26,16 @@ export default async function handler(req: Request): Promise<Response> {
     if (req.method === 'POST') {
       const { user = 'anon', text } = (await req.json()) as Partial<Msg>
       const clean = String(text ?? '').trim()
-      if (!clean) return new Response('Empty', { status: 400 })
+      if (!clean) {
+        return new Response('Empty', { status: 400 })
+      }
 
-      const msg: Msg = { user, text: clean, ts: Date.now() }
+      const msg: Msg = {
+        user,
+        text: clean,
+        ts: Date.now(),
+      }
+
       await kv.lpush(KEY, msg)
       await kv.ltrim(KEY, 0, 19)
 
