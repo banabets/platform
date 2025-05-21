@@ -14,7 +14,6 @@ import RecentPlays from './sections/RecentPlays/RecentPlays'
 import Toasts from './sections/Toasts'
 import { MainWrapper, TosInner, TosWrapper } from './styles'
 import TrollBox from './components/TrollBox'
-import { WalletConnectionProvider } from './wallet' // NUEVA LÍNEA
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -54,7 +53,7 @@ export default function App() {
   const set = useUserStore((state) => state.set)
 
   return (
-    <WalletConnectionProvider> {/* ENVOLVEMOS AQUÍ */}
+    <>
       {newcomer && (
         <Modal>
           <h1>Welcome</h1>
@@ -72,7 +71,7 @@ export default function App() {
       <ScrollToTop />
       <ErrorHandler />
       <Header />
-      <div style={{ height: '50px', visibility: 'hidden', pointerEvents: 'none' }} />
+<div style={{ height: '50px', visibility: 'hidden', pointerEvents: 'none' }} />
       <Toasts />
       <MainWrapper>
         <Routes>
@@ -83,6 +82,6 @@ export default function App() {
         <RecentPlays />
       </MainWrapper>
       <TrollBox />
-    </WalletConnectionProvider>
+    </>
   )
 }
