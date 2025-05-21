@@ -315,7 +315,7 @@ export default function TrollBox() {
               <MessageHeader>
                 <Avatar bg={userColors[m.user]}>{m.user[0]}</Avatar>
                 <Username userColor={userColors[m.user]}>{m.user.slice(0,6)}</Username>
-                <Badge>Guest</Badge>
+                <Badge>Degen</Badge>
                 <Timestamp>{fmtTime(m.ts)}</Timestamp>
               </MessageHeader>
               <MessageText>{m.text}</MessageText>
