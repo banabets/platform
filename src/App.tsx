@@ -14,6 +14,7 @@ import RecentPlays from './sections/RecentPlays/RecentPlays'
 import Toasts from './sections/Toasts'
 import { MainWrapper, TosInner, TosWrapper } from './styles'
 import TrollBox from './components/TrollBox'
+import LeaderboardsModal from './components/LeaderboardsModal'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
