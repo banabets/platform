@@ -1,16 +1,14 @@
 import React, { useMemo } from 'react'
-import {
-  ConnectionProvider,
-  WalletProvider
-} from '@solana/wallet-adapter-react'
-import {
-  WalletModalProvider
-} from '@solana/wallet-adapter-react-ui'
+import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react'
+import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
 import {
   SolanaMobileWalletAdapter,
   createDefaultAuthorizationResultCache,
+  createDefaultAddressSelector,
+  createDefaultWalletNotFoundHandler,
 } from '@solana-mobile/wallet-adapter-mobile'
-import { clusterApiUrl, WalletAdapterNetwork } from '@solana/web3.js'
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
+import { clusterApiUrl } from '@solana/web3.js'
 import { GambaProvider } from 'gamba-react-v2'
 import { GambaUiProvider } from 'gamba-react-ui-v2'
 
@@ -18,24 +16,27 @@ import { GambaUiProvider } from 'gamba-react-ui-v2'
 const isMobile = typeof window !== 'undefined' && /Mobi|Android/i.test(navigator.userAgent)
 
 export const WalletConnectionProvider = ({ children }: { children: React.ReactNode }) => {
-  const endpoint = clusterApiUrl(WalletAdapterNetwork.MainnetBeta)
+  const network = WalletAdapterNetwork.MainnetBeta
+  const endpoint = clusterApiUrl(network)
 
   const wallets = useMemo(() => {
     if (isMobile) {
       return [
         new SolanaMobileWalletAdapter({
+          addressSelector: createDefaultAddressSelector(),
           appIdentity: {
             name: 'Banabets',
             uri: 'https://tu-dapp.com',
             icon: 'https://tu-dapp.com/icon-192x192.png',
           },
           authorizationResultCache: createDefaultAuthorizationResultCache(),
-          cluster: WalletAdapterNetwork.MainnetBeta,
+          cluster: network,
+          onWalletNotFound: createDefaultWalletNotFoundHandler(),
         })
       ]
     }
-    return [] // Puedes agregar adaptadores web aquí si deseas
-  }, [])
+    return [] // Puedes agregar adaptadores web como Phantom si lo deseas.
+  }, [network])
 
   return (
     <ConnectionProvider endpoint={endpoint}>
