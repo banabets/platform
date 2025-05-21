@@ -1,5 +1,8 @@
 import React, { useMemo } from 'react'
-import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react'
+import {
+  ConnectionProvider,
+  WalletProvider
+} from '@solana/wallet-adapter-react'
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
 import {
   SolanaMobileWalletAdapter,
@@ -10,7 +13,6 @@ import {
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
 import { clusterApiUrl } from '@solana/web3.js'
 import { GambaProvider } from 'gamba-react-v2'
-import { GambaUiProvider } from 'gamba-react-ui-v2'
 
 // Detecta dispositivos móviles
 const isMobile = typeof window !== 'undefined' && /Mobi|Android/i.test(navigator.userAgent)
@@ -26,7 +28,7 @@ export const WalletConnectionProvider = ({ children }: { children: React.ReactNo
           addressSelector: createDefaultAddressSelector(),
           appIdentity: {
             name: 'Banabets',
-            uri: 'https://tu-dapp.com',
+            uri: 'https://tu-dapp.com',   // tu URL real aquí
             icon: 'https://tu-dapp.com/icon-192x192.png',
           },
           authorizationResultCache: createDefaultAuthorizationResultCache(),
@@ -35,7 +37,7 @@ export const WalletConnectionProvider = ({ children }: { children: React.ReactNo
         })
       ]
     }
-    return [] // Puedes agregar adaptadores web como Phantom si lo deseas.
+    return [] // aquí puedes agregar adaptadores web (Phantom, etc.)
   }, [network])
 
   return (
@@ -43,9 +45,7 @@ export const WalletConnectionProvider = ({ children }: { children: React.ReactNo
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
           <GambaProvider>
-            <GambaUiProvider>
-              {children}
-            </GambaUiProvider>
+            {children}
           </GambaProvider>
         </WalletModalProvider>
       </WalletProvider>
