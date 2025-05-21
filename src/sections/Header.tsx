@@ -10,10 +10,15 @@ import { NavLink } from 'react-router-dom'
 import styled from 'styled-components'
 import { Modal } from '../components/Modal'
 import LeaderboardsModal from '../components/LeaderboardsModal'
-import { PLATFORM_JACKPOT_FEE } from '../constants'
+import {
+  PLATFORM_JACKPOT_FEE,
+  PLATFORM_CREATOR_ADDRESS,
+} from '../constants'
 import TokenSelect from './TokenSelect'
 import { UserButton } from './UserButton'
 import { useMediaQuery } from '../hooks/useMediaQuery'
+
+/* ─────── styled ───────────────────────────────────────────── */
 
 const StyledHeader = styled.div`
   position: fixed;
@@ -185,6 +190,8 @@ const ClaimButton = styled.button`
   }
 `
 
+/* ─────── component ─────────────────────────────────────────── */
+
 export default function Header() {
   const pool = useCurrentPool()
   const context = useGambaPlatformContext()
@@ -194,19 +201,23 @@ export default function Header() {
   const [bonusHelp, setBonusHelp] = React.useState(false)
   const [jackpotHelp, setJackpotHelp] = React.useState(false)
   const [showDailyChest, setShowDailyChest] = React.useState(false)
+  const [showLeaderboard, setShowLeaderboard] = React.useState(false)
 
   return (
     <>
+      {/* Bonus info */}
       {bonusHelp && (
         <Modal onClose={() => setBonusHelp(false)}>
           <h1>Bonus ✨</h1>
           <p>
-            You have <b><TokenValue amount={balance.bonusBalance} /></b> worth of free plays. This bonus will be applied automatically when you play.
+            You have <b><TokenValue amount={balance.bonusBalance} /></b> worth of free plays.
+            This bonus will be applied automatically when you play.
           </p>
           <p>Note that a fee is still needed from your wallet for each play.</p>
         </Modal>
       )}
 
+      {/* Jackpot info */}
       {jackpotHelp && (
         <Modal onClose={() => setJackpotHelp(false)}>
           <h1>Jackpot 💰</h1>
@@ -214,7 +225,9 @@ export default function Header() {
             There&apos;s <TokenValue amount={pool.jackpotBalance} /> in the Jackpot.
           </p>
           <p>
-            The Jackpot is a prize pool that grows with every bet made. As the Jackpot grows, so does your chance of winning. Once a winner is selected, the value of the Jackpot resets and grows from there until a new winner is selected.
+            The Jackpot is a prize pool that grows with every bet made. As the Jackpot grows,
+            so does your chance of winning. Once a winner is selected, the value of the Jackpot
+            resets and grows from there until a new winner is selected.
           </p>
           <p>
             You will be paying a maximum of {(PLATFORM_JACKPOT_FEE * 100).toLocaleString(undefined, { maximumFractionDigits: 4 })}% for each wager for a chance to win.
@@ -229,6 +242,15 @@ export default function Header() {
         </Modal>
       )}
 
+      {/* Leaderboards */}
+      {showLeaderboard && (
+        <LeaderboardsModal
+          creator={PLATFORM_CREATOR_ADDRESS.toBase58()}
+          onClose={() => setShowLeaderboard(false)}
+        />
+      )}
+
+      {/* Daily chest */}
       {showDailyChest && (
         <PopupContainer>
           <CloseButton onClick={() => setShowDailyChest(false)}>×</CloseButton>
@@ -238,6 +260,7 @@ export default function Header() {
         </PopupContainer>
       )}
 
+      {/* Header bar */}
       <StyledHeader>
         <Logo to="/">
           <img alt="Gamba logo" src="/logo.svg" />
@@ -249,17 +272,30 @@ export default function Header() {
               💰 <TokenValue amount={pool.jackpotBalance} />
             </JackpotBonus>
           )}
+
           {balance.bonusBalance > 0 && (
             <Bonus onClick={() => setBonusHelp(true)}>
               ✨ <TokenValue amount={balance.bonusBalance} />
             </Bonus>
           )}
+
+          {/* Leaderboard trigger */}
+          {isDesktop ? (
+            <GambaUi.Button onClick={() => setShowLeaderboard(true)}>
+              🏆 Leaderboard
+            </GambaUi.Button>
+          ) : (
+            <Bonus noBackground onClick={() => setShowLeaderboard(true)}>
+              🏆
+            </Bonus>
+          )}
+
           <TokenSelect />
           <UserButton />
         </RightGroup>
       </StyledHeader>
 
-      {/* Espacio fantasma solo en móviles para evitar que el header tape el contenido */}
+      {/* Spacer for mobile so content isn't hidden behind the header */}
       {!isDesktop && <div style={{ height: '20px' }} />}
     </>
   )
