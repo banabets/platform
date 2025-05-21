@@ -1,4 +1,4 @@
-// TrollBox.tsx  (responsive + original design)
+// TrollBox.tsx
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import styled, { keyframes } from 'styled-components'
 import useSWR from 'swr'
@@ -28,7 +28,6 @@ const ChatIcon = () => (
   </svg>
 )
 
-/* ---------- sizing logic from first component ---------- */
 const fadeIn = keyframes`
   from { opacity:0; transform:translateY(5px); }
   to   { opacity:1; transform:translateY(0); }
@@ -58,7 +57,6 @@ const Wrapper = styled.div<{ $isMinimized: boolean }>`
   cursor:${p => p.$isMinimized ? 'pointer' : 'default'};
   transition:width .3s, height .3s, max-height .3s, border-radius .3s, background .3s;
 
-  /* expanded vs. bubble */
   ${({ $isMinimized }) => $isMinimized ? `
     width:56px;
     height:56px;
@@ -73,14 +71,11 @@ const Wrapper = styled.div<{ $isMinimized: boolean }>`
     min-height:150px;
   `}
 
-  /* ------------- mobile break-point ------------- */
   @media (max-width:480px){
     bottom:16px;
     right:16px;
-    ${({ $isMinimized }) => $isMinimized ? `
-      /* bubble on mobile – no additional changes */
-    ` : `
-      width:calc(100% - 32px);   /* 16px gutter left + right */
+    ${({ $isMinimized }) => $isMinimized ? `` : `
+      width:calc(100% - 32px);
       max-width:300px;
       max-height:60vh;
     `}
@@ -110,7 +105,7 @@ const Header = styled.div`
 
 const HeaderTitle = styled.span`
   flex-grow:1;
-  font-size:1.1rem;     /* ← slightly smaller for narrow viewport */
+  font-size:1.1rem;
   font-weight:bold;
   display:flex;
   align-items:center;
@@ -129,7 +124,6 @@ const MinimizeButton = styled.button`
   &:hover{ background:rgba(255,255,255,0.1); color:#fff; }
 `
 
-/* message list */
 const Log = styled.div`
   flex:1;overflow-y:auto;padding:20px 25px;display:flex;flex-direction:column;gap:1rem;
   min-height:200px;background:rgba(47,49,54,.8);border-radius:10px;margin-top:10px;
@@ -142,11 +136,35 @@ const MessageItem = styled.div<{ $isOwn?: boolean }>`
   background:${p => p.$isOwn ? '#7289da' : '#40444b'};
   border-radius:8px;padding:10px 14px;max-width:85%;color:#fff;
   align-self:${p => p.$isOwn ? 'flex-end' : 'flex-start'};
-  font-size:.95rem;      /* scaled down a touch */
+  font-size:.95rem;
 `
 
 const MessageHeader = styled.div`
   display:flex;align-items:center;flex-wrap:wrap;margin-bottom:4px;
+`
+
+const Avatar = styled.div<{ bg: string }>`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: ${p => p.bg};
+  flex-shrink: 0;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 rgba(255, 255, 255, 0);
+  transition: all 0.3s ease;
+  &:hover {
+    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+  }
 `
 
 const Username = styled.strong<{ userColor:string }>`
@@ -166,7 +184,6 @@ const MessageText = styled.div`
   white-space:pre-wrap;word-break:break-word;
 `
 
-/* input row */
 const InputRow = styled.div`
   display:flex;align-items:center;border-top:1px solid rgba(255,255,255,0.08);
   background:#202225;padding:10px 15px;flex-shrink:0;
@@ -190,7 +207,6 @@ const LoadingText = styled.div`
   text-align:center;color:#a0a0a0;padding:2rem 0;font-style:italic;font-size:.9rem;
 `
 
-/* ------------ component ------------ */
 export default function TrollBox() {
   const { publicKey, connected } = useWallet()
   const walletModal = useWalletModal()
@@ -211,14 +227,13 @@ export default function TrollBox() {
   const swrKey = isMinimized || (typeof document !== 'undefined' && document.hidden)
     ? null : '/api/chat'
   const { data: messages = [], error, mutate } = useSWR<Msg[]>(swrKey, fetcher, {
-    refreshInterval: 8_000,
-    dedupingInterval: 7_500,
+    refreshInterval: 8000,
+    dedupingInterval: 7500,
   })
 
   const logRef   = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  /* colour map */
   const userColors = useMemo(() => {
     const map: Record<string, string> = {}
     messages.forEach(m => { if (!map[m.user]) map[m.user] = stringToHslColor(m.user, 70, 75) })
@@ -227,7 +242,7 @@ export default function TrollBox() {
   }, [messages, userName])
 
   const fmtTime = (ts:number) =>
-    ts > Date.now() - 5_000
+    ts > Date.now() - 5000
       ? 'sending…'
       : new Date(ts).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })
 
@@ -255,14 +270,12 @@ export default function TrollBox() {
     }
   }
 
-  /* scroll to latest */
   useEffect(() => {
     if (!isMinimized && logRef.current) {
       logRef.current.scrollTo({ top:logRef.current.scrollHeight, behavior:'smooth' })
     }
   }, [messages, isMinimized])
 
-  /* focus input after expand */
   useEffect(() => {
     if (!isMinimized) {
       const t = setTimeout(() => inputRef.current?.focus(), 300)
@@ -270,16 +283,14 @@ export default function TrollBox() {
     }
   }, [isMinimized])
 
-  /* cooldown ticker */
   useEffect(() => {
     if (cooldown <= 0) return
-    const t = setTimeout(() => setCooldown(cooldown - 1), 1_000)
+    const t = setTimeout(() => setCooldown(cooldown - 1), 1000)
     return () => clearTimeout(t)
   }, [cooldown])
 
   const toggleMinimize = () => setIsMinimized(v => !v)
 
-  /* ------------- render ------------- */
   return (
     <Wrapper $isMinimized={isMinimized}>
       {isMinimized && (
@@ -302,6 +313,7 @@ export default function TrollBox() {
           {messages.map((m, i) => (
             <MessageItem key={m.ts || i} $isOwn={m.user === userName}>
               <MessageHeader>
+                <Avatar bg={userColors[m.user]}>{m.user[0]}</Avatar>
                 <Username userColor={userColors[m.user]}>{m.user.slice(0,6)}</Username>
                 <Badge>Guest</Badge>
                 <Timestamp>{fmtTime(m.ts)}</Timestamp>
