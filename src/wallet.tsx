@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react'
 import {
   ConnectionProvider,
@@ -8,33 +7,34 @@ import {
   WalletModalProvider
 } from '@solana/wallet-adapter-react-ui'
 import {
-  MobileWalletAdapter,
+  SolanaMobileWalletAdapter,
   createDefaultAuthorizationResultCache,
 } from '@solana-mobile/wallet-adapter-mobile'
-import { clusterApiUrl } from '@solana/web3.js'
+import { clusterApiUrl, WalletAdapterNetwork } from '@solana/web3.js'
 import { GambaProvider } from 'gamba-react-v2'
 import { GambaUiProvider } from 'gamba-react-ui-v2'
 
-// Detecta si es un dispositivo móvil
+// Detecta dispositivos móviles
 const isMobile = typeof window !== 'undefined' && /Mobi|Android/i.test(navigator.userAgent)
 
 export const WalletConnectionProvider = ({ children }: { children: React.ReactNode }) => {
-  const endpoint = clusterApiUrl('mainnet-beta')
+  const endpoint = clusterApiUrl(WalletAdapterNetwork.MainnetBeta)
 
   const wallets = useMemo(() => {
     if (isMobile) {
       return [
-        new MobileWalletAdapter({
+        new SolanaMobileWalletAdapter({
           appIdentity: {
             name: 'Banabets',
-            uri: 'https://banabets.com',
-            icon: 'https://banabets.com/icon-192x192.png',
+            uri: 'https://tu-dapp.com',
+            icon: 'https://tu-dapp.com/icon-192x192.png',
           },
           authorizationResultCache: createDefaultAuthorizationResultCache(),
+          cluster: WalletAdapterNetwork.MainnetBeta,
         })
       ]
     }
-    return [] // puedes agregar otros wallets aquí para desktop si lo deseas
+    return [] // Puedes agregar adaptadores web aquí si deseas
   }, [])
 
   return (
