@@ -280,15 +280,11 @@ export default function Header() {
           )}
 
           {/* Leaderboard trigger */}
-          {isDesktop ? (
-            <GambaUi.Button onClick={() => setShowLeaderboard(true)}>
-              🏆 Leaderboard
-            </GambaUi.Button>
-          ) : (
-            <Bonus noBackground onClick={() => setShowLeaderboard(true)}>
-              🏆
-            </Bonus>
-          )}
+    {isDesktop && (
+  <GambaUi.Button onClick={() => setShowLeaderboard(true)}>
+    🏆 Leaderboard
+  </GambaUi.Button>
+)}
 
           <TokenSelect />
           <UserButton />
