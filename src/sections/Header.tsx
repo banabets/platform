@@ -5,7 +5,7 @@ import {
   useGambaPlatformContext,
   useUserBalance,
 } from 'gamba-react-ui-v2'
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { NavLink } from 'react-router-dom'
 import styled from 'styled-components'
 import { Modal } from '../components/Modal'
@@ -18,35 +18,7 @@ import TokenSelect from './TokenSelect'
 import { UserButton } from './UserButton'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 
-/* ─────── Hook local para precio de Solana ─────── */
-function useSolPriceInline() {
-  const [price, setPrice] = useState<number | null>(null)
-  const [previousPrice, setPreviousPrice] = useState<number | null>(null)
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
-
-  useEffect(() => {
-    const fetchPrice = async () => {
-      try {
-        const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd')
-        const data = await res.json()
-        const newPrice = data.solana.usd
-        setPreviousPrice(price)
-        setPrice(newPrice)
-        setLastUpdated(new Date())
-      } catch (err) {
-        console.error('Failed to fetch SOL price', err)
-      }
-    }
-
-    fetchPrice()
-    const interval = setInterval(fetchPrice, 10000)
-    return () => clearInterval(interval)
-  }, [price])
-
-  return { price, previousPrice, lastUpdated }
-}
-
-/* ─────── estilos ─────────────────────────────── */
+/* ─────── styled ───────────────────────────────────────────── */
 
 const StyledHeader = styled.div`
   position: fixed;
@@ -104,49 +76,6 @@ const Logo = styled(NavLink)`
       margin: 0 auto;
     }
   }
-`
-
-const SolPrice = styled.span<{ color: 'green' | 'red' | 'gray' }>`
-  font-size: 14px;
-  font-weight: bold;
-  padding: 4px 8px;
-  border-radius: 8px;
-  margin-left: 8px;
-  white-space: nowrap;
-  background: #111;
-
-  color: ${({ color }) =>
-    color === 'green' ? '#00ff7f' : color === 'red' ? '#ff6b6b' : '#aaa'};
-
-  display: flex;
-  align-items: center;
-  gap: 4px;
-
-  @media (max-width: 600px) {
-    font-size: 12px;
-    padding: 2px 6px;
-  }
-`
-
-const Tooltip = styled.div`
-  position: absolute;
-  bottom: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 10px;
-  color: #999;
-  white-space: nowrap;
-
-  @media (max-width: 600px) {
-    display: none;
-  }
-`
-
-const PriceWrapper = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 `
 
 const Bonus = styled.button<{ noBackground?: boolean }>`
@@ -261,7 +190,7 @@ const ClaimButton = styled.button`
   }
 `
 
-/* ─────── componente principal ───────────────────────────────── */
+/* ─────── component ─────────────────────────────────────────── */
 
 export default function Header() {
   const pool = useCurrentPool()
@@ -269,66 +198,51 @@ export default function Header() {
   const balance = useUserBalance()
   const isDesktop = useMediaQuery('lg')
 
-  const [bonusHelp, setBonusHelp] = useState(false)
-  const [jackpotHelp, setJackpotHelp] = useState(false)
-  const [showDailyChest, setShowDailyChest] = useState(false)
-  const [showLeaderboard, setShowLeaderboard] = useState(false)
-
-  const { price, previousPrice, lastUpdated } = useSolPriceInline()
-
-  const priceColor =
-    previousPrice === null || price === null
-      ? 'gray'
-      : price > previousPrice
-      ? 'green'
-      : price < previousPrice
-      ? 'red'
-      : 'gray'
-
-  const priceIcon =
-    previousPrice === null || price === null
-      ? ''
-      : price > previousPrice
-      ? '🔺'
-      : price < previousPrice
-      ? '🔻'
-      : ''
-
-  const secondsAgo = lastUpdated
-    ? Math.round((Date.now() - lastUpdated.getTime()) / 1000)
-    : null
-
-  const tooltipText = secondsAgo !== null ? `Updated ${secondsAgo}s ago` : ''
+  const [bonusHelp, setBonusHelp] = React.useState(false)
+  const [jackpotHelp, setJackpotHelp] = React.useState(false)
+  const [showDailyChest, setShowDailyChest] = React.useState(false)
+  const [showLeaderboard, setShowLeaderboard] = React.useState(false)
 
   return (
     <>
+      {/* Bonus info */}
       {bonusHelp && (
         <Modal onClose={() => setBonusHelp(false)}>
           <h1>Bonus ✨</h1>
           <p>
             You have <b><TokenValue amount={balance.bonusBalance} /></b> worth of free plays.
+            This bonus will be applied automatically when you play.
           </p>
-          <p>A small fee is still needed from your wallet for each play.</p>
+          <p>Note that a fee is still needed from your wallet for each play.</p>
         </Modal>
       )}
 
+      {/* Jackpot info */}
       {jackpotHelp && (
         <Modal onClose={() => setJackpotHelp(false)}>
           <h1>Jackpot 💰</h1>
-          <p><b><TokenValue amount={pool.jackpotBalance} /></b> currently in the Jackpot.</p>
-          <p>It grows with every bet. Enable to have a chance to win it.</p>
+          <p style={{ fontWeight: 'bold' }}>
+            There&apos;s <TokenValue amount={pool.jackpotBalance} /> in the Jackpot.
+          </p>
+          <p>
+            The Jackpot is a prize pool that grows with every bet made. As the Jackpot grows,
+            so does your chance of winning. Once a winner is selected, the value of the Jackpot
+            resets and grows from there until a new winner is selected.
+          </p>
+          <p>
+            You will be paying a maximum of {(PLATFORM_JACKPOT_FEE * 100).toLocaleString(undefined, { maximumFractionDigits: 4 })}% for each wager for a chance to win.
+          </p>
           <label style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span>{context.defaultJackpotFee === 0 ? 'DISABLED' : 'ENABLED'}</span>
             <GambaUi.Switch
               checked={context.defaultJackpotFee > 0}
-              onChange={(checked) =>
-                context.setDefaultJackpotFee(checked ? PLATFORM_JACKPOT_FEE : 0)
-              }
+              onChange={(checked) => context.setDefaultJackpotFee(checked ? PLATFORM_JACKPOT_FEE : 0)}
             />
           </label>
         </Modal>
       )}
 
+      {/* Leaderboards */}
       {showLeaderboard && (
         <LeaderboardsModal
           creator={PLATFORM_CREATOR_ADDRESS.toBase58()}
@@ -336,6 +250,7 @@ export default function Header() {
         />
       )}
 
+      {/* Daily chest */}
       {showDailyChest && (
         <PopupContainer>
           <CloseButton onClick={() => setShowDailyChest(false)}>×</CloseButton>
@@ -345,17 +260,10 @@ export default function Header() {
         </PopupContainer>
       )}
 
+      {/* Header bar */}
       <StyledHeader>
         <Logo to="/">
           <img alt="Gamba logo" src="/logo.svg" />
-          {price && (
-            <PriceWrapper>
-              <SolPrice color={priceColor}>
-                {priceIcon} ${price.toFixed(2)}
-              </SolPrice>
-              {tooltipText && <Tooltip>{tooltipText}</Tooltip>}
-            </PriceWrapper>
-          )}
         </Logo>
 
         <RightGroup>
@@ -371,10 +279,15 @@ export default function Header() {
             </Bonus>
           )}
 
-          {isDesktop && (
+          {/* Leaderboard trigger */}
+          {isDesktop ? (
             <GambaUi.Button onClick={() => setShowLeaderboard(true)}>
               🏆 Leaderboard
             </GambaUi.Button>
+          ) : (
+            <Bonus noBackground onClick={() => setShowLeaderboard(true)}>
+              🏆
+            </Bonus>
           )}
 
           <TokenSelect />
@@ -382,6 +295,7 @@ export default function Header() {
         </RightGroup>
       </StyledHeader>
 
+      {/* Spacer for mobile so content isn't hidden behind the header */}
       {!isDesktop && <div style={{ height: '20px' }} />}
     </>
   )
