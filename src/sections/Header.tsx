@@ -1,12 +1,3 @@
-
-
-  network: 'mainnet-beta',
-})
-
-
-
-})
-
 import {
   GambaUi,
   TokenValue,
