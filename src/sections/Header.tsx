@@ -33,7 +33,7 @@ const StyledHeader = styled.div`
   justify-content: space-between;
 
   width: 90%;
-  max-width: 1400px;
+  max-width: 1200px;
   height: 100px;
   padding: 0 32px;
 
