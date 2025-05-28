@@ -1,111 +1,104 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { useUserStore } from '../../hooks/useUserStore'
 
-const Buttons = styled.div`
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-
-  @media (min-width: 800px) {
-    height: 100%;
-  }
-
-  @media (max-width: 800px) {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
-    padding-top: 0!important;
-  }
-
-& > button {
-  border: none;
-  width: 100%;
-  border-radius: 10px;
-  padding: 10px;
-  background: transparent; 
-  transition: background-color .2s ease;
-  color: white;
-font-size: 17px;
-  cursor: pointer;
-  &:hover {
-    background: transparent; 
-  }
-}
-`
+const images = [
+  'https://iili.io/30VoMKJ.png',
+  'https://i.ibb.co/qt8xHzR/20250504-0532-Banner-Casino-y-Bananas-remix-01jtda67f2ed293kxf2tgp2dew.png',
+  'https://i.ibb.co/n8qDLxwX/20250504-0528-Casino-On-Chain-Colorido-remix-01jtd9y2khe4mv2ezp31n5d7h8.png',
+]
 
 const Welcome = styled.div`
-  @keyframes welcome-fade-in {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes backgroundGradient {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-
-  background-image: url(https://iili.io/30VoMKJ.png); 
-  background-size: cover; 
- background-position: center;
-  border-radius: 20px;
   position: relative;
+  border-radius: 20px;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   padding: 20px;
+  height: 300px;
   filter: drop-shadow(0 4px 3px rgba(0,0,0,.07)) drop-shadow(0 2px 2px rgba(0,0,0,.06));
 
-  & img {
-    animation-duration: 5s;
-    animation-iteration-count: infinite;
-    animation-timing-function: ease-in-out;
-    width: 100px;
-    height: 100px;
-    top: 0;
-    right: 0;
-    &:nth-child(1) {animation-delay: 0s;}
-    &:nth-child(2) {animation-delay: 1s;}
-  }
-
-  & > div {
-    padding: 0px;
-    filter: drop-shadow(0 4px 3px rgba(0,0,0,.07)) drop-shadow(0 2px 2px rgba(0,0,0,.06));
-  }
-
   @media (min-width: 800px) {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    padding: 0;
-    & > div {
-      padding: 40px;
-    }
+    height: 400px;
+  }
+
+  & .content {
+    position: absolute;
+    z-index: 2;
+    text-align: center;
+    color: white;
+    width: 100%;
   }
 `
 
+const BackgroundImage = styled.div<{ url: string }>`
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: url(${p => p.url});
+  background-size: cover;
+  background-position: center;
+  transition: background-image 0.5s ease-in-out;
+  z-index: 1;
+  pointer-events: none;
+`
+
+const Arrows = styled.div`
+  position: absolute;
+  z-index: 3;
+  width: 100%;
+  top: 50%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+  transform: translateY(-50%);
+  user-select: none;
+
+  button {
+    background: rgba(0,0,0,0.4);
+    color: yellow;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    padding: 10px;
+    cursor: pointer;
+  }
+`
+
+const Buttons = styled.div`
+  margin-bottom: 20px; /* Espacio entre botones y el banner */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+
+  & > button {
+    border: none;
+    border-radius: 10px;
+    padding: 10px 15px;
+    background: rgba(0,0,0,0.4); 
+    color: white;
+    font-size: 17px;
+    cursor: pointer;
+    transition: background .2s ease;
+    &:hover {
+      background: rgba(0,0,0,0.6);
+    }
+  }
+`
 export function WelcomeBanner() {
   const wallet = useWallet()
   const walletModal = useWalletModal()
   const store = useUserStore()
+
+  const [index, setIndex] = useState(2) // Comienza con la tercera imagen
+
+  const next = () => setIndex((index + 1) % images.length)
+  const prev = () => setIndex((index - 1 + images.length) % images.length)
+
   const copyInvite = () => {
     store.set({ userModal: true })
     if (!wallet.connected) {
@@ -113,18 +106,18 @@ export function WelcomeBanner() {
     }
   }
 
-  return (
-    <Welcome>
-      <div>
-       <center>
-ㅤ
-ㅤ
-ㅤ
-        <h1>GET THOSE SOLANA'S WITH YOUR BANANAS! 🍌</h1> </center>
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % images.length)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [])
 
-      </div>
+  return (
+    <div>
+      {/* Botones arriba del banner */}
       <Buttons>
-          <button onClick={() => window.open('https://discord.gg/banabets', '_blank')}>
+        <button onClick={() => window.open('https://discord.gg/banabets', '_blank')}>
           💬 DISCORD
         </button>
         <button onClick={() => window.open('https://x.com/banabets', '_blank')}>
@@ -137,7 +130,18 @@ export function WelcomeBanner() {
           📜 DOCS
         </button>
       </Buttons>
-    </Welcome>
 
+      {/* Banner principal */}
+      <Welcome>
+        <BackgroundImage url={images[index]} />
+        <div className="content">
+          {index === 0 && <h1>GET THOSE SOLANA'S WITH YOUR BANANAS! 🍌</h1>}
+        </div>
+        <Arrows>
+          <button onClick={prev}>⬅️</button>
+          <button onClick={next}>➡️</button>
+        </Arrows>
+      </Welcome>
+    </div>
   )
 }
