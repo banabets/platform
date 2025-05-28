@@ -16,8 +16,8 @@ const root = ReactDOM.createRoot(document.getElementById('root')!)
 function Root() {
   const wallets = React.useMemo(
     () => [
-      new PhantomWalletAdapter({ appUrl: 'https://banabets.com' }),
-      new SolflareWalletAdapter({ network: 'mainnet-beta', appUrl: 'https://banabets.com' }),
+      new PhantomWalletAdapter(),
+      new SolflareWalletAdapter(),
     ],
     [],
   )
