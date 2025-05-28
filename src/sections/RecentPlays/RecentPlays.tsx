@@ -73,7 +73,7 @@ const RightPanel = styled.div`
   flex-direction: column;
   gap: 16px;
   justify-content: flex-start;
-  margin-top: 9px;
+  margin-top: 6px;
 `
 
 const SolPriceBox = styled.div`
@@ -184,7 +184,7 @@ export default function RecentPlays() {
         const excludeList = ['solana', 'usd-coin', 'tether', 'wrapped-solana']
         const filtered = json
           .filter((coin: any) => !excludeList.includes(coin.id.toLowerCase()))
-          .slice(0, 10)
+          .slice(0, 11)
         setMemecoins(filtered)
         localStorage.setItem('memecoins', JSON.stringify(filtered))
       } catch (e) {
