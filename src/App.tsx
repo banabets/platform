@@ -53,6 +53,22 @@ export default function App() {
   const newcomer = useUserStore((state) => state.newcomer)
   const set = useUserStore((state) => state.set)
 
+  const { wallet, connect, connected, connecting } = useWallet()
+
+  React.useEffect(() => {
+    const autoReconnect = async () => {
+      if (!connected && !connecting && wallet?.readyState === 'Installed') {
+        try {
+          await connect()
+        } catch (err) {
+          console.warn('Auto-reconnect failed:', err)
+        }
+      }
+    }
+    autoReconnect()
+  }, [connected, connecting, wallet])
+
+
   return (
     <>
       {newcomer && (
@@ -74,7 +90,24 @@ export default function App() {
       <Header />
 <div style={{ height: '50px', visibility: 'hidden', pointerEvents: 'none' }} />
       <Toasts />
-      <MainWrapper>
+      
+      {!connected && connecting && (
+        <div style={{
+          position: 'fixed',
+          top: 10,
+          right: 10,
+          background: 'rgba(0,0,0,0.7)',
+          color: 'white',
+          padding: '8px 12px',
+          borderRadius: '8px',
+          zIndex: 2000,
+          fontSize: '14px',
+        }}>
+          Reconnecting wallet...
+        </div>
+      )}
+
+<MainWrapper>
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/:gameId" element={<Game />} />
