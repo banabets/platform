@@ -1,3 +1,18 @@
+
+import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare'
+
+const solflareWallet = new SolflareWalletAdapter({
+  network: 'mainnet-beta',
+  appUrl: 'https://banabets.com',
+})
+
+
+import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom'
+
+const phantomWallet = new PhantomWalletAdapter({
+  appUrl: 'https://banabets.com',
+})
+
 import {
   GambaUi,
   TokenValue,
