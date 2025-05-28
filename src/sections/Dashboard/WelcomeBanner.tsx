@@ -5,10 +5,12 @@ import styled from 'styled-components'
 import { useUserStore } from '../../hooks/useUserStore'
 
 const images = [
-  'https://iili.io/30VoMKJ.png',
+  'https://iili.io/30VoMKJ.png', // imagen 0 (solo en móvil)
   'https://i.ibb.co/qt8xHzR/20250504-0532-Banner-Casino-y-Bananas-remix-01jtda67f2ed293kxf2tgp2dew.png',
   'https://i.ibb.co/n8qDLxwX/20250504-0528-Casino-On-Chain-Colorido-remix-01jtd9y2khe4mv2ezp31n5d7h8.png',
 ]
+
+const isMobile = window.innerWidth < 800
 
 const Welcome = styled.div`
   position: relative;
@@ -32,6 +34,12 @@ const Welcome = styled.div`
     text-align: center;
     color: white;
     width: 100%;
+  }
+
+  .mobile-only-text {
+    @media (min-width: 800px) {
+      display: none;
+    }
   }
 `
 
@@ -69,7 +77,7 @@ const Arrows = styled.div`
 `
 
 const Buttons = styled.div`
-  margin-bottom: 20px; /* Espacio entre botones y el banner */
+  margin-bottom: 20px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -89,15 +97,25 @@ const Buttons = styled.div`
     }
   }
 `
+
 export function WelcomeBanner() {
   const wallet = useWallet()
   const walletModal = useWalletModal()
   const store = useUserStore()
 
-  const [index, setIndex] = useState(2) // Comienza con la tercera imagen
+  const [index, setIndex] = useState(() => isMobile ? 0 : 1)
 
-  const next = () => setIndex((index + 1) % images.length)
-  const prev = () => setIndex((index - 1 + images.length) % images.length)
+  const next = () => {
+    let nextIndex = (index + 1) % images.length
+    if (!isMobile && nextIndex === 0) nextIndex = 1
+    setIndex(nextIndex)
+  }
+
+  const prev = () => {
+    let prevIndex = (index - 1 + images.length) % images.length
+    if (!isMobile && prevIndex === 0) prevIndex = images.length - 1
+    setIndex(prevIndex)
+  }
 
   const copyInvite = () => {
     store.set({ userModal: true })
@@ -108,14 +126,17 @@ export function WelcomeBanner() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % images.length)
+      setIndex((prev) => {
+        let next = (prev + 1) % images.length
+        if (!isMobile && next === 0) return 1
+        return next
+      })
     }, 5000)
     return () => clearInterval(interval)
   }, [])
 
   return (
     <div>
-      {/* Botones arriba del banner */}
       <Buttons>
         <button onClick={() => window.open('https://discord.gg/banabets', '_blank')}>
           💬 DISCORD
@@ -131,11 +152,12 @@ export function WelcomeBanner() {
         </button>
       </Buttons>
 
-      {/* Banner principal */}
       <Welcome>
         <BackgroundImage url={images[index]} />
         <div className="content">
-          {index === 0 && <h1>GET THOSE SOLANA'S WITH YOUR BANANAS! 🍌</h1>}
+          {index === 0 && (
+            <h1 className="mobile-only-text">GET THOSE SOLANA'S WITH YOUR BANANAS! 🍌</h1>
+          )}
         </div>
         <Arrows>
           <button onClick={prev}>⬅️</button>
