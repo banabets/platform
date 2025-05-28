@@ -1,12 +1,10 @@
 
 
   network: 'mainnet-beta',
-  appUrl: 'https://banabets.com',
 })
 
 
 
-  appUrl: 'https://banabets.com',
 })
 
 import {
