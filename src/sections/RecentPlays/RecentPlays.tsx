@@ -184,7 +184,7 @@ export default function RecentPlays() {
         const excludeList = ['solana', 'usd-coin', 'tether', 'wrapped-solana']
         const filtered = json
           .filter((coin: any) => !excludeList.includes(coin.id.toLowerCase()))
-          .slice(0, 10)
+          .slice(0, 6)
         setMemecoins(filtered)
         localStorage.setItem('memecoins', JSON.stringify(filtered))
       } catch (e) {
