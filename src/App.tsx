@@ -1,4 +1,3 @@
-
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import { GambaUi } from 'gamba-react-ui-v2'
 import { useTransactionError } from 'gamba-react-v2'
@@ -17,7 +16,7 @@ import { MainWrapper, TosInner, TosWrapper } from './styles'
 import TrollBox from './components/TrollBox'
 import LeaderboardsModal from './components/LeaderboardsModal'
 import Sidebar from './components/Sidebar'
-
+import styled from 'styled-components'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -30,15 +29,13 @@ function ErrorHandler() {
   const toast = useToast()
   const [error, setError] = React.useState<Error>()
 
-  useTransactionError(
-    (error) => {
-      if (error.message === 'NOT_CONNECTED') {
-        walletModal.setVisible(true)
-        return
-      }
-      toast({ title: '❌ Transaction error', description: error.error?.errorMessage ?? error.message })
-    },
-  )
+  useTransactionError((error) => {
+    if (error.message === 'NOT_CONNECTED') {
+      walletModal.setVisible(true)
+      return
+    }
+    toast({ title: '❌ Transaction error', description: error.error?.errorMessage ?? error.message })
+  })
 
   return (
     <>
@@ -52,28 +49,46 @@ function ErrorHandler() {
   )
 }
 
+const Hamburger = styled.button`
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1100;
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  color: white;
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+`
+
 export default function App() {
   const newcomer = useUserStore((state) => state.newcomer)
   const set = useUserStore((state) => state.set)
+  const [isSidebarOpen, setSidebarOpen] = React.useState(false)
 
   return (
     <div style={{ display: 'flex' }}>
-      <Sidebar />
-      <div style={{ flex: 1 }}>
+      <Sidebar isOpen={isSidebarOpen} />
+      <div style={{ flex: 1, marginLeft: 260 }}>
+        <Hamburger onClick={() => setSidebarOpen(true)}>☰</Hamburger>
+
         {newcomer && (
           <Modal>
             <h1>Welcome</h1>
             <TosWrapper>
               <TosInner dangerouslySetInnerHTML={{ __html: TOS_HTML }} />
             </TosWrapper>
-            <p>
-              By playing on our platform, you confirm your compliance.
-            </p>
+            <p>By playing on our platform, you confirm your compliance.</p>
             <GambaUi.Button main onClick={() => set({ newcomer: false })}>
               Acknowledge
             </GambaUi.Button>
           </Modal>
         )}
+
         <ScrollToTop />
         <ErrorHandler />
         <Header />
