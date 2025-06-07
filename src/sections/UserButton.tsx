@@ -8,7 +8,7 @@ import { useToast } from '../hooks/useToast'
 import { useUserStore } from '../hooks/useUserStore'
 import { truncateString } from '../utils'
 
-const avatarImage = "https://i.ibb.co/Fbcwbr3Y/favicon.png"
+const avatarImage = "https://i.ibb.co/CppmNbXW/user.png"
 
 function isUsernameTaken(username, currentWallet) {
   for (let i = 0; i < localStorage.length; i++) {
