@@ -18,6 +18,10 @@ const SidebarContainer = styled.div`
   box-sizing: border-box;
   font-family: Arial, sans-serif;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `
 
 const SectionTitle = styled.h4`
