@@ -62,17 +62,3 @@ body::-webkit-scrollbar-thumb {
   background: rgb(55, 57, 82);
   border-radius: 10px;
 }
-@media (max-width: 768px) {
-  #root, html, body {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
-    overflow-x: hidden;
-  }
-
-  .game-container, .main-wrapper {
-    margin-left: 0 !important;
-    padding-left: 0 !important;
-    width: 100% !important;
-  }
-}
