@@ -1,3 +1,4 @@
+
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import { GambaUi } from 'gamba-react-ui-v2'
 import { useTransactionError } from 'gamba-react-v2'
@@ -16,16 +17,7 @@ import { MainWrapper, TosInner, TosWrapper } from './styles'
 import TrollBox from './components/TrollBox'
 import LeaderboardsModal from './components/LeaderboardsModal'
 import Sidebar from './components/Sidebar'
-import styled from 'styled-components'
 
-const MainContentWrapper = styled.div`
-  flex: 1;
-  margin-left: 260px;
-
-  @media (max-width: 768px) {
-    margin-left: 0;
-  }
-`
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -52,7 +44,7 @@ function ErrorHandler() {
     <>
       {error && (
         <Modal onClose={() => setError(undefined)}>
-          <h1>Error occurred</h1>
+          <h1>Error occured</h1>
           <p>{error.message}</p>
         </Modal>
       )}
@@ -67,7 +59,7 @@ export default function App() {
   return (
     <div style={{ display: 'flex' }}>
       <Sidebar />
-      <MainContentWrapper>
+      <div style={{ flex: 1 }}>
         {newcomer && (
           <Modal>
             <h1>Welcome</h1>
@@ -96,7 +88,7 @@ export default function App() {
           <RecentPlays />
         </MainWrapper>
         <TrollBox />
-      </MainContentWrapper>
+      </div>
     </div>
   )
 }
