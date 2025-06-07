@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 
-const SidebarContainer = styled.div`
+const SidebarContainer = styled.div<{ isOpen: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
@@ -18,9 +18,30 @@ const SidebarContainer = styled.div`
   box-sizing: border-box;
   font-family: Arial, sans-serif;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease;
 
   @media (max-width: 768px) {
-    display: none;
+    transform: ${({ isOpen }) => (isOpen ? 'translateX(0)' : 'translateX(-100%)')};
+  }
+`
+
+const Hamburger = styled.button`
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1100;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+
+  img {
+    width: 28px;
+    height: 28px;
   }
 `
 
@@ -77,6 +98,7 @@ const SolanaPrice = styled.div`
 
 const Sidebar = () => {
   const [solPrice, setSolPrice] = useState(null)
+  const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
     const fetchPrice = async () => {
@@ -90,118 +112,86 @@ const Sidebar = () => {
     }
 
     fetchPrice()
-    const interval = setInterval(fetchPrice, 20000) // cada 20 segundos
-
+    const interval = setInterval(fetchPrice, 20000)
     return () => clearInterval(interval)
   }, [])
 
   return (
-    <SidebarContainer>
-      <AirdropButton onClick={() => alert("Airdrop claimed!")}>
-        Claim Airdrop 🎁
-      </AirdropButton>
+    <>
+      <Hamburger onClick={() => setIsOpen(prev => !prev)}>
+        <img src="https://cdn-icons-png.flaticon.com/512/1828/1828859.png" alt="Menu" />
+      </Hamburger>
 
-      <SolanaPrice>
-        {solPrice ? `SOL: $${solPrice}` : 'Loading...'}
-      </SolanaPrice>
+      <SidebarContainer isOpen={isOpen}>
+        <AirdropButton onClick={() => alert("Airdrop claimed!")}>
+          Claim Airdrop 🎁
+        </AirdropButton>
 
-<NavLink to="/">
-  <img
-    src="https://cdn-icons-png.flaticon.com/512/17604/17604657.png" // Ícono de casa (puedes cambiarlo)
-    alt="Home icon"
-    style={{ width: 32, height: 32, marginRight: 8 }}
-  />
-  Home
-</NavLink>
+        <SolanaPrice>
+          {solPrice ? `SOL: $${solPrice}` : 'Loading...'}
+        </SolanaPrice>
 
-      <SectionTitle>Banabets Games</SectionTitle>
-      <NavLink to="/dice">
-  <img
-    src="https://cdn-icons-png.flaticon.com/32/7469/7469372.png"
-    alt="Dice icon"
-    style={{ width: 32, height: 32, marginRight: 8, verticalAlign: 'middle' }}
-  />
-  Dice
-</NavLink>
+        <NavLink to="/">
+          <img src="https://cdn-icons-png.flaticon.com/512/17604/17604657.png" alt="Home" style={{ width: 32, height: 32, marginRight: 8 }} />
+          Home
+        </NavLink>
 
-     <NavLink to="/blackjack">
-  <img
-    src="https://cdn-icons-png.flaticon.com/32/2316/2316698.png"
-    alt="Blackjack icon"
-    style={{ width: 32, height: 32, marginRight: 8, verticalAlign: 'middle' }}
-  />
-  Blackjack
-</NavLink>
-     <NavLink to="/slots">
-  <img
-    src="https://cdn-icons-png.flaticon.com/32/16037/16037628.png"
-    alt="Slots icon"
-    style={{ width: 32, height: 32, marginRight: 8 }}
-  />
-  Slots
-</NavLink>
-      <NavLink to="/flip">
-  <img
-    src="https://cdn-icons-png.flaticon.com/512/8518/8518867.png"
-    alt="Coin Flip icon"
-    style={{ width: 32, height: 32, marginRight: 8 }}
-  />
-  Flip
-</NavLink>
-    <NavLink to="/hi-lo">
-  <img
-    src="https://cdn-icons-png.flaticon.com/32/11305/11305220.png"
-    alt="Hi-Lo icon"
-    style={{ width: 32, height: 32, marginRight: 8 }}
-  />
-  Hi-Lo
-</NavLink>
-      <NavLink to="/mines">
-  <img
-    src="https://cdn-icons-png.flaticon.com/32/17300/17300366.png"
-    alt="Mines icon"
-    style={{ width: 32, height: 32, marginRight: 8 }}
-  />
-  Mines
-</NavLink>
-      <NavLink to="/roulette">
-  <img
-    src="https://cdn-icons-png.flaticon.com/32/16037/16037729.png"
-    alt="Roulette icon"
-    style={{ width: 32, height: 32, marginRight: 8 }}
-  />
-  Roulette
-</NavLink>
-      <NavLink to="/plinko">
-  <img
-    src="https://cdn-icons-png.flaticon.com/32/7037/7037815.png"
-    alt="Plinko icon"
-    style={{ width: 32, height: 32, marginRight: 8 }}
-  />
-  Plinko
-</NavLink>
-      <NavLink to="/crash">
-  <img
-    src="https://cdn-icons-png.flaticon.com/32/7202/7202291.png"
-    alt="Crash icon"
-    style={{ width: 32, height: 32, marginRight: 8 }}
-  />
-  Crash
-</NavLink>
-      <NavLink to="/crypto-chart">
-  <img
-    src="https://cdn-icons-png.flaticon.com/32/6329/6329225.png"
-    alt="Solana icon"
-    style={{ width: 32, height: 32, marginRight: 8 }}
-  />
-  Sol Crash
-</NavLink>
+        <SectionTitle>Banabets Games</SectionTitle>
 
+        <NavLink to="/dice">
+          <img src="https://cdn-icons-png.flaticon.com/32/7469/7469372.png" alt="Dice" style={{ width: 32, height: 32, marginRight: 8, verticalAlign: 'middle' }} />
+          Dice
+        </NavLink>
 
-      <SectionTitle>Exclusive Games</SectionTitle>
-      <center><NavLink to="/provably-fair">Coming Soon..</NavLink></center>
+        <NavLink to="/blackjack">
+          <img src="https://cdn-icons-png.flaticon.com/32/2316/2316698.png" alt="Blackjack" style={{ width: 32, height: 32, marginRight: 8, verticalAlign: 'middle' }} />
+          Blackjack
+        </NavLink>
 
-    </SidebarContainer>
+        <NavLink to="/slots">
+          <img src="https://cdn-icons-png.flaticon.com/32/16037/16037628.png" alt="Slots" style={{ width: 32, height: 32, marginRight: 8 }} />
+          Slots
+        </NavLink>
+
+        <NavLink to="/flip">
+          <img src="https://cdn-icons-png.flaticon.com/512/8518/8518867.png" alt="Flip" style={{ width: 32, height: 32, marginRight: 8 }} />
+          Flip
+        </NavLink>
+
+        <NavLink to="/hi-lo">
+          <img src="https://cdn-icons-png.flaticon.com/32/11305/11305220.png" alt="Hi-Lo" style={{ width: 32, height: 32, marginRight: 8 }} />
+          Hi-Lo
+        </NavLink>
+
+        <NavLink to="/mines">
+          <img src="https://cdn-icons-png.flaticon.com/32/17300/17300366.png" alt="Mines" style={{ width: 32, height: 32, marginRight: 8 }} />
+          Mines
+        </NavLink>
+
+        <NavLink to="/roulette">
+          <img src="https://cdn-icons-png.flaticon.com/32/16037/16037729.png" alt="Roulette" style={{ width: 32, height: 32, marginRight: 8 }} />
+          Roulette
+        </NavLink>
+
+        <NavLink to="/plinko">
+          <img src="https://cdn-icons-png.flaticon.com/32/7037/7037815.png" alt="Plinko" style={{ width: 32, height: 32, marginRight: 8 }} />
+          Plinko
+        </NavLink>
+
+        <NavLink to="/crash">
+          <img src="https://cdn-icons-png.flaticon.com/32/7202/7202291.png" alt="Crash" style={{ width: 32, height: 32, marginRight: 8 }} />
+          Crash
+        </NavLink>
+
+        <NavLink to="/crypto-chart">
+          <img src="https://cdn-icons-png.flaticon.com/32/6329/6329225.png" alt="Sol Crash" style={{ width: 32, height: 32, marginRight: 8 }} />
+          Sol Crash
+        </NavLink>
+
+        <SectionTitle>Exclusive Games</SectionTitle>
+        <center><NavLink to="/provably-fair">Coming Soon..</NavLink></center>
+      </SidebarContainer>
+    </>
   )
 }
 
