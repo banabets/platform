@@ -17,6 +17,17 @@ import { MainWrapper, TosInner, TosWrapper } from './styles'
 import TrollBox from './components/TrollBox'
 import LeaderboardsModal from './components/LeaderboardsModal'
 import Sidebar from './components/Sidebar'
+import styled from 'styled-components'
+
+const MainContent = styled.div`
+  flex: 1;
+  margin-left: 260px;
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+  }
+`
+
 
 function ScrollToTop() {
   const { pathname } = useLocation()
