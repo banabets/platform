@@ -1,3 +1,4 @@
+
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import { GambaUi } from 'gamba-react-ui-v2'
 import { useTransactionError } from 'gamba-react-v2'
@@ -15,6 +16,7 @@ import Toasts from './sections/Toasts'
 import { MainWrapper, TosInner, TosWrapper } from './styles'
 import TrollBox from './components/TrollBox'
 import LeaderboardsModal from './components/LeaderboardsModal'
+import Sidebar from './components/Sidebar'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -54,35 +56,38 @@ export default function App() {
   const set = useUserStore((state) => state.set)
 
   return (
-    <>
-      {newcomer && (
-        <Modal>
-          <h1>Welcome</h1>
-          <TosWrapper>
-            <TosInner dangerouslySetInnerHTML={{ __html: TOS_HTML }} />
-          </TosWrapper>
-          <p>
-            By playing on our platform, you confirm your compliance.
-          </p>
-          <GambaUi.Button main onClick={() => set({ newcomer: false })}>
-            Acknowledge
-          </GambaUi.Button>
-        </Modal>
-      )}
-      <ScrollToTop />
-      <ErrorHandler />
-      <Header />
-<div style={{ height: '50px', visibility: 'hidden', pointerEvents: 'none' }} />
-      <Toasts />
-      <MainWrapper>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/:gameId" element={<Game />} />
-        </Routes>
-        <h2 style={{ textAlign: 'center' }}>Recent Plays</h2>
-        <RecentPlays />
-      </MainWrapper>
-      <TrollBox />
-    </>
+    <div style={{ display: 'flex' }}>
+      <Sidebar />
+      <div style={{ flex: 1 }}>
+        {newcomer && (
+          <Modal>
+            <h1>Welcome</h1>
+            <TosWrapper>
+              <TosInner dangerouslySetInnerHTML={{ __html: TOS_HTML }} />
+            </TosWrapper>
+            <p>
+              By playing on our platform, you confirm your compliance.
+            </p>
+            <GambaUi.Button main onClick={() => set({ newcomer: false })}>
+              Acknowledge
+            </GambaUi.Button>
+          </Modal>
+        )}
+        <ScrollToTop />
+        <ErrorHandler />
+        <Header />
+        <div style={{ height: '50px', visibility: 'hidden', pointerEvents: 'none' }} />
+        <Toasts />
+        <MainWrapper>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/:gameId" element={<Game />} />
+          </Routes>
+          <h2 style={{ textAlign: 'center' }}>Recent Plays</h2>
+          <RecentPlays />
+        </MainWrapper>
+        <TrollBox />
+      </div>
+    </div>
   )
 }
