@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 
-const SidebarContainer = styled.div<{ isOpen: boolean }>`
+const SidebarContainer = styled.div`
   position: fixed;
   top: 0;
   left: 0;
@@ -18,11 +18,9 @@ const SidebarContainer = styled.div<{ isOpen: boolean }>`
   box-sizing: border-box;
   font-family: Arial, sans-serif;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
-  transform: translateX(0);
-  transition: transform 0.3s ease;
 
   @media (max-width: 768px) {
-    transform: ${({ isOpen }) => (isOpen ? 'translateX(0)' : 'translateX(-100%)')};
+    display: none;
   }
 `
 
