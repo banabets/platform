@@ -16,7 +16,6 @@ import { MainWrapper, TosInner, TosWrapper } from './styles'
 import TrollBox from './components/TrollBox'
 import LeaderboardsModal from './components/LeaderboardsModal'
 import Sidebar from './components/Sidebar'
-import styled from 'styled-components'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -41,7 +40,7 @@ function ErrorHandler() {
     <>
       {error && (
         <Modal onClose={() => setError(undefined)}>
-          <h1>Error occured</h1>
+          <h1>Error occurred</h1>
           <p>{error.message}</p>
         </Modal>
       )}
@@ -49,33 +48,28 @@ function ErrorHandler() {
   )
 }
 
-const Hamburger = styled.button`
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 1100;
-  background: transparent;
-  border: none;
-  font-size: 28px;
-  color: white;
-  display: none;
+// Hook para detectar si es escritorio
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = React.useState(window.innerWidth > 768)
 
-  @media (max-width: 768px) {
-    display: block;
-  }
-`
+  React.useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth > 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  return isDesktop
+}
 
 export default function App() {
   const newcomer = useUserStore((state) => state.newcomer)
   const set = useUserStore((state) => state.set)
-  const [isSidebarOpen, setSidebarOpen] = React.useState(false)
+  const isDesktop = useIsDesktop()
 
   return (
     <div style={{ display: 'flex' }}>
-      <Sidebar isOpen={isSidebarOpen} />
-      <div style={{ flex: 1, marginLeft: 260 }}>
-        <Hamburger onClick={() => setSidebarOpen(true)}>☰</Hamburger>
-
+      {isDesktop && <Sidebar />}
+      <div style={{ flex: 1, marginLeft: isDesktop ? 260 : 0 }}>
         {newcomer && (
           <Modal>
             <h1>Welcome</h1>
