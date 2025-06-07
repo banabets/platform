@@ -1,4 +1,3 @@
-
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import { GambaUi } from 'gamba-react-ui-v2'
 import { useTransactionError } from 'gamba-react-v2'
@@ -27,7 +26,6 @@ const MainContent = styled.div`
     margin-left: 0;
   }
 `
-
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -69,8 +67,7 @@ export default function App() {
   return (
     <div style={{ display: 'flex' }}>
       <Sidebar />
-<MainContent>
-      <div style={{ flex: 1 }}>
+      <MainContent>
         {newcomer && (
           <Modal>
             <h1>Welcome</h1>
@@ -100,7 +97,6 @@ export default function App() {
         </MainWrapper>
         <TrollBox />
       </MainContent>
-</div>
     </div>
   )
 }
