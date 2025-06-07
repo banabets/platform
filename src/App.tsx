@@ -69,7 +69,8 @@ export default function App() {
   return (
     <div style={{ display: 'flex' }}>
       {isDesktop && <Sidebar />}
-      <div style={{ flex: 1, marginLeft: isDesktop ? 260 : 0 }}>
+      <div style={{ flex: 1, marginLeft: isDesktop ? 26marginLeft: isDesktop ? 260 : 0
+0 : 0 }}>
         {newcomer && (
           <Modal>
             <h1>Welcome</h1>
