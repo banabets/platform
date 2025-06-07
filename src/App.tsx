@@ -69,6 +69,7 @@ export default function App() {
   return (
     <div style={{ display: 'flex' }}>
       <Sidebar />
+<MainContent>
       <div style={{ flex: 1 }}>
         {newcomer && (
           <Modal>
@@ -98,7 +99,7 @@ export default function App() {
           <RecentPlays />
         </MainWrapper>
         <TrollBox />
-      </div>
+      </MainContent>
     </div>
   )
 }
