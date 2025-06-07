@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 const SidebarContainer = styled.div<{ isOpen: boolean }>`
   position: fixed;
@@ -19,6 +19,9 @@ const SidebarContainer = styled.div<{ isOpen: boolean }>`
   font-family: Arial, sans-serif;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
   transition: transform 0.3s ease;
+
+  /* 👇 Mostrar siempre en PC */
+  transform: translateX(0);
 
   @media (max-width: 768px) {
     transform: ${({ isOpen }) => (isOpen ? 'translateX(0)' : 'translateX(-100%)')};
@@ -99,6 +102,12 @@ const SolanaPrice = styled.div`
 const Sidebar = () => {
   const [solPrice, setSolPrice] = useState(null)
   const [isOpen, setIsOpen] = useState(false)
+  const location = useLocation()
+
+  // 🔁 Cierra el menú móvil al cambiar de ruta
+  useEffect(() => {
+    setIsOpen(false)
+  }, [location.pathname])
 
   useEffect(() => {
     const fetchPrice = async () => {
