@@ -100,6 +100,7 @@ export default function App() {
         </MainWrapper>
         <TrollBox />
       </MainContent>
+</div>
     </div>
   )
 }
