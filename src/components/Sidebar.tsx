@@ -19,11 +19,13 @@ const SidebarContainer = styled.div<{ isOpen: boolean }>`
   font-family: Arial, sans-serif;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
   transition: transform 0.3s ease;
+  transform: translateX(0);  // <-- importante para escritorio
 
   @media (max-width: 768px) {
     transform: ${({ isOpen }) => (isOpen ? 'translateX(0)' : 'translateX(-100%)')};
   }
 `
+
 
 
 const SectionTitle = styled.h4`
