@@ -87,15 +87,19 @@ export const Recent = styled.button`
   font-size: 16px;
   color: #fff;
   border-radius: 10px;
-  background: none; /* SIN color de fondo */
+  background: none;
   border: 2px solid gold;
   font-weight: bold;
   box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
   transition: transform 0.2s;
+  max-width: 100%;         /* ✅ no puede desbordarse */
+  transform-origin: center;/* ✅ expande hacia adentro */
+
   &:hover {
-    transform: scale(1.05);
+    transform: scale(1.03); /* ⬅️ 1.03 es visualmente agradable pero más seguro */
   }
 `
+
 
 export const Skeleton = styled.div`
   height: 50px;
