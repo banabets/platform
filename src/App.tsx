@@ -48,6 +48,7 @@ function ErrorHandler() {
   )
 }
 
+// Hook para detectar si es escritorio
 function useIsDesktop() {
   const [isDesktop, setIsDesktop] = React.useState(window.innerWidth > 768)
 
@@ -64,13 +65,20 @@ export default function App() {
   const newcomer = useUserStore((state) => state.newcomer)
   const set = useUserStore((state) => state.set)
   const isDesktop = useIsDesktop()
-
-  const shouldShowSidebar = isDesktop // ✅ Usamos esta variable para controlar sidebar y margen
+  const shouldShowSidebar = isDesktop
 
   return (
     <div style={{ display: 'flex' }}>
       {shouldShowSidebar && <Sidebar />}
-      <div style={{ flex: 1, marginLeft: shouldShowSidebar ? 260 : 0 }}>
+      <div
+        style={{
+          flex: 1,
+          marginLeft: shouldShowSidebar ? 260 : 0,
+          overflowX: 'hidden',
+          maxWidth: '100vw',
+          boxSizing: 'border-box',
+        }}
+      >
         {newcomer && (
           <Modal>
             <h1>Welcome</h1>
@@ -95,7 +103,9 @@ export default function App() {
             <Route path="/:gameId" element={<Game />} />
           </Routes>
           <h2 style={{ textAlign: 'center' }}>Recent Plays</h2>
-          <RecentPlays />
+          <div style={{ overflowX: 'auto', maxWidth: '100%' }}>
+            <RecentPlays />
+          </div>
         </MainWrapper>
         <TrollBox />
       </div>
