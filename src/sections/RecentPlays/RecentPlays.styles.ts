@@ -109,14 +109,13 @@ export const Skeleton = styled.div`
 `
 
 export const Layout = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 300px;
+  display: flex;
+  flex-direction: column;
   gap: 16px;
   padding: 16px;
   padding-bottom: 80px;
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
     padding: 10px;
   }
 `
