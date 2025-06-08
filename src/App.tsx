@@ -67,7 +67,9 @@ export default function App() {
   const isDesktop = useIsDesktop()
 
   return (
-    <div style={{ display: 'flex' }}>
+     <div style={{ display: 'flex' }}>
+      {shouldShowSidebar && <Sidebar />}
+      <div style={{ flex: 1, marginLeft: shouldShowSidebar ? 260 : 0 }}>
       {isDesktop && <Sidebar />}
       <div style={{ flex: 1, marginLeft: isDesktop ? 260 : 0 }}>
         {newcomer && (
