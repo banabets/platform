@@ -48,7 +48,6 @@ function ErrorHandler() {
   )
 }
 
-// Hook para detectar si es escritorio
 function useIsDesktop() {
   const [isDesktop, setIsDesktop] = React.useState(window.innerWidth > 768)
 
@@ -66,12 +65,12 @@ export default function App() {
   const set = useUserStore((state) => state.set)
   const isDesktop = useIsDesktop()
 
+  const shouldShowSidebar = isDesktop // ✅ Usamos esta variable para controlar sidebar y margen
+
   return (
-     <div style={{ display: 'flex' }}>
+    <div style={{ display: 'flex' }}>
       {shouldShowSidebar && <Sidebar />}
       <div style={{ flex: 1, marginLeft: shouldShowSidebar ? 260 : 0 }}>
-      {isDesktop && <Sidebar />}
-      <div style={{ flex: 1, marginLeft: isDesktop ? 260 : 0 }}>
         {newcomer && (
           <Modal>
             <h1>Welcome</h1>
