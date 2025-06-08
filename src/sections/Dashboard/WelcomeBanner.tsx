@@ -172,7 +172,7 @@ export function WelcomeBanner() {
         <BackgroundImage url={images[index]} />
         <div className="content">
           {index === 0 && (
-            <h1 className="mobile-only-text">GET THOSE SOLANA'S WITH YOUR BANANAS! 🍌</h1>
+            <h1 className="mobile-only-text"></h1>
           )}
         </div>
         <Arrows>
