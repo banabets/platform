@@ -42,7 +42,7 @@ export const Profit = styled.div<{$win: boolean}>`
   display: flex;
   align-items: center;
   gap: 0.5em;
-  background: none; /* SIN color de fondo */
+  background: none;
   border: 2px solid ${props => props.$win ? 'green' : 'red'};
   border-radius: 12px;
   padding: 12px 16px;
@@ -52,10 +52,14 @@ export const Profit = styled.div<{$win: boolean}>`
   box-shadow: 0 0 10px rgba(255, 215, 0, 0.7), 0 0 5px rgba(0, 0, 0, 0.5);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
   transition: transform 0.2s;
+  max-width: 100%;
+  overflow: hidden;
+
   &:hover {
-    transform: scale(1.05);
+    transform: scale(1.02);
   }
 `
+
 
 export const Jackpot = styled.div`
   animation: ${jackpotGradient} 2s linear infinite;
