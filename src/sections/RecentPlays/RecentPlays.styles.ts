@@ -29,10 +29,13 @@ const skeletonAnimation = keyframes`
 
 export const Container = styled.div`
   width: 100%;
+  max-width: 100%;
+  overflow-x: hidden; /* ✅ evita el scroll horizontal */
   display: flex;
   flex-direction: column;
   gap: 12px;
   padding: 10px;
+  box-sizing: border-box;
 `
 
 export const Profit = styled.div<{$win: boolean}>`
