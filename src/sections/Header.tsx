@@ -20,11 +20,11 @@ import { useMediaQuery } from '../hooks/useMediaQuery'
 
 /* ─────── styled ───────────────────────────────────────────── */
 
-const StyledHeader = styled.div`
+const StyledHeader = styled.div<{ offset?: number }>`
   position: fixed;
   top: 8px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: ${({ offset = 50 }) => `translateX(-${offset}%)`};
   z-index: 1000;
 
   display: flex;
@@ -43,6 +43,7 @@ const StyledHeader = styled.div`
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
 
   @media (max-width: 600px) {
+    transform: translateX(-40%); !important
     width: 95%;
     flex-direction: column;
     height: auto;
@@ -51,7 +52,6 @@ const StyledHeader = styled.div`
     top: 12px;
   }
 `
-
 const Logo = styled(NavLink)`
   display: flex;
   align-items: center;
@@ -158,6 +158,7 @@ const PopupContainer = styled.div`
   padding: 20px;
   text-align: center;
   z-index: 2000;
+ 
 `
 
 const CloseButton = styled.button`
@@ -261,7 +262,7 @@ export default function Header() {
       )}
 
       {/* Header bar */}
-      <StyledHeader>
+      <StyledHeader offset={40}>
         <Logo to="/">
           <img alt="Gamba logo" src="/logo.svg" />
         </Logo>
