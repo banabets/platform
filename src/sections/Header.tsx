@@ -43,7 +43,6 @@ const StyledHeader = styled.div<{ offset?: number }>`
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
 
   @media (max-width: 600px) {
-    transform: translateX(-40%); !important
     width: 95%;
     flex-direction: column;
     height: auto;
@@ -52,6 +51,7 @@ const StyledHeader = styled.div<{ offset?: number }>`
     top: 12px;
   }
 `
+
 const Logo = styled(NavLink)`
   display: flex;
   align-items: center;
@@ -262,7 +262,7 @@ export default function Header() {
       )}
 
       {/* Header bar */}
-      <StyledHeader offset={40}>
+      <StyledHeader offset={isDesktop ? 40 : 50}>
         <Logo to="/">
           <img alt="Gamba logo" src="/logo.svg" />
         </Logo>
