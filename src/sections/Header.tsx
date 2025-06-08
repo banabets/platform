@@ -262,7 +262,7 @@ export default function Header() {
       )}
 
       {/* Header bar */}
-      <StyledHeader offset={isDesktop ? 40 : 50}>
+      <StyledHeader offset={isDesktop ? 39.5 : 50}>
         <Logo to="/">
           <img alt="Gamba logo" src="/logo.svg" />
         </Logo>
