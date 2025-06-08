@@ -77,26 +77,42 @@ const Arrows = styled.div`
 `
 
 const Buttons = styled.div`
-  margin-bottom: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  padding: 20px;
+  width: 100%;
 
   & > button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
     border: none;
-    border-radius: 10px;
-    padding: 10px 15px;
-    background: rgba(0,0,0,0.4); 
+    border-radius: 12px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.08);
     color: white;
-    font-size: 17px;
+    font-size: 16px;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     cursor: pointer;
-    transition: background .2s ease;
+    transition: all 0.2s ease;
+
     &:hover {
-      background: rgba(0,0,0,0.6);
+      background: rgba(255, 255, 255, 0.18);
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 500px) {
+      font-size: 14px;
+      padding: 10px 12px;
     }
   }
 `
+
 
 export function WelcomeBanner() {
   const wallet = useWallet()
