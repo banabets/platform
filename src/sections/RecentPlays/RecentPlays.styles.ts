@@ -2,71 +2,65 @@ import styled, { keyframes } from 'styled-components'
 
 const jackpotGradient = keyframes`
   0% {
-    background: linear-gradient(90deg, #ffd700, #ff4500);
+    background: #6666ff;
   }
-  25% {
-    background: linear-gradient(90deg, #ff4500, #32cd32);
+  15% {
+    background: #0099ff;
   }
-  50% {
-    background: linear-gradient(90deg, #32cd32, #1e90ff);
+  30% {
+    background: #00ff55;
+  }
+  45% {
+    background: #ffe44d;
+  }
+  60% {
+    background: #ff5c4d;
   }
   75% {
-    background: linear-gradient(90deg, #1e90ff, #ffd700);
+    background: #ff3399;
+  }
+  90% {
+    background: #6666ff;
   }
   100% {
-    background: linear-gradient(90deg, #ffd700, #ff4500);
+    background: #6666ff;
   }
 `
 
 const skeletonAnimation = keyframes`
   0%, 100% {
-    background-color: #555;
+    background-color: #cccccc11;
   }
   50% {
-    background-color: #777;
+    background-color: #cccccc22;
   }
 `
 
 export const Container = styled.div`
   width: 100%;
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 10px;
+  gap: 10px;
 `
 
 export const Profit = styled.div<{$win: boolean}>`
   display: flex;
+  gap: .5em;
   align-items: center;
-  gap: 0.5em;
-  background: none; /* SIN color de fondo */
-  border: 2px solid ${props => props.$win ? 'green' : 'red'};
-  border-radius: 12px;
-  padding: 12px 16px;
-  font-size: 16px;
-  color: #fff;
-  font-weight: bold;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.7), 0 0 5px rgba(0, 0, 0, 0.5);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-  transition: transform 0.2s;
-  &:hover {
-    transform: scale(1.05);
-  }
+  background: ${props => props.$win ? '#00491e' : '#ffffff11'};
+  border-radius: 10px;
+  padding: 2px 5px;
 `
 
 export const Jackpot = styled.div`
-  animation: ${jackpotGradient} 2s linear infinite;
+  animation: ${jackpotGradient} 1s linear 0s infinite;
   display: flex;
+  gap: .5em;
   align-items: center;
-  gap: 0.5em;
-  border: 2px solid gold;
-  border-radius: 16px;
-  padding: 12px 16px;
-  font-size: 18px;
-  color: #fff;
-  font-weight: 900;
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.8), 0 0 10px rgba(0, 0, 0, 0.6);
-  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.7);
+  color: black;
+  border-radius: 10px;
+  padding: 1px 5px;
 `
 
 export const Recent = styled.button`
@@ -74,27 +68,22 @@ export const Recent = styled.button`
   cursor: pointer;
   display: flex;
   align-items: center;
+  gap: .5em;
+  text-wrap: nowrap;
+  padding: 10px;
+  color: unset;
+  text-decoration: none;
   justify-content: space-between;
-  gap: 0.5em;
-  padding: 10px 16px;
-  font-size: 16px;
-  color: #fff;
   border-radius: 10px;
-  background: none; /* SIN color de fondo */
-  border: 2px solid gold;
-  font-weight: bold;
-  box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
-  transition: transform 0.2s;
+  background: #0f121b;
   &:hover {
-    transform: scale(1.05);
+    background: #131724;
   }
 `
 
 export const Skeleton = styled.div`
-  height: 50px;
+  height: 40px;
   width: 100%;
   border-radius: 10px;
-  animation: ${skeletonAnimation} 1.5s infinite;
-  border: 2px solid gold;
-  box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+  animation: ${skeletonAnimation} 1s infinite;
 `
