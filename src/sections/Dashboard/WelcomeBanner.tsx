@@ -78,6 +78,7 @@ const Arrows = styled.div`
 
 const Buttons = styled.div`
   display: grid;
+margin: 10px auto 40px; /* ⬅️ 10px arriba, 40px abajo */
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 12px;
   padding: 20px;
