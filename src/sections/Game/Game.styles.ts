@@ -19,20 +19,9 @@ export const loadingAnimation = keyframes`
 
 export const Container = styled.div`
   width: 100%;
-  max-width: 100vw;
   position: relative;
   display: grid;
   gap: 5px;
-  margin-left: 0;
-  padding-left: 0;
-
-  @media (max-width: 768px) {
-    margin-left: 0 !important;
-    padding-left: 0 !important;
-    width: 100% !important;
-    max-width: 100vw !important;
-    overflow-x: hidden;
-  }
 `
 
 export const SettingControls = styled.div`
@@ -75,12 +64,8 @@ export const Screen = styled.div`
   overflow: hidden;
   transition: height .2s ease;
   height: 600px;
-  width: 100%;
-
-  @media (max-width: 768px) {
-    height: auto;
-    min-height: 400px;
-    width: 100%;
+  @media (max-width: 700px) {
+    height: 600px;
   }
 `
 
@@ -98,7 +83,6 @@ export const IconButton = styled.button`
   font-size: 16px;
   border-radius: 10px;
   color: white;
-
   &:hover {
     background: #ffffff22;
   }
@@ -110,7 +94,6 @@ export const StyledLoadingIndicator = styled.div<{$active: boolean}>`
   width: 100%;
   overflow: hidden;
   border-radius: 10px;
-
   &:after {
     content: " ";
     position: absolute;
@@ -120,7 +103,6 @@ export const StyledLoadingIndicator = styled.div<{$active: boolean}>`
     opacity: 0;
     background: #9564ff;
     transition: opacity .5s;
-
     ${(props) => props.$active && css`
       opacity: 1;
     `}
@@ -140,15 +122,12 @@ export const Controls = styled.div`
     display: flex;
     flex-direction: column;
     gap: 10px;
-    width: 100%;
   }
-
   @media (min-width: 800px) {
     display: flex;
     gap: 20px;
     align-items: center;
     height: 80px;
-    width: 100%;
   }
 `
 
