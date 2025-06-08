@@ -118,7 +118,7 @@ const Sidebar = () => {
   return (
     <SidebarContainer>
       <AirdropButton onClick={() => alert("Airdrop claimed!")}>
-        Claim Airdrop 🎁
+        Claim $Bananas 🎁
       </AirdropButton>
 
       <SolanaPrice>
