@@ -91,12 +91,16 @@ export const Recent = styled.button`
   border: 2px solid gold;
   font-weight: bold;
   box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
-  transition: transform 0.2s;
-  max-width: 100%;         /* ✅ no puede desbordarse */
-  transform-origin: center;/* ✅ expande hacia adentro */
+  transition: box-shadow 0.2s ease;
+  max-width: 100%;          /* ⛔️ no se expande más de su contenedor */
+  width: 100%;              /* ✅ toma todo el ancho disponible */
+  box-sizing: border-box;
+  overflow: hidden;         /* ⛔️ evita expansión visual */
+  transform: scale(1);      /* ⬅️ asegura que su estado base es fijo */
 
   &:hover {
-    transform: scale(1.03); /* ⬅️ 1.03 es visualmente agradable pero más seguro */
+    box-shadow: 0 0 16px rgba(255, 215, 0, 0.8);
+    transform: none;        /* 🧠 evita cualquier escalado */
   }
 `
 
