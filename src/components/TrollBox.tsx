@@ -15,16 +15,16 @@ const stringToHslColor = (str: string, s: number, l: number): string => {
   return `hsl(${hash % 360}, ${s}%, ${l}%)`
 }
 
-const MinimizeIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-       stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="5" y1="12" x2="19" y2="12"/>
-  </svg>
-)
-
-const ChatIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+const VerifiedIcon = () => (
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="#4fd1c5"
+    xmlns="http://www.w3.org/2000/svg"
+    style={{ marginLeft: 4 }}
+  >
+    <path d="M23,12L20.56,9.22L20.9,5.54L17.29,4.72L15.4,1.54L12,3L8.6,1.54L6.71,4.72L3.1,5.53L3.44,9.21L1,12L3.44,14.78L3.1,18.47L6.71,19.29L8.6,22.47L12,21L15.4,22.46L17.29,19.28L20.9,18.46L20.56,14.78L23,12M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z" />
   </svg>
 )
 
@@ -168,12 +168,7 @@ const Avatar = styled.div<{ bg: string }>`
 `
 
 const Username = styled.strong<{ userColor:string }>`
-  font-weight:600;color:${p => p.userColor};margin-right:.5em;
-`
-
-const Badge = styled.span`
-  background:#8e44ad;color:#fff;font-size:.7rem;font-weight:600;padding:2px 6px;
-  border-radius:4px;margin:0 6px;text-transform:uppercase;letter-spacing:.5px;
+  font-weight:600;color:${p => p.userColor};margin-right:.3em;
 `
 
 const Timestamp = styled.span`
@@ -231,7 +226,7 @@ export default function TrollBox() {
     dedupingInterval: 7500,
   })
 
-  const logRef   = useRef<HTMLDivElement>(null)
+  const logRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const userColors = useMemo(() => {
@@ -314,8 +309,10 @@ export default function TrollBox() {
             <MessageItem key={m.ts || i} $isOwn={m.user === userName}>
               <MessageHeader>
                 <Avatar bg={userColors[m.user]}>{m.user[0]}</Avatar>
-                <Username userColor={userColors[m.user]}>{m.user.slice(0,6)}</Username>
-                <Badge>Degen</Badge>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <Username userColor={userColors[m.user]}>{m.user.slice(0, 6)}</Username>
+                  <VerifiedIcon />
+                </div>
                 <Timestamp>{fmtTime(m.ts)}</Timestamp>
               </MessageHeader>
               <MessageText>{m.text}</MessageText>
