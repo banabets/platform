@@ -15,6 +15,19 @@ const stringToHslColor = (str: string, s: number, l: number): string => {
   return `hsl(${hash % 360}, ${s}%, ${l}%)`
 }
 
+const MinimizeIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="5" y1="12" x2="19" y2="12"/>
+  </svg>
+)
+
+const ChatIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+  </svg>
+)
+
 const VerifiedIcon = () => (
   <svg
     width="18"
@@ -290,20 +303,20 @@ export default function TrollBox() {
     <Wrapper $isMinimized={isMinimized}>
       {isMinimized && (
         <ExpandIconWrapper onClick={toggleMinimize}>
-          <ChatIcon/>
+          <ChatIcon />
         </ExpandIconWrapper>
       )}
 
       <ContentContainer $isMinimized={isMinimized}>
         <Header onClick={toggleMinimize}>
-          <HeaderTitle>#banabets-chat<OnlineStatus/></HeaderTitle>
+          <HeaderTitle>#banabets-chat<OnlineStatus /></HeaderTitle>
           <HeaderStatus>{messages.length ? `${messages.length} msgs` : 'Connecting…'}</HeaderStatus>
-          <MinimizeButton><MinimizeIcon/></MinimizeButton>
+          <MinimizeButton><MinimizeIcon /></MinimizeButton>
         </Header>
 
         <Log ref={logRef}>
           {!messages.length && !error && <LoadingText>Loading messages…</LoadingText>}
-          {error && <LoadingText style={{color:'#ff8080'}}>Error loading chat.</LoadingText>}
+          {error && <LoadingText style={{ color: '#ff8080' }}>Error loading chat.</LoadingText>}
 
           {messages.map((m, i) => (
             <MessageItem key={m.ts || i} $isOwn={m.user === userName}>
