@@ -15,223 +15,130 @@ const stringToHslColor = (str: string, s: number, l: number): string => {
   return `hsl(${hash % 360}, ${s}%, ${l}%)`
 }
 
-const MinimizeIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-       stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="5" y1="12" x2="19" y2="12"/>
-  </svg>
-)
-
-const ChatIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
-  </svg>
-)
-
 const fadeIn = keyframes`
   from { opacity:0; transform:translateY(5px); }
   to   { opacity:1; transform:translateY(0); }
 `
 
-const ExpandIconWrapper = styled.div`
-  display:flex;
-  align-items:center;
-  justify-content:center;
-`
-
 const Wrapper = styled.div<{ $isMinimized: boolean }>`
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  z-index:998;
-  border-radius:${p => p.$isMinimized ? '50%' : '16px'};
-  background:${p => p.$isMinimized ? '#7289da' : '#2f3136'};
-  border:1px solid ${p => p.$isMinimized ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)'};
-  color:#eee;
-  font-size:1rem;
-  box-shadow:0 8px 20px rgba(0,0,0,0.3);
-  ${({ $isMinimized }) => !$isMinimized && `backdrop-filter:blur(10px);`}
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-  cursor:${p => p.$isMinimized ? 'pointer' : 'default'};
-  transition:width .3s, height .3s, max-height .3s, border-radius .3s, background .3s;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 998;
+  background: #2f3136;
+  color: #eee;
+  font-size: 1rem;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  border-radius: ${({ $isMinimized }) => $isMinimized ? '50%' : '16px'};
+  backdrop-filter: ${({ $isMinimized }) => !$isMinimized && 'blur(10px)'};
+  width: ${({ $isMinimized }) => $isMinimized ? '56px' : '340px'};
+  max-height: ${({ $isMinimized }) => $isMinimized ? '56px' : '450px'};
 
-  ${({ $isMinimized }) => $isMinimized ? `
-    width:56px;
-    height:56px;
-    max-height:56px;
-    justify-content:center;
-    align-items:center;
-    color:#fff;
-    & > *:not(${ExpandIconWrapper}){ display:none; }
-  ` : `
-    width:340px;
-    max-height:450px;
-    min-height:150px;
+  ${({ $isMinimized }) => $isMinimized && `
+    justify-content: center;
+    align-items: center;
+    & > *:not(.ExpandIconWrapper){ display:none; }
   `}
 
-  @media (max-width:480px){
-    bottom:16px;
-    right:16px;
-    ${({ $isMinimized }) => $isMinimized ? `` : `
-      width:calc(100% - 32px);
-      max-width:300px;
-      max-height:60vh;
-    `}
+  @media (max-width: 768px) {
+    bottom: 16px;
+    right: 16px;
+    width: ${({ $isMinimized }) => $isMinimized ? '56px' : 'calc(100% - 32px)'};
+    max-width: 300px;
+    max-height: 60vh;
+  }
+
+  @media (min-width: 769px) {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    height: 100vh;
+    width: 350px;
+    max-height: none;
+    border-radius: 0;
+    background: #0f0f12;
+    backdrop-filter: none;
+    box-shadow: none;
   }
 `
 
 const ContentContainer = styled.div<{ $isMinimized: boolean }>`
-  display:flex;
-  flex-direction:column;
-  flex-grow:1;
-  min-height:0;
-  opacity:${p => p.$isMinimized ? 0 : 1};
-  transition:opacity .2s;
-  pointer-events:${p => p.$isMinimized ? 'none' : 'auto'};
-`
-
-const Header = styled.div`
-  padding:15px 20px;
-  border-bottom:1px solid rgba(255,255,255,0.08);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  background:#202225;
-  color:#fff;
-  cursor:pointer;
-`
-
-const HeaderTitle = styled.span`
-  flex-grow:1;
-  font-size:1.1rem;
-  font-weight:bold;
-  display:flex;
-  align-items:center;
-`
-
-const OnlineStatus = styled.div`
-  width:10px;height:10px;border-radius:50%;background:#28a745;margin-left:10px;
-`
-
-const HeaderStatus = styled.span`
-  font-size:.85rem;color:#a0a0a0;opacity:.8;margin:0 10px;
-`
-
-const MinimizeButton = styled.button`
-  background:none;border:none;color:#a0a0a0;padding:5px;cursor:pointer;border-radius:4px;
-  &:hover{ background:rgba(255,255,255,0.1); color:#fff; }
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
+  opacity: ${({ $isMinimized }) => $isMinimized ? 0 : 1};
+  transition: opacity .2s;
+  pointer-events: ${({ $isMinimized }) => $isMinimized ? 'none' : 'auto'};
 `
 
 const Log = styled.div`
-  flex:1;overflow-y:auto;padding:20px 25px;display:flex;flex-direction:column;gap:1rem;
-  min-height:200px;background:rgba(47,49,54,.8);border-radius:10px;margin-top:10px;
-  &::-webkit-scrollbar{width:8px;}
-  &::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:3px;}
-`
-
-const MessageItem = styled.div<{ $isOwn?: boolean }>`
-  line-height:1.5;animation:${fadeIn} .3s ease-out;
-  background:${p => p.$isOwn ? '#7289da' : '#40444b'};
-  border-radius:8px;padding:10px 14px;max-width:85%;color:#fff;
-  align-self:${p => p.$isOwn ? 'flex-end' : 'flex-start'};
-  font-size:.95rem;
-`
-
-const MessageHeader = styled.div`
-  display:flex;align-items:center;flex-wrap:wrap;margin-bottom:4px;
-`
-
-const Avatar = styled.div<{ bg: string }>`
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background-color: ${p => p.bg};
-  flex-shrink: 0;
-  margin-right: 10px;
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 25px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 0.85rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 0 0 rgba(255, 255, 255, 0);
-  transition: all 0.3s ease;
-  &:hover {
-    transform: scale(1.05);
-    border-color: rgba(255, 255, 255, 0.35);
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 200px;
+  background: rgba(47,49,54,.8);
+  border-radius: 10px;
+  margin-top: 10px;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+  }
+
+  @media (min-width: 769px) {
+    background: transparent;
+    padding: 1rem;
+    max-height: calc(100vh - 180px);
   }
 `
 
-const Username = styled.strong<{ userColor:string }>`
-  font-weight:600;color:${p => p.userColor};margin-right:.5em;
-`
-
-const Badge = styled.span`
-  background:#8e44ad;color:#fff;font-size:.7rem;font-weight:600;padding:2px 6px;
-  border-radius:4px;margin:0 6px;text-transform:uppercase;letter-spacing:.5px;
-`
-
-const Timestamp = styled.span`
-  font-size:.8rem;color:#aaa;margin-left:.5em;
-`
-
-const MessageText = styled.div`
-  white-space:pre-wrap;word-break:break-word;
-`
-
 const InputRow = styled.div`
-  display:flex;align-items:center;border-top:1px solid rgba(255,255,255,0.08);
-  background:#202225;padding:10px 15px;flex-shrink:0;
+  display: flex;
+  align-items: center;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  background: #202225;
+  padding: 10px 15px;
+  flex-shrink: 0;
+
+  @media (min-width: 769px) {
+    position: sticky;
+    bottom: 0;
+    background: #151515;
+  }
 `
 
-const TextInput = styled.input`
-  flex:1;background:#40444b;border:none;padding:12px 16px;color:#fff;outline:none;
-  font-size:1rem;border-radius:10px;
-  &::placeholder{color:#777;opacity:.8;}
-`
-
-const SendBtn = styled.button`
-  background:none;border:none;padding:0 18px;cursor:pointer;font-weight:600;color:#fff;
-  font-size:1rem;
-  &:hover:not(:disabled){background:rgba(255,255,255,0.1);}
-  &:active:not(:disabled){background:rgba(255,255,255,0.2);transform:scale(.98);}
-  &:disabled{opacity:.5;cursor:not-allowed;}
-`
-
-const LoadingText = styled.div`
-  text-align:center;color:#a0a0a0;padding:2rem 0;font-style:italic;font-size:.9rem;
-`
-
-export default function TrollBox() {
+const TrollBox = () => {
   const { publicKey, connected } = useWallet()
   const walletModal = useWalletModal()
-
   const anonFallback = useMemo(
     () => 'anon' + Math.floor(Math.random() * 1e4).toString().padStart(4, '0'),
     []
   )
-  const userName = connected && publicKey
-    ? publicKey.toBase58().slice(0, 6)
-    : anonFallback
+  const userName = connected && publicKey ? publicKey.toBase58().slice(0, 6) : anonFallback
 
   const [isMinimized, setIsMinimized] = useState(false)
   const [text, setText] = useState('')
   const [isSending, setIsSending] = useState(false)
   const [cooldown, setCooldown] = useState(0)
 
-  const swrKey = isMinimized || (typeof document !== 'undefined' && document.hidden)
-    ? null : '/api/chat'
+  const swrKey = isMinimized || (typeof document !== 'undefined' && document.hidden) ? null : '/api/chat'
   const { data: messages = [], error, mutate } = useSWR<Msg[]>(swrKey, fetcher, {
     refreshInterval: 8000,
     dedupingInterval: 7500,
   })
 
-  const logRef   = useRef<HTMLDivElement>(null)
+  const logRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const userColors = useMemo(() => {
@@ -241,10 +148,10 @@ export default function TrollBox() {
     return map
   }, [messages, userName])
 
-  const fmtTime = (ts:number) =>
+  const fmtTime = (ts: number) =>
     ts > Date.now() - 5000
       ? 'sending…'
-      : new Date(ts).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })
+      : new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
   async function send() {
     if (!connected) return walletModal.setVisible(true)
@@ -252,13 +159,13 @@ export default function TrollBox() {
     if (!txt || isSending || cooldown > 0) return
     setIsSending(true)
     const id = Date.now()
-    mutate([...messages, { user:userName, text:txt, ts:id }], false)
+    mutate([...messages, { user: userName, text: txt, ts: id }], false)
     setText('')
     try {
       await fetch('/api/chat', {
-        method:'POST',
-        headers:{ 'Content-Type':'application/json' },
-        body:JSON.stringify({ user:userName, text:txt }),
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user: userName, text: txt }),
       })
       mutate()
       setCooldown(5)
@@ -272,7 +179,7 @@ export default function TrollBox() {
 
   useEffect(() => {
     if (!isMinimized && logRef.current) {
-      logRef.current.scrollTo({ top:logRef.current.scrollHeight, behavior:'smooth' })
+      logRef.current.scrollTo({ top: logRef.current.scrollHeight, behavior: 'smooth' })
     }
   }, [messages, isMinimized])
 
@@ -289,42 +196,21 @@ export default function TrollBox() {
     return () => clearTimeout(t)
   }, [cooldown])
 
-  const toggleMinimize = () => setIsMinimized(v => !v)
-
   return (
     <Wrapper $isMinimized={isMinimized}>
-      {isMinimized && (
-        <ExpandIconWrapper onClick={toggleMinimize}>
-          <ChatIcon/>
-        </ExpandIconWrapper>
-      )}
-
       <ContentContainer $isMinimized={isMinimized}>
-        <Header onClick={toggleMinimize}>
-          <HeaderTitle>#banabets-chat<OnlineStatus/></HeaderTitle>
-          <HeaderStatus>{messages.length ? `${messages.length} msgs` : 'Connecting…'}</HeaderStatus>
-          <MinimizeButton><MinimizeIcon/></MinimizeButton>
-        </Header>
-
         <Log ref={logRef}>
-          {!messages.length && !error && <LoadingText>Loading messages…</LoadingText>}
-          {error && <LoadingText style={{color:'#ff8080'}}>Error loading chat.</LoadingText>}
-
+          {!messages.length && !error && <div>Loading messages…</div>}
+          {error && <div style={{ color: '#ff8080' }}>Error loading chat.</div>}
           {messages.map((m, i) => (
-            <MessageItem key={m.ts || i} $isOwn={m.user === userName}>
-              <MessageHeader>
-                <Avatar bg={userColors[m.user]}>{m.user[0]}</Avatar>
-                <Username userColor={userColors[m.user]}>{m.user.slice(0,6)}</Username>
-                <Badge>Degen</Badge>
-                <Timestamp>{fmtTime(m.ts)}</Timestamp>
-              </MessageHeader>
-              <MessageText>{m.text}</MessageText>
-            </MessageItem>
+            <div key={m.ts || i} style={{ animation: `${fadeIn} .3s ease-out`, color: userColors[m.user] }}>
+              <strong>{m.user.slice(0, 6)}</strong>: {m.text}
+              <span style={{ float: 'right', fontSize: '0.8rem', color: '#aaa' }}>{fmtTime(m.ts)}</span>
+            </div>
           ))}
         </Log>
-
         <InputRow>
-          <TextInput
+          <input
             ref={inputRef}
             value={text}
             placeholder={connected ? 'Say something…' : 'Connect wallet to chat'}
@@ -335,15 +221,19 @@ export default function TrollBox() {
             }}
             disabled={isSending || !swrKey}
             maxLength={200}
+            style={{ flex: 1, background: '#40444b', border: 'none', padding: '12px 16px', color: '#fff', borderRadius: '10px' }}
           />
-          <SendBtn
+          <button
             onClick={send}
             disabled={!connected || isSending || cooldown > 0 || !text.trim() || !swrKey}
+            style={{ marginLeft: '0.5rem', background: 'none', border: 'none', color: '#fff', fontWeight: 600 }}
           >
             {isSending ? '…' : cooldown > 0 ? `Wait ${cooldown}s` : 'Send'}
-          </SendBtn>
+          </button>
         </InputRow>
       </ContentContainer>
     </Wrapper>
   )
 }
+
+export default TrollBox
