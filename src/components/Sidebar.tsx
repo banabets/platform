@@ -6,7 +6,7 @@ const SidebarContainer = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  width: 260px;
+  width: 290px;
   height: 100vh;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(10px);
@@ -18,10 +18,6 @@ const SidebarContainer = styled.div`
   box-sizing: border-box;
   font-family: Arial, sans-serif;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
-
-  @media (max-width: 768px) {
-    display: none;
-  }
 `
 
 const SectionTitle = styled.h4`
@@ -45,26 +41,6 @@ const NavLink = styled(Link)`
   }
 `
 
-const AirdropButton = styled.button`
-  font-size: 18px;
-  font-weight: 700;
-  padding: 12px 16px;
-  background: linear-gradient(90deg, #fbbf24, #f59e0b);
-  color: #000;
-  box-shadow: 0 0 8px rgba(251, 191, 36, 0.8);
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  margin-bottom: 20px;
-  transition: background 0.2s, box-shadow 0.2s;
-
-  &:hover {
-    background: linear-gradient(90deg, #f59e0b, #d97706);
-    box-shadow: 0 0 12px rgba(217, 119, 6, 1);
-  }
-`
-
 const SolanaPrice = styled.div`
   background-color: #111;
   color: #00ffa3;
@@ -74,29 +50,82 @@ const SolanaPrice = styled.div`
   text-align: center;
   margin-bottom: 20px;
 `
-const SpinButton = styled.button`
-  font-size: 16px;
-  font-weight: 600;
-  padding: 12px 16px;
-  background: linear-gradient(90deg, #34d399, #10b981);
-  color: white;
-  box-shadow: 0 0 6px rgba(16, 185, 129, 0.7);
+
+// NUEVO DISEÑO DEL BOTÓN DE AIRDROP
+const AirdropButtonContainer = styled.div`
+  background: #1c1c2b;
+  border: 2px solid #2a2a40;
   border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 10px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+gap: 2px; /* 👈 agrega esto */
   margin-bottom: 20px;
-  transition: background 0.2s, box-shadow 0.2s;
+  font-family: 'Arial', sans-serif;
+`
+
+const AirdropText = styled.div`
+  display: flex;
+  flex-direction: column;
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #a1a1aa;
+
+  span:first-child {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #fff;
+  }
+
+  span:last-child {
+    color: #a78bfa;
+    font-size: 1.2rem;
+    font-weight: 900;
+  }
+`
+
+const AirdropAmountBox = styled.div`
+  display: flex;
+  align-items: center;
+  background: #2a2a40;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  gap: 8px;
+  color: white;
+`
+
+const SolIcon = styled.img`
+  width: 20px;
+  height: 20px;
+`
+
+const ClaimButton = styled.button`
+  background: #a78bfa;
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 
   &:hover {
-    background: linear-gradient(90deg, #10b981, #059669);
-    box-shadow: 0 0 10px rgba(5, 150, 105, 1);
+    background: #c084fc;
+  }
+
+  img {
+    width: 20px;
+    height: 20px;
   }
 `
 
 const Sidebar = () => {
   const [solPrice, setSolPrice] = useState(null)
+  const airdropAmount = 5.13
 
   useEffect(() => {
     const fetchPrice = async () => {
@@ -110,117 +139,89 @@ const Sidebar = () => {
     }
 
     fetchPrice()
-    const interval = setInterval(fetchPrice, 20000) // cada 20 segundos
+    const interval = setInterval(fetchPrice, 20000)
 
     return () => clearInterval(interval)
   }, [])
 
   return (
     <SidebarContainer>
-      <AirdropButton onClick={() => alert("Airdrop claimed!")}>
-        Claim $Bananas 🎁
-      </AirdropButton>
+
+      <AirdropButtonContainer>
+        <AirdropText>
+          <span>LIVE</span>
+          <span>AIRDROP</span>
+        </AirdropText>
+
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <AirdropAmountBox>
+            <SolIcon src="https://images.seeklogo.com/logo-png/42/2/solana-sol-logo-png_seeklogo-423095.png" alt="SOL" />
+            {airdropAmount}
+          </AirdropAmountBox>
+          <ClaimButton onClick={() => alert('You are not eligible to claim the airdrop due to insufficient plays!')}>
+            <img src="https://cdn-icons-png.flaticon.com/512/1828/1828919.png" alt="Claim" />
+          </ClaimButton>
+        </div>
+      </AirdropButtonContainer>
 
       <SolanaPrice>
         {solPrice ? `SOL: $${solPrice}` : 'Loading...'}
       </SolanaPrice>
 
-<NavLink to="/">
-  <img
-    src="https://cdn-icons-png.flaticon.com/512/17604/17604657.png" // Ícono de casa (puedes cambiarlo)
-    alt="Home icon"
-    style={{ width: 32, height: 32, marginRight: 8 }}
-  />
-  Home
-</NavLink>
+      <NavLink to="/">
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/17604/17604657.png"
+          alt="Home icon"
+          style={{ width: 32, height: 32, marginRight: 8 }}
+        />
+        Home
+      </NavLink>
 
       <SectionTitle>Banabets Games</SectionTitle>
+
       <NavLink to="/dice">
-  <img
-    src="https://cdn-icons-png.flaticon.com/32/7469/7469372.png"
-    alt="Dice icon"
-    style={{ width: 32, height: 32, marginRight: 8, verticalAlign: 'middle' }}
-  />
-  Dice
-</NavLink>
-
-     <NavLink to="/blackjack">
-  <img
-    src="https://cdn-icons-png.flaticon.com/32/2316/2316698.png"
-    alt="Blackjack icon"
-    style={{ width: 32, height: 32, marginRight: 8, verticalAlign: 'middle' }}
-  />
-  Blackjack
-</NavLink>
-     <NavLink to="/slots">
-  <img
-    src="https://cdn-icons-png.flaticon.com/32/16037/16037628.png"
-    alt="Slots icon"
-    style={{ width: 32, height: 32, marginRight: 8 }}
-  />
-  Slots
-</NavLink>
+        <img src="https://cdn-icons-png.flaticon.com/32/7469/7469372.png" alt="Dice" style={{ width: 32, height: 32, marginRight: 8 }} />
+        Dice
+      </NavLink>
+      <NavLink to="/blackjack">
+        <img src="https://cdn-icons-png.flaticon.com/32/2316/2316698.png" alt="Blackjack" style={{ width: 32, height: 32, marginRight: 8 }} />
+        Blackjack
+      </NavLink>
+      <NavLink to="/slots">
+        <img src="https://cdn-icons-png.flaticon.com/32/16037/16037628.png" alt="Slots" style={{ width: 32, height: 32, marginRight: 8 }} />
+        Slots
+      </NavLink>
       <NavLink to="/flip">
-  <img
-    src="https://cdn-icons-png.flaticon.com/512/8518/8518867.png"
-    alt="Coin Flip icon"
-    style={{ width: 32, height: 32, marginRight: 8 }}
-  />
-  Flip
-</NavLink>
-    <NavLink to="/hi-lo">
-  <img
-    src="https://cdn-icons-png.flaticon.com/32/11305/11305220.png"
-    alt="Hi-Lo icon"
-    style={{ width: 32, height: 32, marginRight: 8 }}
-  />
-  Hi-Lo
-</NavLink>
+        <img src="https://cdn-icons-png.flaticon.com/512/8518/8518867.png" alt="Coin Flip" style={{ width: 32, height: 32, marginRight: 8 }} />
+        Flip
+      </NavLink>
+      <NavLink to="/hi-lo">
+        <img src="https://cdn-icons-png.flaticon.com/32/11305/11305220.png" alt="Hi-Lo" style={{ width: 32, height: 32, marginRight: 8 }} />
+        Hi-Lo
+      </NavLink>
       <NavLink to="/mines">
-  <img
-    src="https://cdn-icons-png.flaticon.com/32/17300/17300366.png"
-    alt="Mines icon"
-    style={{ width: 32, height: 32, marginRight: 8 }}
-  />
-  Mines
-</NavLink>
+        <img src="https://cdn-icons-png.flaticon.com/32/17300/17300366.png" alt="Mines" style={{ width: 32, height: 32, marginRight: 8 }} />
+        Mines
+      </NavLink>
       <NavLink to="/roulette">
-  <img
-    src="https://cdn-icons-png.flaticon.com/32/16037/16037729.png"
-    alt="Roulette icon"
-    style={{ width: 32, height: 32, marginRight: 8 }}
-  />
-  Roulette
-</NavLink>
+        <img src="https://cdn-icons-png.flaticon.com/32/16037/16037729.png" alt="Roulette" style={{ width: 32, height: 32, marginRight: 8 }} />
+        Roulette
+      </NavLink>
       <NavLink to="/plinko">
-  <img
-    src="https://cdn-icons-png.flaticon.com/32/7037/7037815.png"
-    alt="Plinko icon"
-    style={{ width: 32, height: 32, marginRight: 8 }}
-  />
-  Plinko
-</NavLink>
+        <img src="https://cdn-icons-png.flaticon.com/32/7037/7037815.png" alt="Plinko" style={{ width: 32, height: 32, marginRight: 8 }} />
+        Plinko
+      </NavLink>
       <NavLink to="/crash">
-  <img
-    src="https://cdn-icons-png.flaticon.com/32/7202/7202291.png"
-    alt="Crash icon"
-    style={{ width: 32, height: 32, marginRight: 8 }}
-  />
-  Crash
-</NavLink>
+        <img src="https://cdn-icons-png.flaticon.com/32/7202/7202291.png" alt="Crash" style={{ width: 32, height: 32, marginRight: 8 }} />
+        Crash
+      </NavLink>
       <NavLink to="/crypto-chart">
-  <img
-    src="https://cdn-icons-png.flaticon.com/32/6329/6329225.png"
-    alt="Solana icon"
-    style={{ width: 32, height: 32, marginRight: 8 }}
-  />
-  Sol Crash
-</NavLink>
-
+        <img src="https://cdn-icons-png.flaticon.com/32/6329/6329225.png" alt="Solana Chart" style={{ width: 32, height: 32, marginRight: 8 }} />
+        Sol Crash
+      </NavLink>
 
       <SectionTitle>Exclusive Games</SectionTitle>
       <center><NavLink to="/provably-fair">Coming Soon..</NavLink></center>
-
     </SidebarContainer>
   )
 }
