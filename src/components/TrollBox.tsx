@@ -33,7 +33,7 @@ const VerifiedIcon = () => (
     width="18"
     height="18"
     viewBox="0 0 24 24"
-    fill="#4fd1c5"
+    fill="#FFFFFF"
     xmlns="http://www.w3.org/2000/svg"
     style={{ marginLeft: 4 }}
   >
