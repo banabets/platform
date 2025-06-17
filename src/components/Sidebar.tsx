@@ -195,7 +195,7 @@ const Sidebar = () => {
         <img src="https://cdn-icons-png.flaticon.com/512/8518/8518867.png" alt="Coin Flip" style={{ width: 32, height: 32, marginRight: 8 }} />
         Flip
       </NavLink>
-      <NavLink to="/hi-lo">
+      <NavLink to="/hilo">
         <img src="https://cdn-icons-png.flaticon.com/32/11305/11305220.png" alt="Hi-Lo" style={{ width: 32, height: 32, marginRight: 8 }} />
         Hi-Lo
       </NavLink>
