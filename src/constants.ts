@@ -46,6 +46,8 @@ export const POOLS = [
   lp('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
     // JUP:
   lp('JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN'),
+    // BONK:
+  lp('DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263'),
 ]
 
 // The default token to be selected
@@ -81,6 +83,15 @@ export const TOKEN_METADATA: (Partial<TokenMeta> & {mint: PublicKey})[] = [
     image: 'https://wormhole.com/token.png',
     baseWager: 1e6,
     decimals: 6,
+    usdPrice: 0,
+  },
+  {
+    mint: new PublicKey('DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263'),
+    name: 'BONK',
+    symbol: 'BONK',
+    image: 'https://statics.solscan.io/cdn/imgs/s60?ref=68747470733a2f2f617277656176652e6e65742f685169505a4f73525a584758424a645f3832506856646c4d5f68414373545f713677717766356353593749',
+    baseWager: 1e6,
+    decimals: 5,
     usdPrice: 0,
   },
 ]
