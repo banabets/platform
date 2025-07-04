@@ -7,7 +7,7 @@ import { useUserStore } from '../../hooks/useUserStore'
 const images = [
   'https://i.ibb.co/RVL7hgK/20250504-0532-Banner-Casino-y-Bananas-remix-01jtda67f2ed293kxf2tgp2dew-min.png',
   'https://i.ibb.co/hJdCLX3X/20250504-0528-Casino-On-Chain-Colorido-remix-01jtd9y2khe4mv2ezp31n5d7h8-min.png',
- 'https://i.ibb.co/MkXw2LBc/nft.png',
+ 'https://i.ibb.co/ns09tRVb/20250704-0159-Publicidad-de-Banana-Bet-remix-01jza0779zeea8ttn1fm63hrp4.png',
 ]
 
 const isMobile = window.innerWidth < 800
