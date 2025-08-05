@@ -221,7 +221,7 @@ const Sidebar = () => {
       </NavLink>
 
       <SectionTitle>Nft Collection</SectionTitle>
-      <center><NavLink to="/provably-fair">$BANADEGENS Nft's Coming Soon..</NavLink></center>
+      <center><NavLink to="">$BANADEGENS Nft's Coming Soon..</NavLink></center>
     </SidebarContainer>
   )
 }
