@@ -165,7 +165,7 @@ export function WelcomeBanner() {
           🤖 TELEGRAM
         </button>
 
-     <button onClick={() => window.open('https://banabets.com', '_blank')}>
+     <button onClick={() => window.open('https://banadegens.net', '_blank')}>
           🚀 NFT'S (SOON)
         </button>
       </Buttons>
