@@ -222,6 +222,7 @@ const Sidebar = () => {
 
       <SectionTitle>Nft Collection</SectionTitle>
       <center><NavLink to="">$BANADEGENS Nft's Coming Soon..</NavLink></center>
+             <div id="mint-button-container"/>                
     </SidebarContainer>
   )
 }
