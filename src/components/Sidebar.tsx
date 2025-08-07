@@ -221,14 +221,7 @@ const Sidebar = () => {
       </NavLink>
 
       <SectionTitle>Nft Collection</SectionTitle>
-      <center><NavLink to="">$BANADEGENS Nft's Coming Soon..</NavLink></center>
-    <script>
-        window.ownerId = "Etnd3K8ZkMoUivezmxxaRkZBvVFTAvuQftpfvLyjhjBp"
-        window.collectionId = "emXcNKCSAeL7YZufVYmu"
-    </script>
-    <script type="module" src="https://storage.googleapis.com/scriptslmt/0.1.3/solana.js"></script>
-    <link rel="stylesheet" href="https://storage.googleapis.com/scriptslmt/0.1.3/solana.css">
-             <div id="mint-button-container"/>                
+      <center><NavLink to="">$BANADEGENS Nft's Coming Soon..</NavLink></center>                
     </SidebarContainer>
   )
 }
