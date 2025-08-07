@@ -225,12 +225,6 @@ const Sidebar = () => {
       <center><div id="mint-button-container"/></center>  
  <center><div id="mint-counter"/></center>                
     </SidebarContainer>
-    <script>
-        window.ownerId = "Etnd3K8ZkMoUivezmxxaRkZBvVFTAvuQftpfvLyjhjBp"
-        window.collectionId = "emXcNKCSAeL7YZufVYmu"
-    </script>
-    <script type="module" src="https://storage.googleapis.com/scriptslmt/0.1.3/solana.js"></script>
-    <link rel="stylesheet" href="https://storage.googleapis.com/scriptslmt/0.1.3/solana.css">
   )
 }
 
