@@ -166,7 +166,7 @@ export function WelcomeBanner() {
         </button>
 
      <button onClick={() => window.open('https://banadegens.net', '_blank')}>
-          🚀 NFT'S (SOON)
+          🚀 NFT'S
         </button>
       </Buttons>
 
