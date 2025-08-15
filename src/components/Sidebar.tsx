@@ -158,9 +158,9 @@ const Sidebar = () => {
             <SolIcon src="https://images.seeklogo.com/logo-png/42/2/solana-sol-logo-png_seeklogo-423095.png" alt="SOL" />
             {airdropAmount}
           </AirdropAmountBox>
-          <ClaimButton onClick={() => alert('NFT COLLECTION COMING SOON!')}>
-            <img src="https://cdn-icons-png.flaticon.com/512/1828/1828919.png" alt="Claim" />
-          </ClaimButton>
+        <ClaimButton onClick={() => window.open('https://launchmynft.io/sol/18715', '_blank')}>
+  <img src="https://cdn-icons-png.flaticon.com/512/1828/1828919.png" alt="Claim" />
+</ClaimButton>
         </div>
       </AirdropButtonContainer>
 
