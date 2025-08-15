@@ -3,34 +3,7 @@ import { GameBundle } from 'gamba-react-ui-v2'
 import React from 'react'
 
 export const GAMES: GameBundle[] = [
-  
   {
-    id: 'jackpot',
-    meta: {
-      background: '#38acc9ff',
-      name: 'JackPot',
-      image: '/games/jackpot.webp',
-      description: `
-        Jackpot con bote común entre jugadores. Entra, aporta al bote y mira si te lo llevas.
-      `,
-      tag: 'Multiplayer',
-    },
-    app: React.lazy(() => import('./Jackpot')),
-  },
-  {
-    id: 'plinkorace',
-    meta: {
-      background: '#62cc34ff',
-      name: 'PlinkoRace',
-      image: '/games/plinko2.webp',
-      description: `
-        Plinko en modo carrera con lobby y partidas compartidas.
-      `,
-      tag: 'Multiplayer',
-    },
-    app: React.lazy(() => import('./PlinkoRace')),
-  },
-{
     id: 'dice',
     meta: {
       background: '#ffffffdf',
@@ -131,8 +104,30 @@ export const GAMES: GameBundle[] = [
     app: React.lazy(() => import('./CryptoChartGame')),
   },
 
-
-
+  {
+    id: '',
+    meta: {
+      name: 'App Store',
+      description: `
+        There's money hidden beneath the squares. The reward will increase the more squares you reveal, but watch out for the 5 hidden mines. Touch one and you'll go broke. You can cash out at any time.
+      `,
+      image: '/games/app.png',
+      background: '#000000CC',
+    },
+    app: React.lazy(() => import('./Mines')),
+  },
+ {
+    id: '',
+    meta: {
+      name: 'Play Store',
+      description: `
+        There's money hidden beneath the squares. The reward will increase the more squares you reveal, but watch out for the 5 hidden mines. Touch one and you'll go broke. You can cash out at any time.
+      `,
+      image: '/games/app2.png',
+      background: '#000000CC',
+    },
+    app: React.lazy(() => import('./Mines')),
+  },
 ]
 
 
