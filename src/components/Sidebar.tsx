@@ -125,7 +125,7 @@ const ClaimButton = styled.button`
 
 const Sidebar = () => {
   const [solPrice, setSolPrice] = useState(null)
-  const airdropAmount = 0.4
+  const airdropAmount = 0.065
 
   useEffect(() => {
     const fetchPrice = async () => {
