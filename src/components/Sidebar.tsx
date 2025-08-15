@@ -220,8 +220,8 @@ const Sidebar = () => {
         Sol Crash
       </NavLink>
 
-      <SectionTitle>Nft Collection</SectionTitle>
-      <center><NavLink to="">$BANADEGENS Nft's Coming Soon..</NavLink></center>
+      <SectionTitle>Nft Staking</SectionTitle>
+      <center><NavLink to="">$BANADEGENS Nft's Staking Coming Soon..</NavLink></center>
     </SidebarContainer>
   )
 }
