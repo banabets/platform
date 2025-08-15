@@ -17,7 +17,7 @@ export const PLATFORM_SHARABLE_URL = 'banabets.com'
 
 // Creator fee (in %)
 export const PLATFORM_CREATOR_FEE = 0.035 // 1% !!max 5%!!
-
+export const MULTIPLAYER_FEE = 0.01         // 1%
 // Jackpot fee (in %)
 export const PLATFORM_JACKPOT_FEE = 0.002 // 0.1%
 
