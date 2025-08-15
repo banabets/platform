@@ -149,8 +149,8 @@ const Sidebar = () => {
 
       <AirdropButtonContainer>
         <AirdropText>
-          <span>LIVE NFT MINT</span>
-          <span>SOON..</span>
+          <span>NFT MINT</span>
+          <span>LIVE</span>
         </AirdropText>
 
         <div style={{ display: 'flex', alignItems: 'center' }}>
