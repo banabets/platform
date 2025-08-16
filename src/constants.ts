@@ -48,6 +48,8 @@ export const POOLS = [
   lp('JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN'),
     // BONK:
   lp('DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263'),
+    // THRN:
+  lp('59GSQsnRcxoiUmaXkP9pWiy2sKYqwAJUaksbHfKHzZpv'),
 ]
 
 // The default token to be selected
