@@ -49,7 +49,7 @@ export const POOLS = [
     // BONK:
   lp('DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263'),
     // THRN:
-  lp('2T6vwSajccRRb4roAdqZqgZhtWdPqVQm8kjDUrSqMray'),
+  lp('59GSQsnRcxoiUmaXkP9pWiy2sKYqwAJUaksbHfKHzZpv'),
 ]
 
 // The default token to be selected
@@ -92,6 +92,16 @@ export const TOKEN_METADATA: (Partial<TokenMeta> & {mint: PublicKey})[] = [
     name: 'BONK',
     symbol: 'BONK',
     image: 'https://statics.solscan.io/cdn/imgs/s60?ref=68747470733a2f2f617277656176652e6e65742f685169505a4f73525a584758424a645f3832506856646c4d5f68414373545f713677717766356353593749',
+    baseWager: 1e6,
+    decimals: 5,
+    usdPrice: 0,
+  },
+
+  {
+    mint: new PublicKey('59GSQsnRcxoiUmaXkP9pWiy2sKYqwAJUaksbHfKHzZpv'),
+    name: 'APE OF THE HILL',
+    symbol: 'THRN',
+    image: 'https://ipfs.io/ipfs/bafybeieq62bwu57pexaqst67yncmqvxlcccnjmwpywffr7td3v4y4f24z4',
     baseWager: 1e6,
     decimals: 5,
     usdPrice: 0,
