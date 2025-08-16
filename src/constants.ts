@@ -22,7 +22,7 @@ export const MULTIPLAYER_FEE = 0.035         // 1%
 export const PLATFORM_JACKPOT_FEE = 0.002 // 0.1%
 
 // Referral fee (in %)
-export const PLATFORM_REFERRAL_FEE = 0.15 // 0.25%
+export const PLATFORM_REFERRAL_FEE = 0.0025 // 0.25%
 
 /** If the user should be able to revoke an invite after they've accepted an invite */
 export const PLATFORM_ALLOW_REFERRER_REMOVAL = true
