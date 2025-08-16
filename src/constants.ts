@@ -49,7 +49,7 @@ export const POOLS = [
     // BONK:
   lp('DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263'),
     // THRN:
-  lp('59GSQsnRcxoiUmaXkP9pWiy2sKYqwAJUaksbHfKHzZpv'),
+  lp('2T6vwSajccRRb4roAdqZqgZhtWdPqVQm8kjDUrSqMray'),
 ]
 
 // The default token to be selected
@@ -98,7 +98,7 @@ export const TOKEN_METADATA: (Partial<TokenMeta> & {mint: PublicKey})[] = [
   },
 
   {
-    mint: new PublicKey('59GSQsnRcxoiUmaXkP9pWiy2sKYqwAJUaksbHfKHzZpv'),
+    mint: new PublicKey('2T6vwSajccRRb4roAdqZqgZhtWdPqVQm8kjDUrSqMray'),
     name: 'APE OF THE HILL',
     symbol: 'THRN',
     image: 'https://ipfs.io/ipfs/bafybeieq62bwu57pexaqst67yncmqvxlcccnjmwpywffr7td3v4y4f24z4',
