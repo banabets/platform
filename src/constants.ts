@@ -103,7 +103,7 @@ export const TOKEN_METADATA: (Partial<TokenMeta> & {mint: PublicKey})[] = [
     symbol: 'THRN',
     image: 'https://ipfs.io/ipfs/bafybeieq62bwu57pexaqst67yncmqvxlcccnjmwpywffr7td3v4y4f24z4',
     baseWager: 1e6,
-    decimals: 5,
+    decimals: 6,
     usdPrice: 0,
   },
 ]
