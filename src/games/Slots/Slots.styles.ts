@@ -72,7 +72,7 @@ export const StyledSlots = styled.div`
     border: 1px solid #ffec63;
     background-color: #ffec6311;
     color: #ffec63;
-    font-size: 50px;
+    font-size: 40px;
     font-weight: bold;
     text-align: center;
   }
