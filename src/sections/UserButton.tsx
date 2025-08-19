@@ -111,7 +111,6 @@ const AvatarFrame = styled.div`
   }
 `
 
-
 const AvatarImg = styled.img`
   position: relative;
   z-index: 1;
@@ -282,21 +281,25 @@ const Section = styled.div`
 const PopoverWrap = styled.div`
   position: relative;
   display: inline-block;
+  max-width: 100%;
 `
 
 const FramePopover = styled.div`
   position: absolute;
   top: 110%;
   left: 0;
-  min-width: 300px;
+  width: max-content;
+  min-width: 260px;
+  max-width: min(92vw, 360px);
   padding: 12px;
   border-radius: 14px;
   background: rgba(10, 14, 18, 0.96);
   border: 1px solid rgba(0,255,136,0.25);
   box-shadow: 0 10px 24px rgba(0,0,0,.45), 0 0 16px rgba(0,255,136,.15);
   backdrop-filter: blur(6px);
-  z-index: 50;
+  z-index: 9999;
   animation: popIn .12s ease-out;
+  overflow: hidden;
 
   @keyframes popIn {
     from { transform: translateY(-4px); opacity: .0; }
@@ -316,6 +319,21 @@ const FramePopover = styled.div`
     transform: rotate(45deg);
     z-index: -1;
   }
+
+  @media (max-width: 520px) {
+    position: fixed;
+    left: 50%;
+    top: auto;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    width: calc(100vw - 24px);
+    max-width: 560px;
+    border-radius: 14px;
+    padding: 12px;
+    max-height: min(60vh, 420px);
+    overflow: auto;
+    &:before { display: none; }
+  }
 `
 
 const PopoverHeader = styled.div`
@@ -324,6 +342,10 @@ const PopoverHeader = styled.div`
   justify-content: space-between;
   gap: 8px;
   margin-bottom: 8px;
+  position: sticky;
+  top: 0;
+  padding-bottom: 8px;
+  background: inherit;
 `
 
 const PopoverTitle = styled.div`
@@ -351,6 +373,10 @@ const FrameGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, minmax(0,1fr));
   gap: 8px;
+
+  @media (max-width: 360px) {
+    grid-template-columns: 1fr;
+  }
 `
 
 /** ================= Helpers almacenamiento seguro ================= */
