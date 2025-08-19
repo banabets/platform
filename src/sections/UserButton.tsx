@@ -2,7 +2,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import { GambaUi, useReferral } from 'gamba-react-ui-v2'
 import React, { useState, useEffect } from 'react'
-import styled, { keyframes } from 'styled-components'
+import styled, { keyframes, createGlobalStyle } from 'styled-components'
 import { Modal } from '../components/Modal'
 import { PLATFORM_ALLOW_REFERRER_REMOVAL, PLATFORM_REFERRAL_FEE } from '../constants'
 import { useToast } from '../hooks/useToast'
@@ -10,6 +10,16 @@ import { useUserStore } from '../hooks/useUserStore'
 import { truncateString } from '../utils'
 
 const DEFAULT_AVATAR = "https://i.ibb.co/CppmNbXW/user.png"
+
+/** ====== Global fixes para caret/zoom en móvil ====== */
+const GlobalFixes = createGlobalStyle`
+  @media (max-width: 520px) {
+    html { -webkit-text-size-adjust: 100%; }
+    input, textarea {
+      font-size: 16px !important; /* evita zoom de iOS y estabiliza caret */
+    }
+  }
+`
 
 /** ================= Animaciones y UI styled ================= */
 const glow = keyframes`
@@ -37,6 +47,9 @@ const ModalCard = styled.div`
   border: 1px solid rgba(0, 255, 136, 0.18);
   backdrop-filter: blur(8px);
   animation: ${glow} 4s ease-in-out infinite;
+
+  /* Pausa animaciones mientras hay un input enfocado para que el caret no "flote" */
+  &:focus-within { animation: none; }
 `
 
 /** Header de perfil: avatar a la izq, info a la der */
@@ -46,6 +59,9 @@ const ProfileHeader = styled.div`
   gap: 14px;
   align-items: center;
   margin-bottom: 12px;
+
+  /* por si algún ancestro aplica transform, evitamos afectar caret al enfocar */
+  &:focus-within { transform: none; }
 `
 
 const AvatarWrap = styled.div`
@@ -78,9 +94,7 @@ const AvatarFrame = styled.div`
     pointer-events: none;
   }
 
-  &.none::before {
-    display: none;
-  }
+  &.none::before { display: none; }
 
   &.neon::before {
     background: linear-gradient(135deg, #00ff88, #0ff, #facc15, #f472b6);
@@ -110,7 +124,6 @@ const AvatarFrame = styled.div`
     100% { background-position: 0% 50% }
   }
 `
-
 
 const AvatarImg = styled.img`
   position: relative;
@@ -160,6 +173,18 @@ const UserRow = styled.div`
   min-width: 0;
 `
 
+/** Wrapper que reserva altura para evitar saltos al cambiar de pill a input */
+const UsernameBlock = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px; /* ≈ alto del input (40) + margen mínimo */
+  @media (max-width: 520px) {
+    flex-direction: column; /* en móvil, nombre arriba y chip debajo si quieres */
+    gap: 4px;
+  }
+`
+
 const UsernamePill = styled.span`
   font-size: 1.1rem;
   font-weight: 800;
@@ -176,17 +201,25 @@ const UsernamePill = styled.span`
   &:hover { transform: translateY(-1px); filter: drop-shadow(0 0 6px rgba(0,255,136,.4)); }
 `
 
+/** Input estable: alto y line-height iguales + font-size 16 para iOS */
 const UsernameInput = styled.input`
-  font-size: 1rem;
+  display: inline-block;
+  width: 220px;
+  max-width: 80vw;
+  height: 40px;
+  line-height: 40px;
+  font-size: 16px;           /* evita zoom iOS y estabiliza caret */
   font-weight: 700;
   color: #fff;
   background: rgba(255,255,255,0.04);
   border: 1px solid #2f2f2f;
   border-radius: 8px;
-  padding: 6px 10px;
+  padding: 0 10px;           /* sin padding vertical */
   outline: none;
   text-align: center;
+  caret-color: #00ff88;
   transition: border-color .2s ease, box-shadow .2s ease;
+
   &:focus {
     border-color: #00ff88;
     box-shadow: 0 0 0 3px rgba(0,255,136,0.15);
@@ -282,21 +315,25 @@ const Section = styled.div`
 const PopoverWrap = styled.div`
   position: relative;
   display: inline-block;
+  max-width: 100%;
 `
 
 const FramePopover = styled.div`
   position: absolute;
   top: 110%;
   left: 0;
-  min-width: 300px;
+  width: max-content;
+  min-width: 260px;
+  max-width: min(92vw, 360px);
   padding: 12px;
   border-radius: 14px;
   background: rgba(10, 14, 18, 0.96);
   border: 1px solid rgba(0,255,136,0.25);
   box-shadow: 0 10px 24px rgba(0,0,0,.45), 0 0 16px rgba(0,255,136,.15);
   backdrop-filter: blur(6px);
-  z-index: 50;
+  z-index: 9999;
   animation: popIn .12s ease-out;
+  overflow: hidden;
 
   @keyframes popIn {
     from { transform: translateY(-4px); opacity: .0; }
@@ -316,6 +353,21 @@ const FramePopover = styled.div`
     transform: rotate(45deg);
     z-index: -1;
   }
+
+  @media (max-width: 520px) {
+    position: fixed;
+    left: 50%;
+    top: auto;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    width: calc(100vw - 24px);
+    max-width: 560px;
+    border-radius: 14px;
+    padding: 12px;
+    max-height: min(60vh, 420px);
+    overflow: auto;
+    &:before { display: none; }
+  }
 `
 
 const PopoverHeader = styled.div`
@@ -324,6 +376,10 @@ const PopoverHeader = styled.div`
   justify-content: space-between;
   gap: 8px;
   margin-bottom: 8px;
+  position: sticky;
+  top: 0;
+  padding-bottom: 8px;
+  background: inherit;
 `
 
 const PopoverTitle = styled.div`
@@ -351,6 +407,10 @@ const FrameGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, minmax(0,1fr));
   gap: 8px;
+
+  @media (max-width: 360px) {
+    grid-template-columns: 1fr;
+  }
 `
 
 /** ================= Helpers almacenamiento seguro ================= */
@@ -610,6 +670,7 @@ function UserModal() {
 
   return (
     <Modal onClose={() => user.set({ userModal: false })}>
+      <GlobalFixes />
       <ModalCard>
         {/* Header de perfil */}
         <ProfileHeader>
@@ -622,26 +683,31 @@ function UserModal() {
 
           <HeaderRight>
             <UserRow>
-              {editing ? (
-                <>
-                  <UsernameInput
-                    aria-label="Username"
-                    value={tempUsername}
-                    onChange={(e) => setTempUsername(e.target.value)}
-                    onKeyDown={onInputKeyDown}
-                  />
-                  <IconBtn aria-label="Save username" onClick={saveUsername}>💾</IconBtn>
-                  <IconBtn aria-label="Cancel edit" onClick={() => { setTempUsername(username); setEditing(false) }}>✖️</IconBtn>
-                </>
-              ) : (
-                <UsernamePill title={`@${username}`} onClick={() => setEditing(true)}>
-                  @{username} ✏️
-                </UsernamePill>
-              )}
+              <UsernameBlock>
+                {editing ? (
+                  <>
+                    <UsernameInput
+                      aria-label="Username"
+                      value={tempUsername}
+                      onChange={(e) => setTempUsername(e.target.value)}
+                      onKeyDown={onInputKeyDown}
+                      autoFocus
+                    />
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <IconBtn aria-label="Save username" onClick={saveUsername}>💾</IconBtn>
+                      <IconBtn aria-label="Cancel edit" onClick={() => { setTempUsername(username); setEditing(false) }}>✖️</IconBtn>
+                    </div>
+                  </>
+                ) : (
+                  <UsernamePill title={`@${username}`} onClick={() => setEditing(true)}>
+                    @{username} ✏️
+                  </UsernamePill>
+                )}
 
-              {!editing && (
-                <UserChip>{isNewUser ? 'NEW USER' : 'BANADEGEN'}</UserChip>
-              )}
+                {!editing && (
+                  <UserChip>{isNewUser ? 'NEW USER' : 'BANADEGEN'}</UserChip>
+                )}
+              </UsernameBlock>
             </UserRow>
 
             {publicKey && (
