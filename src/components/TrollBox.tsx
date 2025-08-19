@@ -33,7 +33,7 @@ const VerifiedIcon = () => (
     width="18"
     height="18"
     viewBox="0 0 24 24"
-    fill="#FFFFFF"
+    fill="#ffffff"
     xmlns="http://www.w3.org/2000/svg"
     style={{ marginLeft: 4 }}
   >
@@ -42,7 +42,7 @@ const VerifiedIcon = () => (
 )
 
 const fadeIn = keyframes`
-  from { opacity:0; transform:translateY(5px); }
+  from { opacity:0; transform:translateY(4px); }
   to   { opacity:1; transform:translateY(0); }
 `
 
@@ -57,162 +57,149 @@ const Wrapper = styled.div<{ $isMinimized: boolean }>`
   bottom:20px;
   right:20px;
   z-index:998;
-  border-radius:${p => p.$isMinimized ? '50%' : '16px'};
-  background:${p => p.$isMinimized ? '#7289da' : '#2f3136'};
-  border:1px solid ${p => p.$isMinimized ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)'};
-  color:#eee;
-  font-size:1rem;
-  box-shadow:0 8px 20px rgba(0,0,0,0.3);
-  ${({ $isMinimized }) => !$isMinimized && `backdrop-filter:blur(10px);`}
+  border-radius:${p => p.$isMinimized ? '50%' : '12px'};
+  background:${p => p.$isMinimized ? '#5865f2' : '#2b2d31'};
+  border:1px solid ${p => p.$isMinimized ? 'rgba(255,255,255,0.28)' : '#1f2124'};
+  color:#e6e6e6;
+  font-size:14px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.35);
   overflow:hidden;
   display:flex;
   flex-direction:column;
   cursor:${p => p.$isMinimized ? 'pointer' : 'default'};
-  transition:width .3s, height .3s, max-height .3s, border-radius .3s, background .3s;
+  transition:width .25s, height .25s, max-height .25s, border-radius .25s, background .25s;
 
   ${({ $isMinimized }) => $isMinimized ? `
-    width:56px;
-    height:56px;
-    max-height:56px;
-    justify-content:center;
-    align-items:center;
-    color:#fff;
+    width:56px; height:56px; max-height:56px;
+    justify-content:center; align-items:center;
     & > *:not(${ExpandIconWrapper}){ display:none; }
   ` : `
-    width:340px;
-    max-height:450px;
-    min-height:150px;
+    width:360px; max-height:520px; min-height:180px;
   `}
 
   @media (max-width:480px){
-    bottom:16px;
-    right:16px;
+    bottom:16px; right:16px;
     ${({ $isMinimized }) => $isMinimized ? `` : `
-      width:calc(100% - 32px);
-      max-width:300px;
-      max-height:60vh;
+      width:calc(100% - 32px); max-width:340px; max-height:65vh;
     `}
   }
 `
 
 const ContentContainer = styled.div<{ $isMinimized: boolean }>`
-  display:flex;
-  flex-direction:column;
-  flex-grow:1;
-  min-height:0;
+  display:flex; flex-direction:column; flex-grow:1; min-height:0;
   opacity:${p => p.$isMinimized ? 0 : 1};
-  transition:opacity .2s;
+  transition:opacity .18s;
   pointer-events:${p => p.$isMinimized ? 'none' : 'auto'};
 `
 
 const Header = styled.div`
-  padding:15px 20px;
-  border-bottom:1px solid rgba(255,255,255,0.08);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  background:#202225;
+  padding:12px 16px;
+  display:flex; align-items:center; justify-content:space-between;
+  background:#1e1f22;
   color:#fff;
+  border-bottom:1px solid #1f2124;
+  user-select:none;
   cursor:pointer;
 `
 
 const HeaderTitle = styled.span`
-  flex-grow:1;
-  font-size:1.1rem;
-  font-weight:bold;
-  display:flex;
-  align-items:center;
+  flex:1;
+  font-size:15px;
+  font-weight:700;
+  display:flex; align-items:center; gap:8px;
+  letter-spacing:.2px;
 `
 
 const OnlineStatus = styled.div`
-  width:10px;height:10px;border-radius:50%;background:#28a745;margin-left:10px;
+  width:8px;height:8px;border-radius:50%;background:#23a55a;
 `
 
 const HeaderStatus = styled.span`
-  font-size:.85rem;color:#a0a0a0;opacity:.8;margin:0 10px;
+  font-size:12px;color:#a3a6aa;margin:0 8px;
 `
 
 const MinimizeButton = styled.button`
-  background:none;border:none;color:#a0a0a0;padding:5px;cursor:pointer;border-radius:4px;
-  &:hover{ background:rgba(255,255,255,0.1); color:#fff; }
+  background:none;border:none;color:#a3a6aa;padding:6px;cursor:pointer;border-radius:6px;
+  &:hover{ background:#2b2d31; color:#fff; }
 `
 
 const Log = styled.div`
-  flex:1;overflow-y:auto;padding:20px 25px;display:flex;flex-direction:column;gap:1rem;
-  min-height:200px;background:rgba(47,49,54,.8);border-radius:10px;margin-top:10px;
-  &::-webkit-scrollbar{width:8px;}
-  &::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:3px;}
+  flex:1; overflow-y:auto; padding:10px 8px 14px 8px; display:flex; flex-direction:column; gap:0;
+  min-height:220px; background:#2b2d31;
+
+  &::-webkit-scrollbar{ width:8px; }
+  &::-webkit-scrollbar-thumb{ background:#1f2124; border-radius:4px; }
 `
 
-const MessageItem = styled.div<{ $isOwn?: boolean }>`
-  line-height:1.5;animation:${fadeIn} .3s ease-out;
-  background:${p => p.$isOwn ? '#7289da' : '#40444b'};
-  border-radius:8px;padding:10px 14px;max-width:85%;color:#fff;
-  align-self:${p => p.$isOwn ? 'flex-end' : 'flex-start'};
-  font-size:.95rem;
-`
+/* ===== Discord-like message row, no bubbles ===== */
+const Row = styled.div`
+  display:grid;
+  grid-template-columns: 40px 1fr;
+  gap:12px;
+  padding:8px 10px;
+  border-radius:6px;
+  animation:${fadeIn} .16s ease-out;
 
-const MessageHeader = styled.div`
-  display:flex;align-items:center;flex-wrap:wrap;margin-bottom:4px;
-`
-
-const Avatar = styled.div<{ bg: string }>`
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background-color: ${p => p.bg};
-  flex-shrink: 0;
-  margin-right: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 0.85rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 0 0 rgba(255, 255, 255, 0);
-  transition: all 0.3s ease;
-  &:hover {
-    transform: scale(1.05);
-    border-color: rgba(255, 255, 255, 0.35);
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+  &:hover{
+    background:rgba(255,255,255,0.03);
   }
 `
 
+const Avatar = styled.div<{ bg: string }>`
+  width: 40px; height: 40px; border-radius: 50%;
+  background-color: ${p => p.bg};
+  color:#fff; display:flex; align-items:center; justify-content:center;
+  font-weight:700; letter-spacing:.2px;
+  border: 2px solid rgba(255,255,255,0.15);
+  user-select:none;
+`
+
+const Head = styled.div`
+  display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;
+`
+
 const Username = styled.strong<{ userColor:string }>`
-  font-weight:600;color:${p => p.userColor};margin-right:.3em;
+  color:${p => p.userColor};
+  font-weight:600; font-size:14px;
 `
 
 const Timestamp = styled.span`
-  font-size:.8rem;color:#aaa;margin-left:.5em;
+  font-size:12px; color:#a3a6aa;
 `
 
 const MessageText = styled.div`
-  white-space:pre-wrap;word-break:break-word;
+  margin-top:2px;
+  color:#dbdee1;
+  white-space:pre-wrap; word-break:break-word; line-height:1.35;
+`
+
+const InputWrap = styled.div`
+  border-top:1px solid #1f2124;
+  background:#313338;
+  padding:12px;
 `
 
 const InputRow = styled.div`
-  display:flex;align-items:center;border-top:1px solid rgba(255,255,255,0.08);
-  background:#202225;padding:10px 15px;flex-shrink:0;
+  display:flex; align-items:center; gap:8px;
+  background:#383a40; border:1px solid #1f2124; border-radius:8px;
+  padding:6px 8px 6px 12px;
 `
 
 const TextInput = styled.input`
-  flex:1;background:#40444b;border:none;padding:12px 16px;color:#fff;outline:none;
-  font-size:1rem;border-radius:10px;
-  &::placeholder{color:#777;opacity:.8;}
+  flex:1; background:transparent; border:none; outline:none;
+  color:#fff; font-size:14px; padding:8px 0;
+  &::placeholder{ color:#8b8f97; }
 `
 
 const SendBtn = styled.button`
-  background:none;border:none;padding:0 18px;cursor:pointer;font-weight:600;color:#fff;
-  font-size:1rem;
-  &:hover:not(:disabled){background:rgba(255,255,255,0.1);}
-  &:active:not(:disabled){background:rgba(255,255,255,0.2);transform:scale(.98);}
-  &:disabled{opacity:.5;cursor:not-allowed;}
+  background:#5865f2; border:none; color:#fff; font-weight:700;
+  font-size:13px; padding:8px 12px; border-radius:6px; cursor:pointer;
+  &:disabled{ opacity:.5; cursor:not-allowed; }
+  &:not(:disabled):hover{ filter:brightness(1.05); }
 `
 
 const LoadingText = styled.div`
-  text-align:center;color:#a0a0a0;padding:2rem 0;font-style:italic;font-size:.9rem;
+  text-align:center; color:#a3a6aa; padding:1rem 0; font-style:italic; font-size:13px;
 `
 
 export default function TrollBox() {
@@ -232,8 +219,10 @@ export default function TrollBox() {
   const [isSending, setIsSending] = useState(false)
   const [cooldown, setCooldown] = useState(0)
 
-  const swrKey = isMinimized || (typeof document !== 'undefined' && document.hidden)
-    ? null : '/api/chat'
+  const swrKey =
+    isMinimized || (typeof document !== 'undefined' && document.hidden)
+      ? null
+      : '/api/chat'
   const { data: messages = [], error, mutate } = useSWR<Msg[]>(swrKey, fetcher, {
     refreshInterval: 8000,
     dedupingInterval: 7500,
@@ -244,8 +233,8 @@ export default function TrollBox() {
 
   const userColors = useMemo(() => {
     const map: Record<string, string> = {}
-    messages.forEach(m => { if (!map[m.user]) map[m.user] = stringToHslColor(m.user, 70, 75) })
-    if (!map[userName]) map[userName] = stringToHslColor(userName, 70, 75)
+    messages.forEach(m => { if (!map[m.user]) map[m.user] = stringToHslColor(m.user, 70, 65) })
+    if (!map[userName]) map[userName] = stringToHslColor(userName, 70, 65)
     return map
   }, [messages, userName])
 
@@ -309,7 +298,9 @@ export default function TrollBox() {
 
       <ContentContainer $isMinimized={isMinimized}>
         <Header onClick={toggleMinimize}>
-          <HeaderTitle>#banabets-chat<OnlineStatus /></HeaderTitle>
+          <HeaderTitle>
+            #fronk-chat <OnlineStatus />
+          </HeaderTitle>
           <HeaderStatus>{messages.length ? `${messages.length} msgs` : 'Connecting…'}</HeaderStatus>
           <MinimizeButton><MinimizeIcon /></MinimizeButton>
         </Header>
@@ -319,40 +310,43 @@ export default function TrollBox() {
           {error && <LoadingText style={{ color: '#ff8080' }}>Error loading chat.</LoadingText>}
 
           {messages.map((m, i) => (
-            <MessageItem key={m.ts || i} $isOwn={m.user === userName}>
-              <MessageHeader>
-                <Avatar bg={userColors[m.user]}>{m.user[0]}</Avatar>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Row key={m.ts || i}>
+              <Avatar bg={userColors[m.user]}>{m.user[0]}</Avatar>
+
+              <div>
+                <Head>
                   <Username userColor={userColors[m.user]}>{m.user.slice(0, 6)}</Username>
                   <VerifiedIcon />
-                </div>
-                <Timestamp>{fmtTime(m.ts)}</Timestamp>
-              </MessageHeader>
-              <MessageText>{m.text}</MessageText>
-            </MessageItem>
+                  <Timestamp>{fmtTime(m.ts)}</Timestamp>
+                </Head>
+                <MessageText>{m.text}</MessageText>
+              </div>
+            </Row>
           ))}
         </Log>
 
-        <InputRow>
-          <TextInput
-            ref={inputRef}
-            value={text}
-            placeholder={connected ? 'Say something…' : 'Connect wallet to chat'}
-            onChange={e => setText(e.target.value)}
-            onClick={() => !connected && walletModal.setVisible(true)}
-            onKeyDown={e => {
-              if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() }
-            }}
-            disabled={isSending || !swrKey}
-            maxLength={200}
-          />
-          <SendBtn
-            onClick={send}
-            disabled={!connected || isSending || cooldown > 0 || !text.trim() || !swrKey}
-          >
-            {isSending ? '…' : cooldown > 0 ? `Wait ${cooldown}s` : 'Send'}
-          </SendBtn>
-        </InputRow>
+        <InputWrap>
+          <InputRow>
+            <TextInput
+              ref={inputRef}
+              value={text}
+              placeholder={connected ? 'Message #fronk-chat' : 'Connect wallet to chat'}
+              onChange={e => setText(e.target.value)}
+              onClick={() => !connected && walletModal.setVisible(true)}
+              onKeyDown={e => {
+                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() }
+              }}
+              disabled={isSending || !swrKey}
+              maxLength={200}
+            />
+            <SendBtn
+              onClick={send}
+              disabled={!connected || isSending || cooldown > 0 || !text.trim() || !swrKey}
+            >
+              {isSending ? '…' : cooldown > 0 ? `Wait ${cooldown}s` : 'Send'}
+            </SendBtn>
+          </InputRow>
+        </InputWrap>
       </ContentContainer>
     </Wrapper>
   )
