@@ -299,7 +299,7 @@ export default function TrollBox() {
       <ContentContainer $isMinimized={isMinimized}>
         <Header onClick={toggleMinimize}>
           <HeaderTitle>
-            #fronk-chat <OnlineStatus />
+            #bana-chat <OnlineStatus />
           </HeaderTitle>
           <HeaderStatus>{messages.length ? `${messages.length} msgs` : 'Connecting…'}</HeaderStatus>
           <MinimizeButton><MinimizeIcon /></MinimizeButton>
@@ -330,7 +330,7 @@ export default function TrollBox() {
             <TextInput
               ref={inputRef}
               value={text}
-              placeholder={connected ? 'Message #fronk-chat' : 'Connect wallet to chat'}
+              placeholder={connected ? 'Message #bana-chat' : 'Connect wallet to chat'}
               onChange={e => setText(e.target.value)}
               onClick={() => !connected && walletModal.setVisible(true)}
               onKeyDown={e => {
