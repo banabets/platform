@@ -167,9 +167,12 @@ const UserRow = styled.div`
   min-width: 0;
 
   @media (max-width: 520px) {
-    justify-content: center;
+    flex-direction: column;   /* nombre arriba, chip debajo */
+    align-items: center;
+    row-gap: 4px;             /* espacio más compacto */
   }
 `
+
 
 const UsernamePill = styled.span`
   font-size: 1.1rem;
