@@ -1,23 +1,31 @@
-// TrollBox.tsx
+// TrollBox.tsx — LITE PACK (sin endpoints nuevos)
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import styled, { keyframes } from 'styled-components'
 import useSWR from 'swr'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 
-type Msg = { user: string; text: string; ts: number }
+/** ========= Tipos ========= **/
+type Reaction = { emoji: string; users: string[] }
+type Msg = {
+  user: string
+  text: string
+  ts: number
+  reactions?: Reaction[]     // opcional: si tu backend lo trae algún día
+  gif?: string               // url de gif adjunta
+}
 
+/** ========= SWR ========= **/
 const fetcher = (u: string) => fetch(u).then(r => r.json())
 
+/** ========= Utils ========= **/
 const stringToHslColor = (str: string, s: number, l: number): string => {
   let hash = 0
   for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash)
   return `hsl(${hash % 360}, ${s}%, ${l}%)`
 }
-
-// número de avatares disponibles en /public/avatars como 1.png, 2.png, ...
+// avatares en /public/avatars/1.png, 2.png, ...
 const AVATAR_COUNT = 12
-
 function getAvatar(user: string, total = AVATAR_COUNT) {
   if (total <= 0) return ''
   let hash = 0
@@ -25,201 +33,199 @@ function getAvatar(user: string, total = AVATAR_COUNT) {
   const index = Math.abs(hash) % total
   return `/avatars/${index + 1}.png`
 }
+const urlRegex = /(https?:\/\/[^\s]+)/gi
+const mentionRegex = /(^|[\s])@([a-zA-Z0-9_.\-]{2,})/g
 
+/** ========= Iconos ========= **/
 const MinimizeIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <line x1="5" y1="12" x2="19" y2="12"/>
   </svg>
 )
-
 const ChatIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
     <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
   </svg>
 )
-
 const VerifiedIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg" style={{ marginLeft: 4 }}>
     <path d="M23,12L20.56,9.22L20.9,5.54L17.29,4.72L15.4,1.54L12,3L8.6,1.54L6.71,4.72L3.1,5.53L3.44,9.21L1,12L3.44,14.78L3.1,18.47L6.71,19.29L8.6,22.47L12,21L15.4,22.46L17.29,19.28L20.9,18.46L20.56,14.78L23,12M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z" />
   </svg>
 )
+const GifIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="#dfe3e6"><path d="M3 3h18v18H3V3zm4 5v8h2V8H7zm4 0v8h2v-3h2V12h-2v-2h2V8h-4zm8 0h-4v8h2v-3h2v-2h-2v-1h2V8z"/></svg>
+)
 
-const fadeIn = keyframes`
-  from { opacity:0; transform:translateY(4px); }
-  to   { opacity:1; transform:translateY(0); }
-`
-
-const ExpandIconWrapper = styled.div`
-  display:flex; align-items:center; justify-content:center;
-`
-
+/** ========= Estilos ========= **/
+const fadeIn = keyframes`from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}`
+const ExpandIconWrapper = styled.div`display:flex;align-items:center;justify-content:center;`
 const Wrapper = styled.div<{ $isMinimized: boolean }>`
   position:fixed; bottom:20px; right:20px; z-index:998;
-  border-radius:${p => p.$isMinimized ? '50%' : '12px'};
-  background:${p => p.$isMinimized ? '#5865f2' : '#2b2d31'};
-  border:1px solid ${p => p.$isMinimized ? 'rgba(255,255,255,0.28)' : '#1f2124'};
-  color:#e6e6e6; font-size:14px; box-shadow:0 8px 20px rgba(0,0,0,0.35);
+  border-radius:${p=>p.$isMinimized?'50%':'12px'};
+  background:${p=>p.$isMinimized?'#5865f2':'#2b2d31'};
+  border:1px solid ${p=>p.$isMinimized?'rgba(255,255,255,0.28)':'#1f2124'};
+  color:#e6e6e6; font-size:14px; box-shadow:0 8px 20px rgba(0,0,0,.35);
   overflow:hidden; display:flex; flex-direction:column;
-  cursor:${p => p.$isMinimized ? 'pointer' : 'default'};
+  cursor:${p=>p.$isMinimized?'pointer':'default'};
   transition:width .25s, height .25s, max-height .25s, border-radius .25s, background .25s;
-
-  ${({ $isMinimized }) => $isMinimized ? `
-    width:56px; height:56px; max-height:56px;
-    justify-content:center; align-items:center;
-    & > *:not(${ExpandIconWrapper}){ display:none; }
-  ` : `
-    width:360px; max-height:520px; min-height:180px;
+  ${({$isMinimized})=>$isMinimized?`
+    width:56px;height:56px;max-height:56px;justify-content:center;align-items:center;
+    & > *:not(${ExpandIconWrapper}){display:none;}
+  `:`
+    width:360px; max-height:620px; min-height:180px;
   `}
-
   @media (max-width:480px){
     bottom:16px; right:16px;
-    ${({ $isMinimized }) => $isMinimized ? `` : `
-      width:calc(100% - 32px); max-width:340px; max-height:65vh;
-    `}
+    ${({$isMinimized})=>$isMinimized?``:`width:calc(100% - 32px);max-width:360px;max-height:70vh;`}
   }
 `
-
 const ContentContainer = styled.div<{ $isMinimized: boolean }>`
   display:flex; flex-direction:column; flex-grow:1; min-height:0;
-  opacity:${p => p.$isMinimized ? 0 : 1};
-  transition:opacity .18s;
-  pointer-events:${p => p.$isMinimized ? 'none' : 'auto'};
+  opacity:${p=>p.$isMinimized?0:1}; transition:opacity .18s; pointer-events:${p=>p.$isMinimized?'none':'auto'};
 `
-
 const Header = styled.div`
   padding:12px 16px; display:flex; align-items:center; justify-content:space-between;
-  background:#1e1f22; color:#fff; border-bottom:1px solid #1f2124;
-  user-select:none; cursor:pointer;
+  background:#1e1f22; color:#fff; border-bottom:1px solid #1f2124; user-select:none; cursor:pointer;
 `
-
-const HeaderTitle = styled.span`
-  flex:1; font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px; letter-spacing:.2px;
-`
-
-const OnlineStatus = styled.div`
-  width:8px; height:8px; border-radius:50%; background:#23a55a;
-`
-
-const HeaderStatus = styled.span`
-  font-size:12px; color:#a3a6aa; margin:0 8px;
-`
-
+const HeaderTitle = styled.span`flex:1; font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;`
+const OnlineStatus = styled.div`width:8px; height:8px; border-radius:50%; background:#23a55a;`
+const HeaderStatus = styled.span`font-size:12px; color:#a3a6aa; margin:0 8px;`
 const MinimizeButton = styled.button`
   background:none; border:none; color:#a3a6aa; padding:6px; cursor:pointer; border-radius:6px;
   &:hover{ background:#2b2d31; color:#fff; }
 `
-
 const Log = styled.div`
   flex:1; overflow-y:auto; padding:10px 8px 14px 8px; display:flex; flex-direction:column;
   min-height:220px; background:#2b2d31;
-
-  &::-webkit-scrollbar{ width:8px; }
-  &::-webkit-scrollbar-thumb{ background:#1f2124; border-radius:4px; }
+  &::-webkit-scrollbar{width:8px} &::-webkit-scrollbar-thumb{background:#1f2124;border-radius:4px}
 `
-
 const Row = styled.div`
   display:grid; grid-template-columns: 40px 1fr; gap:12px;
   padding:8px 10px; border-radius:6px; animation:${fadeIn} .16s ease-out;
   &:hover{ background:rgba(255,255,255,0.03); }
 `
-
 const AvatarImg = styled.img`
-  width:40px; height:40px; border-radius:50%;
-  object-fit:cover; border:2px solid rgba(255,255,255,0.15);
-  background:#3a3c43;
+  width:40px; height:40px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,0.15); background:#3a3c43;
 `
-
-const Head = styled.div`
-  display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;
-`
-
-const Username = styled.strong<{ userColor:string }>`
-  color:${p => p.userColor}; font-weight:600; font-size:14px;
-`
-
-const Timestamp = styled.span`
-  font-size:12px; color:#a3a6aa;
-`
-
-const MessageText = styled.div`
-  margin-top:2px; color:#dbdee1; white-space:pre-wrap; word-break:break-word; line-height:1.35;
-`
-
-/* Badge BANA en CSS sin imágenes */
+const HeadLine = styled.div`display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;`
+const Username = styled.strong<{ userColor:string }>`color:${p=>p.userColor}; font-weight:600; font-size:14px;`
+const Timestamp = styled.span`font-size:12px; color:#a3a6aa;`
+const MessageText = styled.div`margin-top:2px; color:#dbdee1; white-space:pre-wrap; word-break:break-word; line-height:1.35;`
+/* Badge BANA CSS */
 const Badge = styled.span`
-  display:inline-flex; align-items:center; gap:6px;
-  padding:2px 8px; height:20px; border-radius:999px;
-  background:#3b3d44; border:1px solid #1f2124;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);
+  display:inline-flex; align-items:center; gap:6px; padding:2px 8px; height:20px; border-radius:999px;
+  background:#3b3d44; border:1px solid #1f2124; box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);
 `
-
 const BadgeIcon = styled.span`
   width:12px; height:12px; border-radius:50%;
-  background:linear-gradient(180deg, #ffd66e, #c79b30);
-  display:inline-block; box-shadow:0 0 0 1px rgba(0,0,0,0.25) inset;
+  background:linear-gradient(180deg,#ffd66e,#c79b30);
+  display:inline-block; box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
+`
+const BadgeText = styled.span`font-size:11px; font-weight:700; color:#dfe3e6; letter-spacing:.3px; line-height:1;`
+
+/* Reacciones (local-only) */
+const ReactionBar = styled.div`margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;`
+const ReactionChip = styled.button`
+  display:inline-flex; align-items:center; gap:6px; padding:2px 8px; border-radius:999px; cursor:pointer;
+  background:#313338; border:1px solid #1f2124; color:#dbdee1; font-size:12px;
+  &:hover{ background:#3b3d44; }
 `
 
-const BadgeText = styled.span`
-  font-size:11px; font-weight:700; color:#dfe3e6;
-  letter-spacing:.3px; line-height:1;
+/* Vista previa ligera de links */
+const LinkChip = styled.a`
+  display:inline-flex; align-items:center; gap:8px; margin-top:8px; max-width:100%;
+  background:#1f2124; border:1px solid #2a2c31; border-radius:8px; padding:8px; color:#dfe3e6; text-decoration:none; overflow:hidden;
+`
+const Favicon = styled.img`width:16px; height:16px; border-radius:4px; background:#2b2d31;`
+const Host = styled.span`font-size:12px; color:#b9bcc2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;`
+
+/* Menciones */
+const Mention = styled.span`color:#f2a1ff; font-weight:700;`
+const Popover = styled.div`
+  position:absolute; bottom:58px; left:12px; z-index:999;
+  background:#2b2d31; border:1px solid #1f2124; border-radius:8px; padding:6px; width:240px;
+  max-height:200px; overflow:auto; box-shadow:0 8px 20px rgba(0,0,0,.35);
+`
+const PopRow = styled.button`
+  width:100%; text-align:left; padding:6px 8px; border:none; background:transparent; color:#e6e6e6; border-radius:6px; cursor:pointer;
+  &:hover{ background:#3b3d44; }
 `
 
-const InputWrap = styled.div`
-  border-top:1px solid #1f2124; background:#313338; padding:12px;
-`
-
+/* Input */
+const InputWrap = styled.div`border-top:1px solid #1f2124; background:#313338; padding:10px 12px; position:relative;`
 const InputRow = styled.div`
-  display:flex; align-items:center; gap:8px;
-  background:#383a40; border:1px solid #1f2124; border-radius:8px; padding:6px 8px 6px 12px;
+  display:flex; align-items:center; gap:8px; background:#383a40; border:1px solid #1f2124; border-radius:8px; padding:6px 8px 6px 12px;
 `
-
-const TextInput = styled.input`
-  flex:1; background:transparent; border:none; outline:none;
-  color:#fff; font-size:14px; padding:8px 0;
+const TextInput = styled.textarea`
+  flex:1; background:transparent; border:none; outline:none; resize:none;
+  color:#fff; font-size:14px; padding:8px 0; max-height:100px; min-height:18px; line-height:1.35;
   &::placeholder{ color:#8b8f97; }
 `
-
+const Actions = styled.div`display:flex; align-items:center; gap:6px;`
+const IconBtn = styled.button`
+  background:transparent; border:none; cursor:pointer; padding:6px; border-radius:6px; color:#dfe3e6;
+  &:hover{ background:#2f3136; }
+`
 const SendBtn = styled.button`
-  background:#5865f2; border:none; color:#fff; font-weight:700;
-  font-size:13px; padding:8px 12px; border-radius:6px; cursor:pointer;
-  &:disabled{ opacity:.5; cursor:not-allowed; }
-  &:not(:disabled):hover{ filter:brightness(1.05); }
+  background:#5865f2; border:none; color:#fff; font-weight:700; font-size:13px; padding:8px 12px; border-radius:6px; cursor:pointer;
+  &:disabled{ opacity:.5; cursor:not-allowed; } &:not(:disabled):hover{ filter:brightness(1.05); }
 `
+const LoadingText = styled.div`text-align:center; color:#a3a6aa; padding:1rem 0; font-style:italic; font-size:13px;`
 
-const LoadingText = styled.div`
-  text-align:center; color:#a3a6aa; padding:1rem 0; font-style:italic; font-size:13px;
-`
+/** ========= Helpers de UI ========= **/
+function formatWithMentions(text: string) {
+  const parts: React.ReactNode[] = []
+  let lastIndex = 0
+  text.replace(mentionRegex, (match, p1, user, offset) => {
+    if (offset > lastIndex) parts.push(text.slice(lastIndex, offset))
+    parts.push(<span key={offset + '-sp'}>{p1}</span>)
+    parts.push(<Mention key={offset + '-m'}>@{user}</Mention>)
+    lastIndex = offset + match.length
+    return match
+  })
+  if (lastIndex < text.length) parts.push(text.slice(lastIndex))
+  return parts
+}
+function firstUrl(text:string): string | null {
+  const m = text.match(urlRegex)
+  return m && m[0] ? m[0] : null
+}
+function hostFromUrl(u:string) {
+  try { return new URL(u).hostname } catch { return '' }
+}
 
+/** ========= Componente principal ========= **/
 export default function TrollBox() {
   const { publicKey, connected } = useWallet()
   const walletModal = useWalletModal()
 
-  const anonFallback = useMemo(
-    () => 'anon' + Math.floor(Math.random() * 1e4).toString().padStart(4, '0'),
-    []
-  )
-  const userName = connected && publicKey
-    ? publicKey.toBase58().slice(0, 6)
-    : anonFallback
+  // id visible: primeros 6 chars, o anonXXXX
+  const anonFallback = useMemo(() => 'anon' + Math.floor(Math.random() * 1e4).toString().padStart(4, '0'), [])
+  const userName = connected && publicKey ? publicKey.toBase58().slice(0, 6) : anonFallback
 
   const [isMinimized, setIsMinimized] = useState(false)
   const [text, setText] = useState('')
   const [isSending, setIsSending] = useState(false)
   const [cooldown, setCooldown] = useState(0)
+  const [mentionOpen, setMentionOpen] = useState(false)
 
-  const swrKey =
-    isMinimized || (typeof document !== 'undefined' && document.hidden)
-      ? null
-      : '/api/chat'
+  const inputRef = useRef<HTMLTextAreaElement>(null)
+  const logRef = useRef<HTMLDivElement>(null)
+
+  // Local-only reactions (no backend): id -> Reaction[]
+  const [localReactions, setLocalReactions] = useState<Record<number, Reaction[]>>({})
+
+  const swrKey = isMinimized || (typeof document !== 'undefined' && document.hidden) ? null : '/api/chat'
   const { data: messages = [], error, mutate } = useSWR<Msg[]>(swrKey, fetcher, {
     refreshInterval: 8000,
     dedupingInterval: 7500,
   })
 
-  const logRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
+  // Autocomplete users
+  const activeUsers = useMemo(() => Array.from(new Set(messages.map(m => m.user))), [messages])
 
+  // Colors por user
   const userColors = useMemo(() => {
     const map: Record<string, string> = {}
     messages.forEach(m => { if (!map[m.user]) map[m.user] = stringToHslColor(m.user, 70, 65) })
@@ -228,32 +234,63 @@ export default function TrollBox() {
   }, [messages, userName])
 
   const fmtTime = (ts:number) =>
-    ts > Date.now() - 5000
-      ? 'sending…'
-      : new Date(ts).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })
+    ts > Date.now() - 5000 ? 'sending…' : new Date(ts).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })
 
-  async function send() {
+  async function send(gifUrl?: string) {
     if (!connected) return walletModal.setVisible(true)
-    const txt = text.trim()
-    if (!txt || isSending || cooldown > 0) return
+    const txt = (text || '').trim()
+    const sendingGifOnly = !!gifUrl && !txt
+    if ((!txt && !gifUrl) || isSending || cooldown > 0) return
     setIsSending(true)
     const id = Date.now()
-    mutate([...messages, { user:userName, text:txt, ts:id }], false)
+    // UI optimista (no persistimos reacciones locales aquí)
+    mutate([...messages, { user:userName, text:txt, ts:id, gif: gifUrl }], false)
     setText('')
     try {
       await fetch('/api/chat', {
         method:'POST',
         headers:{ 'Content-Type':'application/json' },
-        body:JSON.stringify({ user:userName, text:txt }),
+        body:JSON.stringify({ user:userName, text:txt, gif: gifUrl }),
       })
       mutate()
-      setCooldown(5)
+      setCooldown(sendingGifOnly ? 2 : 5)
     } catch (e) {
       console.error(e); mutate()
     } finally {
       setIsSending(false)
       inputRef.current?.focus()
     }
+  }
+
+  // Reacciones locales (toggle sin duplicar usuario)
+  function toggleReactionLocal(messageId:number, emoji:string, me:string){
+    setLocalReactions(prev => {
+      const copy = { ...prev }
+      const list = copy[messageId] ? [...copy[messageId]] : []
+      const idx = list.findIndex(r => r.emoji === emoji)
+      if (idx === -1) {
+        list.push({ emoji, users: [me] })
+      } else {
+        const users = new Set(list[idx].users)
+        if (users.has(me)) users.delete(me); else users.add(me)
+        list[idx] = { emoji, users: Array.from(users) }
+      }
+      copy[messageId] = list.filter(r => r.users.length > 0)
+      return copy
+    })
+  }
+
+  // Merge de reacciones: backend (si vinieran) + locales
+  function mergedReactions(m: Msg): Reaction[] {
+    const fromServer = m.reactions || []
+    const local = localReactions[m.ts] || []
+    const byEmoji = new Map<string, Set<string>>()
+    for (const r of [...fromServer, ...local]) {
+      const set = byEmoji.get(r.emoji) || new Set<string>()
+      r.users.forEach(u => set.add(u))
+      byEmoji.set(r.emoji, set)
+    }
+    return Array.from(byEmoji.entries()).map(([emoji, set]) => ({ emoji, users: Array.from(set) }))
   }
 
   useEffect(() => {
@@ -275,6 +312,37 @@ export default function TrollBox() {
     return () => clearTimeout(t)
   }, [cooldown])
 
+  // Menciones
+  function onInputKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() }
+    if (e.key === '@') setMentionOpen(true)
+  }
+  function insertAtCursor(insert: string) {
+    const el = inputRef.current
+    if (!el) return
+    const start = el.selectionStart ?? el.value.length
+    const end = el.selectionEnd ?? el.value.length
+    const before = el.value.slice(0, start)
+    const after = el.value.slice(end)
+    el.value = before + insert + after
+    setText(el.value)
+    const pos = before.length + insert.length
+    requestAnimationFrame(() => {
+      el.setSelectionRange(pos, pos)
+      el.focus()
+    })
+  }
+  function pickMention(u: string) {
+    insertAtCursor(`@${u} `)
+    setMentionOpen(false)
+  }
+
+  function openGifPrompt() {
+    const url = window.prompt('Pega la URL del GIF (giphy/tenor/.gif):')
+    if (!url) return
+    send(url) // lo enviamos como gif adjunto
+  }
+
   const toggleMinimize = () => setIsMinimized(v => !v)
 
   return (
@@ -292,57 +360,101 @@ export default function TrollBox() {
           <MinimizeButton><MinimizeIcon /></MinimizeButton>
         </Header>
 
-        <Log ref={logRef}>
+        <Log ref={logRef} onClick={() => setMentionOpen(false)}>
           {!messages.length && !error && <LoadingText>Loading messages…</LoadingText>}
           {error && <LoadingText style={{ color: '#ff8080' }}>Error loading chat.</LoadingText>}
 
           {messages.map((m, i) => {
-            const src = getAvatar(m.user)
-            const color = userColors[m.user]
+            const color = m.user === 'system' ? '#ffd66e' : userColors[m.user]
+            const avatar = getAvatar(m.user)
+            const url = m.text ? firstUrl(m.text) : null
+            const host = url ? hostFromUrl(url) : ''
+            const fav = host ? `https://www.google.com/s2/favicons?domain=${host}` : ''
+
             return (
               <Row key={m.ts || i}>
-                <AvatarImg src={src} alt={m.user} />
+                <AvatarImg src={avatar} alt={m.user} />
                 <div>
-                  <Head>
+                  <HeadLine>
                     <Username userColor={color}>{m.user.slice(0, 6)}</Username>
-
-                    {/* Badge BANA en CSS */}
-                    <Badge>
-                      <BadgeIcon />
-                      <BadgeText>BANA</BadgeText>
-                    </Badge>
-
+                    <Badge><BadgeIcon /><BadgeText>BANA</BadgeText></Badge>
                     <VerifiedIcon />
                     <Timestamp>{fmtTime(m.ts)}</Timestamp>
-                  </Head>
-                  <MessageText>{m.text}</MessageText>
+                  </HeadLine>
+
+                  {m.text ? (
+                    <MessageText>{formatWithMentions(m.text)}</MessageText>
+                  ) : null}
+
+                  {/* GIF adjunto si existe */}
+                  {m.gif ? (
+                    <div style={{ marginTop: 8 }}>
+                      <img src={m.gif} alt="gif" style={{ maxWidth:'100%', borderRadius:8 }} />
+                    </div>
+                  ) : null}
+
+                  {/* Chip de link (favicon + dominio) sin backend */}
+                  {url && host ? (
+                    <LinkChip href={url} target="_blank" rel="noreferrer">
+                      <Favicon src={fav} alt="" />
+                      <Host>{host}</Host>
+                    </LinkChip>
+                  ) : null}
+
+                  {/* Reacciones (local only, merge con las que vengan del server si algún día hay) */}
+                  <ReactionBar>
+                    {mergedReactions(m).map(r => (
+                      <ReactionChip key={r.emoji} onClick={() => toggleReactionLocal(m.ts, r.emoji, userName)}>
+                        <span>{r.emoji}</span><span>{r.users.length}</span>
+                      </ReactionChip>
+                    ))}
+                    <ReactionChip onClick={() => toggleReactionLocal(m.ts, '👍', userName)}>👍</ReactionChip>
+                    <ReactionChip onClick={() => toggleReactionLocal(m.ts, '🔥', userName)}>🔥</ReactionChip>
+                    <ReactionChip onClick={() => toggleReactionLocal(m.ts, '🍌', userName)}>🍌</ReactionChip>
+                  </ReactionBar>
                 </div>
               </Row>
             )
           })}
         </Log>
 
-        <InputWrap>
+        <InputWrap onClick={() => inputRef.current?.focus()}>
           <InputRow>
             <TextInput
               ref={inputRef}
+              rows={1}
               value={text}
-              placeholder={connected ? 'Message #bana-chat' : 'Connect wallet to chat'}
+              placeholder={connected ? 'Message #bana-chat — Enter envía, Shift+Enter nueva línea' : 'Connect wallet to chat'}
               onChange={e => setText(e.target.value)}
-              onClick={() => !connected && walletModal.setVisible(true)}
-              onKeyDown={e => {
-                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() }
-              }}
+              onKeyDown={onInputKeyDown}
+              onFocus={() => setMentionOpen(false)}
               disabled={isSending || !swrKey}
-              maxLength={200}
+              maxLength={600}
             />
-            <SendBtn
-              onClick={send}
-              disabled={!connected || isSending || cooldown > 0 || !text.trim() || !swrKey}
-            >
-              {isSending ? '…' : cooldown > 0 ? `Wait ${cooldown}s` : 'Send'}
-            </SendBtn>
+            <Actions>
+              <IconBtn title="GIF via URL" onClick={openGifPrompt}><GifIcon /></IconBtn>
+              {/* Si un día quieres activar /tip:
+              <IconBtn title="Tip SOL" onClick={()=>insertAtCursor('/tip @user 0.1 ')}>💸</IconBtn>
+              */}
+              <SendBtn
+                onClick={() => send()}
+                disabled={!connected || isSending || cooldown > 0 || (!text.trim()) || !swrKey}
+              >
+                {isSending ? '…' : cooldown > 0 ? `Wait ${cooldown}s` : 'Send'}
+              </SendBtn>
+            </Actions>
           </InputRow>
+
+          {/* Popover menciones */}
+          {mentionOpen && activeUsers.length > 0 && (
+            <Popover>
+              {activeUsers.slice(0, 12).map(u => (
+                <PopRow key={u} onClick={() => pickMention(u)}>
+                  @{u}
+                </PopRow>
+              ))}
+            </Popover>
+          )}
         </InputWrap>
       </ContentContainer>
     </Wrapper>
