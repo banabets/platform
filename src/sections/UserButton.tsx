@@ -52,7 +52,7 @@ const ModalCard = styled.div`
   &:focus-within { animation: none; }
 `
 
-/** Header de perfil: avatar a la izq, info a la der */
+/** Header de perfil: avatar a la izq, info a la der. En móvil: una sola columna y centrado */
 const ProfileHeader = styled.div`
   display: grid;
   grid-template-columns: 106px 1fr;
@@ -62,6 +62,12 @@ const ProfileHeader = styled.div`
 
   /* por si algún ancestro aplica transform, evitamos afectar caret al enfocar */
   &:focus-within { transform: none; }
+
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+    text-align: center;
+    justify-items: center;
+  }
 `
 
 const AvatarWrap = styled.div`
@@ -162,8 +168,13 @@ const HeaderRight = styled.div`
   flex-direction: column;
   align-items: flex-start;
   min-width: 0;
+
+  @media (max-width: 520px) {
+    align-items: center; /* centra debajo del avatar */
+  }
 `
 
+/** Fila de usuario: en móvil apila vertical (username arriba, badge debajo) y centra */
 const UserRow = styled.div`
   display: flex;
   align-items: center;
@@ -171,6 +182,12 @@ const UserRow = styled.div`
   column-gap: 8px;
   row-gap: 6px;
   min-width: 0;
+
+  @media (max-width: 520px) {
+    justify-content: center;
+    flex-direction: column;
+    row-gap: 4px;
+  }
 `
 
 /** Wrapper que reserva altura para evitar saltos al cambiar de pill a input */
@@ -180,7 +197,7 @@ const UsernameBlock = styled.div`
   gap: 8px;
   min-height: 42px; /* ≈ alto del input (40) + margen mínimo */
   @media (max-width: 520px) {
-    flex-direction: column; /* en móvil, nombre arriba y chip debajo si quieres */
+    flex-direction: column; /* username arriba, badge debajo */
     gap: 4px;
   }
 `
@@ -260,6 +277,10 @@ const WalletRow = styled.div`
   gap: 8px;
   opacity: .95;
   min-width: 0;
+
+  @media (max-width: 520px) {
+    justify-content: center;
+  }
 `
 
 const PillRow = styled.div`
@@ -267,6 +288,10 @@ const PillRow = styled.div`
   gap: 10px;
   margin-top: 8px;
   flex-wrap: wrap;
+
+  @media (max-width: 520px) {
+    justify-content: center; /* acciones centradas bajo el avatar */
+  }
 `
 
 const PillButton = styled.button`
