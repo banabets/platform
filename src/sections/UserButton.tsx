@@ -39,19 +39,13 @@ const ModalCard = styled.div`
   animation: ${glow} 4s ease-in-out infinite;
 `
 
-/** Header de perfil: avatar a la izq, info a la der. En móvil va todo en columna */
+/** Header de perfil: avatar a la izq, info a la der */
 const ProfileHeader = styled.div`
   display: grid;
   grid-template-columns: 106px 1fr;
   gap: 14px;
   align-items: center;
   margin-bottom: 12px;
-
-  @media (max-width: 520px) {
-    grid-template-columns: 1fr;
-    text-align: center;
-    justify-items: center;
-  }
 `
 
 const AvatarWrap = styled.div`
@@ -84,7 +78,9 @@ const AvatarFrame = styled.div`
     pointer-events: none;
   }
 
-  &.none::before { display: none; }
+  &.none::before {
+    display: none;
+  }
 
   &.neon::before {
     background: linear-gradient(135deg, #00ff88, #0ff, #facc15, #f472b6);
@@ -152,10 +148,6 @@ const HeaderRight = styled.div`
   flex-direction: column;
   align-items: flex-start;
   min-width: 0;
-
-  @media (max-width: 520px) {
-    align-items: center; /* username y badge centrados debajo del avatar */
-  }
 `
 
 const UserRow = styled.div`
@@ -165,14 +157,7 @@ const UserRow = styled.div`
   column-gap: 8px;
   row-gap: 6px;
   min-width: 0;
-
-  @media (max-width: 520px) {
-    flex-direction: column;   /* nombre arriba, chip debajo */
-    align-items: center;
-    row-gap: 4px;             /* espacio más compacto */
-  }
 `
-
 
 const UsernamePill = styled.span`
   font-size: 1.1rem;
@@ -241,10 +226,6 @@ const WalletRow = styled.div`
   gap: 8px;
   opacity: .95;
   min-width: 0;
-
-  @media (max-width: 520px) {
-    justify-content: center;
-  }
 `
 
 const PillRow = styled.div`
@@ -252,10 +233,6 @@ const PillRow = styled.div`
   gap: 10px;
   margin-top: 8px;
   flex-wrap: wrap;
-
-  @media (max-width: 520px) {
-    justify-content: center; /* acciones centradas bajo el avatar */
-  }
 `
 
 const PillButton = styled.button`
