@@ -15,23 +15,15 @@ const stringToHslColor = (str: string, s: number, l: number): string => {
   return `hsl(${hash % 360}, ${s}%, ${l}%)`
 }
 
-// avatares en /public/avatars/1.png, 2.png, ...
+// número de avatares disponibles en /public/avatars como 1.png, 2.png, ...
 const AVATAR_COUNT = 12
+
 function getAvatar(user: string, total = AVATAR_COUNT) {
   if (total <= 0) return ''
   let hash = 0
   for (let i = 0; i < user.length; i++) hash = user.charCodeAt(i) + ((hash << 5) - hash)
   const index = Math.abs(hash) % total
   return `/avatars/${index + 1}.png`
-}
-
-// niveles
-const LEVEL_STEP = 50
-function getLevel(count: number) {
-  return Math.floor(count / LEVEL_STEP) + 1
-}
-function getProgress(count: number) {
-  return count % LEVEL_STEP
 }
 
 const MinimizeIcon = () => (
@@ -154,7 +146,7 @@ const MessageText = styled.div`
   margin-top:2px; color:#dbdee1; white-space:pre-wrap; word-break:break-word; line-height:1.35;
 `
 
-/* Badge BANA en CSS */
+/* Badge BANA en CSS sin imágenes */
 const Badge = styled.span`
   display:inline-flex; align-items:center; gap:6px;
   padding:2px 8px; height:20px; border-radius:999px;
@@ -171,14 +163,6 @@ const BadgeIcon = styled.span`
 const BadgeText = styled.span`
   font-size:11px; font-weight:700; color:#dfe3e6;
   letter-spacing:.3px; line-height:1;
-`
-
-/* Badge de nivel */
-const LevelBadge = styled.span`
-  display:inline-flex; align-items:center;
-  padding:2px 8px; height:20px; border-radius:999px;
-  background:#2f3136; border:1px solid #1f2124; color:#e6e6e6;
-  font-size:11px; font-weight:700; letter-spacing:.3px; line-height:1;
 `
 
 const InputWrap = styled.div`
@@ -236,20 +220,12 @@ export default function TrollBox() {
   const logRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // colores por usuario
   const userColors = useMemo(() => {
     const map: Record<string, string> = {}
     messages.forEach(m => { if (!map[m.user]) map[m.user] = stringToHslColor(m.user, 70, 65) })
     if (!map[userName]) map[userName] = stringToHslColor(userName, 70, 65)
     return map
   }, [messages, userName])
-
-  // conteo por usuario para niveles
-  const userCounts = useMemo(() => {
-    const map: Record<string, number> = {}
-    for (const m of messages) map[m.user] = (map[m.user] || 0) + 1
-    return map
-  }, [messages])
 
   const fmtTime = (ts:number) =>
     ts > Date.now() - 5000
@@ -323,10 +299,6 @@ export default function TrollBox() {
           {messages.map((m, i) => {
             const src = getAvatar(m.user)
             const color = userColors[m.user]
-            const count = userCounts[m.user] || 0
-            const level = getLevel(count)
-            const prog = getProgress(count) // 0..49
-
             return (
               <Row key={m.ts || i}>
                 <AvatarImg src={src} alt={m.user} />
@@ -334,16 +306,11 @@ export default function TrollBox() {
                   <Head>
                     <Username userColor={color}>{m.user.slice(0, 6)}</Username>
 
-                    {/* Badge BANA */}
+                    {/* Badge BANA en CSS */}
                     <Badge>
                       <BadgeIcon />
                       <BadgeText>BANA</BadgeText>
                     </Badge>
-
-                    {/* Badge de nivel */}
-                    <LevelBadge title={`Mensajes: ${count} • Progreso: ${prog}/${LEVEL_STEP}`}>
-                      Lv. {level}
-                    </LevelBadge>
 
                     <VerifiedIcon />
                     <Timestamp>{fmtTime(m.ts)}</Timestamp>
