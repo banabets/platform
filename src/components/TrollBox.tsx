@@ -1,4 +1,4 @@
-// TrollBox.tsx — LITE PACK (sin endpoints nuevos)
+// TrollBox.tsx — Reacciones per-user + notificaciones mínimas (sin GIFs)
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import styled, { keyframes } from 'styled-components'
 import useSWR from 'swr'
@@ -11,8 +11,7 @@ type Msg = {
   user: string
   text: string
   ts: number
-  reactions?: Reaction[]     // opcional: si tu backend lo trae algún día
-  gif?: string               // url de gif adjunta
+  reactions?: Reaction[]  // opcional si algún día tu backend lo trae
 }
 
 /** ========= SWR ========= **/
@@ -35,6 +34,7 @@ function getAvatar(user: string, total = AVATAR_COUNT) {
 }
 const urlRegex = /(https?:\/\/[^\s]+)/gi
 const mentionRegex = /(^|[\s])@([a-zA-Z0-9_.\-]{2,})/g
+const FIXED_EMOJIS = ['👍','🔥','🍌'] as const
 
 /** ========= Iconos ========= **/
 const MinimizeIcon = () => (
@@ -52,9 +52,6 @@ const VerifiedIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg" style={{ marginLeft: 4 }}>
     <path d="M23,12L20.56,9.22L20.9,5.54L17.29,4.72L15.4,1.54L12,3L8.6,1.54L6.71,4.72L3.1,5.53L3.44,9.21L1,12L3.44,14.78L3.1,18.47L6.71,19.29L8.6,22.47L12,21L15.4,22.46L17.29,19.28L20.9,18.46L20.56,14.78L23,12M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z" />
   </svg>
-)
-const GifIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="#dfe3e6"><path d="M3 3h18v18H3V3zm4 5v8h2V8H7zm4 0v8h2v-3h2V12h-2v-2h2V8h-4zm8 0h-4v8h2v-3h2v-2h-2v-1h2V8z"/></svg>
 )
 
 /** ========= Estilos ========= **/
@@ -126,13 +123,13 @@ const BadgeText = styled.span`font-size:11px; font-weight:700; color:#dfe3e6; le
 
 /* Reacciones (local-only) */
 const ReactionBar = styled.div`margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;`
-const ReactionChip = styled.button`
+const ReactionChip = styled.button<{ $active?: boolean }>`
   display:inline-flex; align-items:center; gap:6px; padding:2px 8px; border-radius:999px; cursor:pointer;
-  background:#313338; border:1px solid #1f2124; color:#dbdee1; font-size:12px;
+  background:${p=>p.$active?'#3b3d44':'#313338'}; border:1px solid #1f2124; color:#dbdee1; font-size:12px;
   &:hover{ background:#3b3d44; }
 `
 
-/* Vista previa ligera de links */
+/* Vista previa ligera de links (favicon + dominio) */
 const LinkChip = styled.a`
   display:inline-flex; align-items:center; gap:8px; margin-top:8px; max-width:100%;
   background:#1f2124; border:1px solid #2a2c31; border-radius:8px; padding:8px; color:#dfe3e6; text-decoration:none; overflow:hidden;
@@ -163,10 +160,6 @@ const TextInput = styled.textarea`
   &::placeholder{ color:#8b8f97; }
 `
 const Actions = styled.div`display:flex; align-items:center; gap:6px;`
-const IconBtn = styled.button`
-  background:transparent; border:none; cursor:pointer; padding:6px; border-radius:6px; color:#dfe3e6;
-  &:hover{ background:#2f3136; }
-`
 const SendBtn = styled.button`
   background:#5865f2; border:none; color:#fff; font-weight:700; font-size:13px; padding:8px 12px; border-radius:6px; cursor:pointer;
   &:disabled{ opacity:.5; cursor:not-allowed; } &:not(:disabled):hover{ filter:brightness(1.05); }
@@ -212,8 +205,10 @@ export default function TrollBox() {
 
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const logRef = useRef<HTMLDivElement>(null)
+  const soundRef = useRef<HTMLAudioElement | null>(null)
+  const prevLenRef = useRef<number>(0)
 
-  // Local-only reactions (no backend): id -> Reaction[]
+  // Reacciones locales (toggle por usuario, sin backend)
   const [localReactions, setLocalReactions] = useState<Record<number, Reaction[]>>({})
 
   const swrKey = isMinimized || (typeof document !== 'undefined' && document.hidden) ? null : '/api/chat'
@@ -236,24 +231,24 @@ export default function TrollBox() {
   const fmtTime = (ts:number) =>
     ts > Date.now() - 5000 ? 'sending…' : new Date(ts).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })
 
-  async function send(gifUrl?: string) {
+  /** ===== Envío ===== */
+  async function send() {
     if (!connected) return walletModal.setVisible(true)
     const txt = (text || '').trim()
-    const sendingGifOnly = !!gifUrl && !txt
-    if ((!txt && !gifUrl) || isSending || cooldown > 0) return
+    if (!txt || isSending || cooldown > 0) return
     setIsSending(true)
     const id = Date.now()
-    // UI optimista (no persistimos reacciones locales aquí)
-    mutate([...messages, { user:userName, text:txt, ts:id, gif: gifUrl }], false)
+    // UI optimista
+    mutate([...messages, { user:userName, text:txt, ts:id }], false)
     setText('')
     try {
       await fetch('/api/chat', {
         method:'POST',
         headers:{ 'Content-Type':'application/json' },
-        body:JSON.stringify({ user:userName, text:txt, gif: gifUrl }),
+        body:JSON.stringify({ user:userName, text:txt }),
       })
       mutate()
-      setCooldown(sendingGifOnly ? 2 : 5)
+      setCooldown(5)
     } catch (e) {
       console.error(e); mutate()
     } finally {
@@ -262,7 +257,7 @@ export default function TrollBox() {
     }
   }
 
-  // Reacciones locales (toggle sin duplicar usuario)
+  /** ===== Reacciones locales (toggle sin duplicados) ===== */
   function toggleReactionLocal(messageId:number, emoji:string, me:string){
     setLocalReactions(prev => {
       const copy = { ...prev }
@@ -279,8 +274,6 @@ export default function TrollBox() {
       return copy
     })
   }
-
-  // Merge de reacciones: backend (si vinieran) + locales
   function mergedReactions(m: Msg): Reaction[] {
     const fromServer = m.reactions || []
     const local = localReactions[m.ts] || []
@@ -293,6 +286,7 @@ export default function TrollBox() {
     return Array.from(byEmoji.entries()).map(([emoji, set]) => ({ emoji, users: Array.from(set) }))
   }
 
+  /** ===== UI: scroll y foco ===== */
   useEffect(() => {
     if (!isMinimized && logRef.current) {
       logRef.current.scrollTo({ top:logRef.current.scrollHeight, behavior:'smooth' })
@@ -312,7 +306,38 @@ export default function TrollBox() {
     return () => clearTimeout(t)
   }, [cooldown])
 
-  // Menciones
+  /** ===== Notificaciones mínimas ===== */
+  useEffect(() => {
+    // Pre-carga audio
+    if (!soundRef.current) {
+      soundRef.current = new Audio('/ping.mp3')
+      soundRef.current.volume = 0.6
+    }
+    // Base title
+    if (typeof document !== 'undefined') {
+      document.title = '#bana-chat'
+    }
+    const onVis = () => {
+      if (!document.hidden) document.title = '#bana-chat'
+    }
+    document.addEventListener('visibilitychange', onVis)
+    return () => document.removeEventListener('visibilitychange', onVis)
+  }, [])
+
+  useEffect(() => {
+    const prevLen = prevLenRef.current
+    const currLen = messages.length
+    if (currLen > prevLen && currLen > 0) {
+      const last = messages[currLen - 1]
+      if (last.user !== userName) {
+        try { soundRef.current?.play().catch(()=>{}) } catch {}
+        if (document.hidden) document.title = '(1) #bana-chat'
+      }
+    }
+    prevLenRef.current = currLen
+  }, [messages, userName])
+
+  /** ===== Menciones ===== */
   function onInputKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() }
     if (e.key === '@') setMentionOpen(true)
@@ -335,12 +360,6 @@ export default function TrollBox() {
   function pickMention(u: string) {
     insertAtCursor(`@${u} `)
     setMentionOpen(false)
-  }
-
-  function openGifPrompt() {
-    const url = window.prompt('Pega la URL del GIF (giphy/tenor/.gif):')
-    if (!url) return
-    send(url) // lo enviamos como gif adjunto
   }
 
   const toggleMinimize = () => setIsMinimized(v => !v)
@@ -371,6 +390,10 @@ export default function TrollBox() {
             const host = url ? hostFromUrl(url) : ''
             const fav = host ? `https://www.google.com/s2/favicons?domain=${host}` : ''
 
+            const reactions = mergedReactions(m)
+            const userEmojis = new Set(reactions.filter(r => r.users.includes(userName)).map(r => r.emoji))
+            const existingEmojiSet = new Set(reactions.map(r => r.emoji))
+
             return (
               <Row key={m.ts || i}>
                 <AvatarImg src={avatar} alt={m.user} />
@@ -386,13 +409,6 @@ export default function TrollBox() {
                     <MessageText>{formatWithMentions(m.text)}</MessageText>
                   ) : null}
 
-                  {/* GIF adjunto si existe */}
-                  {m.gif ? (
-                    <div style={{ marginTop: 8 }}>
-                      <img src={m.gif} alt="gif" style={{ maxWidth:'100%', borderRadius:8 }} />
-                    </div>
-                  ) : null}
-
                   {/* Chip de link (favicon + dominio) sin backend */}
                   {url && host ? (
                     <LinkChip href={url} target="_blank" rel="noreferrer">
@@ -401,16 +417,38 @@ export default function TrollBox() {
                     </LinkChip>
                   ) : null}
 
-                  {/* Reacciones (local only, merge con las que vengan del server si algún día hay) */}
+                  {/* Reacciones */}
                   <ReactionBar>
-                    {mergedReactions(m).map(r => (
-                      <ReactionChip key={r.emoji} onClick={() => toggleReactionLocal(m.ts, r.emoji, userName)}>
+                    {/* Chips existentes: siempre visibles; si tú reaccionaste, se marcan activos.
+                        Click = toggle (agrega o quita tu reacción). */}
+                    {reactions.map(r => (
+                      <ReactionChip
+                        key={r.emoji}
+                        $active={r.users.includes(userName)}
+                        onClick={() => toggleReactionLocal(m.ts, r.emoji, userName)}
+                        title={`${r.emoji} • ${r.users.length}`}
+                      >
                         <span>{r.emoji}</span><span>{r.users.length}</span>
                       </ReactionChip>
                     ))}
-                    <ReactionChip onClick={() => toggleReactionLocal(m.ts, '👍', userName)}>👍</ReactionChip>
-                    <ReactionChip onClick={() => toggleReactionLocal(m.ts, '🔥', userName)}>🔥</ReactionChip>
-                    <ReactionChip onClick={() => toggleReactionLocal(m.ts, '🍌', userName)}>🍌</ReactionChip>
+
+                    {/* Quick-add SOLO si:
+                        1) ese emoji aún no existe como chip en el mensaje, y
+                        2) tú no lo has usado (redundante, pero explícito).
+                        Al reaccionar, el botón desaparece para ti y aparece el chip. */}
+                    {FIXED_EMOJIS.map(e => {
+                      if (existingEmojiSet.has(e)) return null
+                      if (userEmojis.has(e)) return null
+                      return (
+                        <ReactionChip
+                          key={`add-${e}`}
+                          onClick={() => toggleReactionLocal(m.ts, e, userName)}
+                          title={`Agregar ${e}`}
+                        >
+                          {e}
+                        </ReactionChip>
+                      )
+                    })}
                   </ReactionBar>
                 </div>
               </Row>
@@ -424,7 +462,7 @@ export default function TrollBox() {
               ref={inputRef}
               rows={1}
               value={text}
-              placeholder={connected ? 'Message #bana-chat — Enter envía, Shift+Enter nueva línea' : 'Connect wallet to chat'}
+              placeholder={'Message #bana-chat'}
               onChange={e => setText(e.target.value)}
               onKeyDown={onInputKeyDown}
               onFocus={() => setMentionOpen(false)}
@@ -432,10 +470,6 @@ export default function TrollBox() {
               maxLength={600}
             />
             <Actions>
-              <IconBtn title="GIF via URL" onClick={openGifPrompt}><GifIcon /></IconBtn>
-              {/* Si un día quieres activar /tip:
-              <IconBtn title="Tip SOL" onClick={()=>insertAtCursor('/tip @user 0.1 ')}>💸</IconBtn>
-              */}
               <SendBtn
                 onClick={() => send()}
                 disabled={!connected || isSending || cooldown > 0 || (!text.trim()) || !swrKey}
