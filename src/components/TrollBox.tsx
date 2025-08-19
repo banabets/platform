@@ -89,7 +89,13 @@ const Header = styled.div`
 `
 
 const HeaderTitle = styled.span`flex:1; font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;`
-const OnlineStatus = styled.div`width:8px; height:8px; border-radius:50%; background:#23a55a;`
+const OnlineStatus = styled.div`
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background: radial-gradient(circle at center, #4dff8c 0%, #23a55a 60%, #178a48 100%);
+  box-shadow: 0 0 6px #23a55a, 0 0 12px #23a55a;
+`
 const HeaderStatus = styled.span`font-size:12px; color:#a3a6aa; margin:0 8px;`
 
 const MinimizeButton = styled.button`
