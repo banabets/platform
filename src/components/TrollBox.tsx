@@ -16,7 +16,7 @@ const stringToHslColor = (str: string, s: number, l: number): string => {
 }
 
 /** Configura cuántas imágenes subiste a /public/avatars como 1.png, 2.png, ... */
-const AVATAR_COUNT = 21
+const AVATAR_COUNT = 54
 
 /** Elige un avatar estable por usuario usando hash */
 function getAvatar(user: string, total = AVATAR_COUNT) {
