@@ -1,4 +1,4 @@
-// TrollBox.tsx — emoji-XL para mensajes solo con emojis (resto igual: menciones, preview, título sin sonido)
+// TrollBox.tsx — sin reacciones, con menciones (fix @@), preview de links, y notificación de título sin sonido
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import styled, { keyframes } from 'styled-components'
 import useSWR from 'swr'
@@ -55,7 +55,6 @@ const VerifiedIcon = () => (
 
 /** ========= Estilos ========= **/
 const fadeIn = keyframes`from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}`
-const popIn = keyframes`0%{transform:scale(.96)}100%{transform:scale(1)}`
 const ExpandIconWrapper = styled.div`display:flex;align-items:center;justify-content:center;`
 
 const Wrapper = styled.div<{ $isMinimized: boolean }>`
@@ -117,15 +116,7 @@ const AvatarImg = styled.img`
 const HeadLine = styled.div`display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;`
 const Username = styled.strong<{ userColor:string }>`color:${p=>p.userColor}; font-weight:600; font-size:14px;`
 const Timestamp = styled.span`font-size:12px; color:#a3a6aa;`
-
-const MessageText = styled.div<{ $emojiOnly?: boolean }>`
-  margin-top:2px; color:#dbdee1; white-space:pre-wrap; word-break:break-word;
-  line-height:${p=>p.$emojiOnly?1.1:1.35};
-  font-size:${p=>p.$emojiOnly?'2.6rem':'inherit'};
-  letter-spacing:${p=>p.$emojiOnly?'-0.01em':'normal'};
-  transform-origin:left top;
-  ${p=>p.$emojiOnly?`animation:${popIn} .18s ease-out;`:''}
-`
+const MessageText = styled.div`margin-top:2px; color:#dbdee1; white-space:pre-wrap; word-break:break-word; line-height:1.35;`
 
 /* Badge BANA CSS */
 const Badge = styled.span`
@@ -199,21 +190,14 @@ function hostFromUrl(u:string) {
   try { return new URL(u).hostname } catch { return '' }
 }
 
-/** Detecta si un texto son SOLO emojis (ignora espacios) */
-function isEmojiOnly(text: string): boolean {
-  const stripped = (text || '').replace(/\s+/g, '')
-  if (!stripped) return false
-  // Soporta emojis con variation selectors y ZWJ (👩‍💻, 🏳️‍🌈, etc.)
-  const re = /^(?:\p{Extended_Pictographic}(?:\uFE0F|\uFE0E)?(?:\u200D\p{Extended_Pictographic}(?:\uFE0F|\uFE0E)?)?)+$/u
-  return re.test(stripped)
-}
-
 /** Encuentra el rango de la mención activa: desde '@' (o '@parcial') hasta el cursor */
 function getActiveMentionRange(text: string, caret: number): { start: number; end: number } | null {
+  // Busca el inicio del token sin espacios hacia atrás
   let i = caret - 1
   while (i >= 0 && !/\s/.test(text[i])) i--
   const tokenStart = i + 1
   if (text[tokenStart] !== '@') return null
+  // Asegura que antes del '@' haya inicio de línea o espacio
   if (tokenStart > 0 && !/\s/.test(text[tokenStart - 1])) return null
   return { start: tokenStart, end: caret }
 }
@@ -373,6 +357,7 @@ export default function TrollBox() {
       replaceRangeInTextarea(el, range.start, range.end, `@${u} `)
       setText(el.value)
     } else {
+      // fallback: inserta al cursor si no detecta rango activo
       insertAtCursor(`@${u} `)
     }
     setMentionOpen(false)
@@ -400,14 +385,12 @@ export default function TrollBox() {
           {error && <LoadingText style={{ color: '#ff8080' }}>Error loading chat.</LoadingText>}
 
           {messages.map((m, i) => {
-            const color = m.user === 'system' ? '#ffd66e' : stringToHslColor(m.user, 70, 65)
+            const color = m.user === 'system' ? '#ffd66e' : userColors[m.user]
             const avatar = getAvatar(m.user)
 
             const url = m.text ? firstUrl(m.text) : null
             const host = url ? hostFromUrl(url) : ''
             const fav = host ? `https://www.google.com/s2/favicons?domain=${host}` : ''
-
-            const emojiXL = isEmojiOnly(m.text)
 
             return (
               <Row key={m.ts || i}>
@@ -421,9 +404,7 @@ export default function TrollBox() {
                   </HeadLine>
 
                   {m.text ? (
-                    <MessageText $emojiOnly={emojiXL}>
-                      {emojiXL ? m.text : formatWithMentions(m.text)}
-                    </MessageText>
+                    <MessageText>{formatWithMentions(m.text)}</MessageText>
                   ) : null}
 
                   {/* Chip de link (favicon + dominio) sin backend */}
