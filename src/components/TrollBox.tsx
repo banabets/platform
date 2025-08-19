@@ -15,10 +15,9 @@ const stringToHslColor = (str: string, s: number, l: number): string => {
   return `hsl(${hash % 360}, ${s}%, ${l}%)`
 }
 
-/** Configura cuántas imágenes subiste a /public/avatars como 1.png, 2.png, ... */
-const AVATAR_COUNT = 54
+// número de avatares disponibles en /public/avatars como 1.png, 2.png, ...
+const AVATAR_COUNT = 12
 
-/** Elige un avatar estable por usuario usando hash */
 function getAvatar(user: string, total = AVATAR_COUNT) {
   if (total <= 0) return ''
   let hash = 0
@@ -131,13 +130,6 @@ const AvatarImg = styled.img`
   background:#3a3c43;
 `
 
-const FallbackAvatar = styled.div<{ bg: string }>`
-  width:40px; height:40px; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  color:#fff; font-weight:700; border:2px solid rgba(255,255,255,0.15);
-  background:${p => p.bg};
-`
-
 const Head = styled.div`
   display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;
 `
@@ -152,6 +144,25 @@ const Timestamp = styled.span`
 
 const MessageText = styled.div`
   margin-top:2px; color:#dbdee1; white-space:pre-wrap; word-break:break-word; line-height:1.35;
+`
+
+/* Badge puramente CSS */
+const Badge = styled.span`
+  display:inline-flex; align-items:center; gap:6px;
+  padding:2px 8px; height:20px; border-radius:999px;
+  background:#3b3d44; border:1px solid #1f2124;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);
+`
+
+const BadgeIcon = styled.span`
+  width:12px; height:12px; border-radius:50%;
+  background:linear-gradient(180deg, #ffd66e, #c79b30);
+  display:inline-block; box-shadow:0 0 0 1px rgba(0,0,0,0.25) inset;
+`
+
+const BadgeText = styled.span`
+  font-size:11px; font-weight:700; color:#dfe3e6;
+  letter-spacing:.3px; line-height:1;
 `
 
 const InputWrap = styled.div`
@@ -290,27 +301,17 @@ export default function TrollBox() {
             const color = userColors[m.user]
             return (
               <Row key={m.ts || i}>
-                {src ? (
-                  <AvatarImg
-                    src={src}
-                    alt={m.user}
-                    onError={(e) => {
-                      // Si falta la imagen, muestra fallback de color
-                      const target = e.currentTarget as HTMLImageElement
-                      target.style.display = 'none'
-                      const next = target.nextElementSibling as HTMLDivElement | null
-                      if (next) next.style.display = 'flex'
-                    }}
-                  />
-                ) : null}
-                {/* Fallback oculto por defecto, se usa si falla la imagen */}
-                <FallbackAvatar bg={color} style={{ display: 'none' }}>
-                  {m.user[0] || '?'}
-                </FallbackAvatar>
-
+                <AvatarImg src={src} alt={m.user} />
                 <div>
                   <Head>
                     <Username userColor={color}>{m.user.slice(0, 6)}</Username>
+
+                    {/* Badge CSS antes del verified */}
+                    <Badge>
+                      <BadgeIcon />
+                      <BadgeText>BANA</BadgeText>
+                    </Badge>
+
                     <VerifiedIcon />
                     <Timestamp>{fmtTime(m.ts)}</Timestamp>
                   </Head>
