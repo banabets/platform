@@ -1,4 +1,4 @@
-// TrollBox.tsx — sin reacciones, con menciones (fix @@), preview de links, y notificación de título sin sonido
+// TrollBox.tsx — Burbujas agrupadas por autor (sin repetir avatar/cabecera) + menciones + link preview + título sin sonido
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import styled, { keyframes } from 'styled-components'
 import useSWR from 'swr'
@@ -103,9 +103,12 @@ const Log = styled.div`
   &::-webkit-scrollbar{width:8px} &::-webkit-scrollbar-thumb{background:#1f2124;border-radius:4px}
 `
 
-const Row = styled.div`
-  display:grid; grid-template-columns: 40px 1fr; gap:12px;
-  padding:8px 10px; border-radius:6px; animation:${fadeIn} .16s ease-out;
+/* Fila de mensaje:
+   - $compact = true cuando es del mismo autor que el anterior (no repetimos avatar/cabecera y ajustamos padding) */
+const Row = styled.div<{ $compact?: boolean }>`
+  display:grid; grid-template-columns: 40px 1fr; gap:${p=>p.$compact?'8px':'12px'};
+  padding:${p=>p.$compact?'2px 10px 2px 10px':'8px 10px'};
+  border-radius:6px; animation:${fadeIn} .16s ease-out;
   &:hover{ background:rgba(255,255,255,0.03); }
 `
 
@@ -192,12 +195,10 @@ function hostFromUrl(u:string) {
 
 /** Encuentra el rango de la mención activa: desde '@' (o '@parcial') hasta el cursor */
 function getActiveMentionRange(text: string, caret: number): { start: number; end: number } | null {
-  // Busca el inicio del token sin espacios hacia atrás
   let i = caret - 1
   while (i >= 0 && !/\s/.test(text[i])) i--
   const tokenStart = i + 1
   if (text[tokenStart] !== '@') return null
-  // Asegura que antes del '@' haya inicio de línea o espacio
   if (tokenStart > 0 && !/\s/.test(text[tokenStart - 1])) return null
   return { start: tokenStart, end: caret }
 }
@@ -357,11 +358,13 @@ export default function TrollBox() {
       replaceRangeInTextarea(el, range.start, range.end, `@${u} `)
       setText(el.value)
     } else {
-      // fallback: inserta al cursor si no detecta rango activo
       insertAtCursor(`@${u} `)
     }
     setMentionOpen(false)
   }
+
+  /** ===== Helpers de agrupación ===== */
+  const sameAuthorAsPrev = (idx:number) => idx>0 && messages[idx-1]?.user === messages[idx]?.user
 
   const toggleMinimize = () => setIsMinimized(v => !v)
 
@@ -385,7 +388,8 @@ export default function TrollBox() {
           {error && <LoadingText style={{ color: '#ff8080' }}>Error loading chat.</LoadingText>}
 
           {messages.map((m, i) => {
-            const color = m.user === 'system' ? '#ffd66e' : userColors[m.user]
+            const isCompact = sameAuthorAsPrev(i)
+            const color = m.user === 'system' ? '#ffd66e' : stringToHslColor(m.user, 70, 65)
             const avatar = getAvatar(m.user)
 
             const url = m.text ? firstUrl(m.text) : null
@@ -393,15 +397,20 @@ export default function TrollBox() {
             const fav = host ? `https://www.google.com/s2/favicons?domain=${host}` : ''
 
             return (
-              <Row key={m.ts || i}>
-                <AvatarImg src={avatar} alt={m.user} />
+              <Row key={m.ts || i} $compact={isCompact}>
+                {/* Columna avatar: solo en el inicio de grupo */}
+                {isCompact ? <div /> : <AvatarImg src={avatar} alt={m.user} />}
+
                 <div>
-                  <HeadLine>
-                    <Username userColor={color}>{m.user.slice(0, 6)}</Username>
-                    <Badge><BadgeIcon /><BadgeText>BANA</BadgeText></Badge>
-                    <VerifiedIcon />
-                    <Timestamp>{fmtTime(m.ts)}</Timestamp>
-                  </HeadLine>
+                  {/* Cabecera (username/badge/verified/time) solo en inicio de grupo */}
+                  {!isCompact && (
+                    <HeadLine>
+                      <Username userColor={color}>{m.user.slice(0, 6)}</Username>
+                      <Badge><BadgeIcon /><BadgeText>BANA</BadgeText></Badge>
+                      <VerifiedIcon />
+                      <Timestamp>{fmtTime(m.ts)}</Timestamp>
+                    </HeadLine>
+                  )}
 
                   {m.text ? (
                     <MessageText>{formatWithMentions(m.text)}</MessageText>
