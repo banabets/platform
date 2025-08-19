@@ -1,4 +1,4 @@
-// TrollBox.tsx — Reacciones per-user + notificaciones de título (sin sonido, sin GIFs)
+// TrollBox.tsx — sin reacciones, con menciones (fix @@), preview de links, y notificación de título sin sonido
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import styled, { keyframes } from 'styled-components'
 import useSWR from 'swr'
@@ -6,12 +6,10 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 
 /** ========= Tipos ========= **/
-type Reaction = { emoji: string; users: string[] }
 type Msg = {
   user: string
   text: string
   ts: number
-  reactions?: Reaction[]  // opcional si algún día tu backend lo trae
 }
 
 /** ========= SWR ========= **/
@@ -36,7 +34,6 @@ function getAvatar(user: string, total = AVATAR_COUNT) {
 
 const urlRegex = /(https?:\/\/[^\s]+)/gi
 const mentionRegex = /(^|[\s])@([a-zA-Z0-9_.\-]{2,})/g
-const FIXED_EMOJIS = ['👍','🔥','🍌'] as const
 
 /** ========= Iconos ========= **/
 const MinimizeIcon = () => (
@@ -133,14 +130,6 @@ const BadgeIcon = styled.span`
 `
 const BadgeText = styled.span`font-size:11px; font-weight:700; color:#dfe3e6; letter-spacing:.3px; line-height:1;`
 
-/* Reacciones (local-only) */
-const ReactionBar = styled.div`margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;`
-const ReactionChip = styled.button<{ $active?: boolean }>`
-  display:inline-flex; align-items:center; gap:6px; padding:2px 8px; border-radius:999px; cursor:pointer;
-  background:${p=>p.$active?'#3b3d44':'#313338'}; border:1px solid #1f2124; color:#dbdee1; font-size:12px;
-  &:hover{ background:#3b3d44; }
-`
-
 /* Vista previa ligera de links (favicon + dominio) */
 const LinkChip = styled.a`
   display:inline-flex; align-items:center; gap:8px; margin-top:8px; max-width:100%;
@@ -179,7 +168,7 @@ const SendBtn = styled.button`
 
 const LoadingText = styled.div`text-align:center; color:#a3a6aa; padding:1rem 0; font-style:italic; font-size:13px;`
 
-/** ========= Helpers de UI ========= **/
+/** ========= Helpers ========= **/
 function formatWithMentions(text: string) {
   const parts: React.ReactNode[] = []
   let lastIndex = 0
@@ -201,6 +190,27 @@ function hostFromUrl(u:string) {
   try { return new URL(u).hostname } catch { return '' }
 }
 
+/** Encuentra el rango de la mención activa: desde '@' (o '@parcial') hasta el cursor */
+function getActiveMentionRange(text: string, caret: number): { start: number; end: number } | null {
+  // Busca el inicio del token sin espacios hacia atrás
+  let i = caret - 1
+  while (i >= 0 && !/\s/.test(text[i])) i--
+  const tokenStart = i + 1
+  if (text[tokenStart] !== '@') return null
+  // Asegura que antes del '@' haya inicio de línea o espacio
+  if (tokenStart > 0 && !/\s/.test(text[tokenStart - 1])) return null
+  return { start: tokenStart, end: caret }
+}
+
+/** Reemplaza un rango del textarea por el texto dado */
+function replaceRangeInTextarea(el: HTMLTextAreaElement, start: number, end: number, replacement: string) {
+  const before = el.value.slice(0, start)
+  const after = el.value.slice(end)
+  el.value = before + replacement + after
+  const pos = before.length + replacement.length
+  el.setSelectionRange(pos, pos)
+}
+
 /** ========= Componente principal ========= **/
 export default function TrollBox() {
   const { publicKey, connected } = useWallet()
@@ -218,11 +228,8 @@ export default function TrollBox() {
 
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const logRef = useRef<HTMLDivElement>(null)
-  const originalTitleRef = useRef<string>('')     // << guarda el título original
+  const originalTitleRef = useRef<string>('')     // guarda el título original
   const prevLenRef = useRef<number>(0)
-
-  // Reacciones locales (toggle por usuario, sin backend)
-  const [localReactions, setLocalReactions] = useState<Record<number, Reaction[]>>({})
 
   const swrKey = isMinimized || (typeof document !== 'undefined' && document.hidden) ? null : '/api/chat'
   const { data: messages = [], error, mutate } = useSWR<Msg[]>(swrKey, fetcher, {
@@ -270,35 +277,6 @@ export default function TrollBox() {
     }
   }
 
-  /** ===== Reacciones locales (toggle sin duplicados) ===== */
-  function toggleReactionLocal(messageId:number, emoji:string, me:string){
-    setLocalReactions(prev => {
-      const copy = { ...prev }
-      const list = copy[messageId] ? [...copy[messageId]] : []
-      const idx = list.findIndex(r => r.emoji === emoji)
-      if (idx === -1) {
-        list.push({ emoji, users: [me] })
-      } else {
-        const users = new Set(list[idx].users)
-        if (users.has(me)) users.delete(me); else users.add(me)
-        list[idx] = { emoji, users: Array.from(users) }
-      }
-      copy[messageId] = list.filter(r => r.users.length > 0)
-      return copy
-    })
-  }
-  function mergedReactions(m: Msg): Reaction[] {
-    const fromServer = m.reactions || []
-    const local = localReactions[m.ts] || []
-    const byEmoji = new Map<string, Set<string>>()
-    for (const r of [...fromServer, ...local]) {
-      const set = byEmoji.get(r.emoji) || new Set<string>()
-      r.users.forEach(u => set.add(u))
-      byEmoji.set(r.emoji, set)
-    }
-    return Array.from(byEmoji.entries()).map(([emoji, set]) => ({ emoji, users: Array.from(set) }))
-  }
-
   /** ===== UI: scroll y foco ===== */
   useEffect(() => {
     if (!isMinimized && logRef.current) {
@@ -321,11 +299,9 @@ export default function TrollBox() {
 
   /** ===== Notificaciones de título (sin sonido) ===== */
   useEffect(() => {
-    // Guarda el título original una sola vez
     if (typeof document !== 'undefined' && !originalTitleRef.current) {
       originalTitleRef.current = document.title
     }
-    // Al volver al tab, restaura el título original
     const onVis = () => {
       if (!document.hidden && originalTitleRef.current) {
         document.title = originalTitleRef.current
@@ -353,7 +329,9 @@ export default function TrollBox() {
   function onInputKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() }
     if (e.key === '@') setMentionOpen(true)
+    if (e.key === 'Escape') setMentionOpen(false)
   }
+
   function insertAtCursor(insert: string) {
     const el = inputRef.current
     if (!el) return
@@ -369,8 +347,19 @@ export default function TrollBox() {
       el.focus()
     })
   }
+
   function pickMention(u: string) {
-    insertAtCursor(`@${u} `)
+    const el = inputRef.current
+    if (!el) return
+    const caret = el.selectionStart ?? el.value.length
+    const range = getActiveMentionRange(el.value, caret)
+    if (range) {
+      replaceRangeInTextarea(el, range.start, range.end, `@${u} `)
+      setText(el.value)
+    } else {
+      // fallback: inserta al cursor si no detecta rango activo
+      insertAtCursor(`@${u} `)
+    }
     setMentionOpen(false)
   }
 
@@ -403,10 +392,6 @@ export default function TrollBox() {
             const host = url ? hostFromUrl(url) : ''
             const fav = host ? `https://www.google.com/s2/favicons?domain=${host}` : ''
 
-            const reactions = mergedReactions(m)
-            const userEmojis = new Set(reactions.filter(r => r.users.includes(userName)).map(r => r.emoji))
-            const existingEmojiSet = new Set(reactions.map(r => r.emoji))
-
             return (
               <Row key={m.ts || i}>
                 <AvatarImg src={avatar} alt={m.user} />
@@ -429,39 +414,6 @@ export default function TrollBox() {
                       <Host>{host}</Host>
                     </LinkChip>
                   ) : null}
-
-                  {/* Reacciones */}
-                  <ReactionBar>
-                    {/* Chips existentes: siempre visibles; si tú reaccionaste, se marcan activos.
-                        Click = toggle (agrega o quita tu reacción). */}
-                    {reactions.map(r => (
-                      <ReactionChip
-                        key={r.emoji}
-                        $active={r.users.includes(userName)}
-                        onClick={() => toggleReactionLocal(m.ts, r.emoji, userName)}
-                        title={`${r.emoji} • ${r.users.length}`}
-                      >
-                        <span>{r.emoji}</span><span>{r.users.length}</span>
-                      </ReactionChip>
-                    ))}
-
-                    {/* Quick-add SOLO si:
-                        1) ese emoji aún no existe como chip en el mensaje, y
-                        2) tú no lo has usado. */}
-                    {FIXED_EMOJIS.map(e => {
-                      if (existingEmojiSet.has(e)) return null
-                      if (userEmojis.has(e)) return null
-                      return (
-                        <ReactionChip
-                          key={`add-${e}`}
-                          onClick={() => toggleReactionLocal(m.ts, e, userName)}
-                          title={`Agregar ${e}`}
-                        >
-                          {e}
-                        </ReactionChip>
-                      )
-                    })}
-                  </ReactionBar>
                 </div>
               </Row>
             )
