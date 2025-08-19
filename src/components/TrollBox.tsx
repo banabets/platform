@@ -15,6 +15,18 @@ const stringToHslColor = (str: string, s: number, l: number): string => {
   return `hsl(${hash % 360}, ${s}%, ${l}%)`
 }
 
+/** Configura cuántas imágenes subiste a /public/avatars como 1.png, 2.png, ... */
+const AVATAR_COUNT = 12
+
+/** Elige un avatar estable por usuario usando hash */
+function getAvatar(user: string, total = AVATAR_COUNT) {
+  if (total <= 0) return ''
+  let hash = 0
+  for (let i = 0; i < user.length; i++) hash = user.charCodeAt(i) + ((hash << 5) - hash)
+  const index = Math.abs(hash) % total
+  return `/avatars/${index + 1}.png`
+}
+
 const MinimizeIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -29,14 +41,7 @@ const ChatIcon = () => (
 )
 
 const VerifiedIcon = () => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="#ffffff"
-    xmlns="http://www.w3.org/2000/svg"
-    style={{ marginLeft: 4 }}
-  >
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg" style={{ marginLeft: 4 }}>
     <path d="M23,12L20.56,9.22L20.9,5.54L17.29,4.72L15.4,1.54L12,3L8.6,1.54L6.71,4.72L3.1,5.53L3.44,9.21L1,12L3.44,14.78L3.1,18.47L6.71,19.29L8.6,22.47L12,21L15.4,22.46L17.29,19.28L20.9,18.46L20.56,14.78L23,12M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z" />
   </svg>
 )
@@ -47,25 +52,16 @@ const fadeIn = keyframes`
 `
 
 const ExpandIconWrapper = styled.div`
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display:flex; align-items:center; justify-content:center;
 `
 
 const Wrapper = styled.div<{ $isMinimized: boolean }>`
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  z-index:998;
+  position:fixed; bottom:20px; right:20px; z-index:998;
   border-radius:${p => p.$isMinimized ? '50%' : '12px'};
   background:${p => p.$isMinimized ? '#5865f2' : '#2b2d31'};
   border:1px solid ${p => p.$isMinimized ? 'rgba(255,255,255,0.28)' : '#1f2124'};
-  color:#e6e6e6;
-  font-size:14px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.35);
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
+  color:#e6e6e6; font-size:14px; box-shadow:0 8px 20px rgba(0,0,0,0.35);
+  overflow:hidden; display:flex; flex-direction:column;
   cursor:${p => p.$isMinimized ? 'pointer' : 'default'};
   transition:width .25s, height .25s, max-height .25s, border-radius .25s, background .25s;
 
@@ -93,65 +89,53 @@ const ContentContainer = styled.div<{ $isMinimized: boolean }>`
 `
 
 const Header = styled.div`
-  padding:12px 16px;
-  display:flex; align-items:center; justify-content:space-between;
-  background:#1e1f22;
-  color:#fff;
-  border-bottom:1px solid #1f2124;
-  user-select:none;
-  cursor:pointer;
+  padding:12px 16px; display:flex; align-items:center; justify-content:space-between;
+  background:#1e1f22; color:#fff; border-bottom:1px solid #1f2124;
+  user-select:none; cursor:pointer;
 `
 
 const HeaderTitle = styled.span`
-  flex:1;
-  font-size:15px;
-  font-weight:700;
-  display:flex; align-items:center; gap:8px;
-  letter-spacing:.2px;
+  flex:1; font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px; letter-spacing:.2px;
 `
 
 const OnlineStatus = styled.div`
-  width:8px;height:8px;border-radius:50%;background:#23a55a;
+  width:8px; height:8px; border-radius:50%; background:#23a55a;
 `
 
 const HeaderStatus = styled.span`
-  font-size:12px;color:#a3a6aa;margin:0 8px;
+  font-size:12px; color:#a3a6aa; margin:0 8px;
 `
 
 const MinimizeButton = styled.button`
-  background:none;border:none;color:#a3a6aa;padding:6px;cursor:pointer;border-radius:6px;
+  background:none; border:none; color:#a3a6aa; padding:6px; cursor:pointer; border-radius:6px;
   &:hover{ background:#2b2d31; color:#fff; }
 `
 
 const Log = styled.div`
-  flex:1; overflow-y:auto; padding:10px 8px 14px 8px; display:flex; flex-direction:column; gap:0;
+  flex:1; overflow-y:auto; padding:10px 8px 14px 8px; display:flex; flex-direction:column;
   min-height:220px; background:#2b2d31;
 
   &::-webkit-scrollbar{ width:8px; }
   &::-webkit-scrollbar-thumb{ background:#1f2124; border-radius:4px; }
 `
 
-/* ===== Discord-like message row, no bubbles ===== */
 const Row = styled.div`
-  display:grid;
-  grid-template-columns: 40px 1fr;
-  gap:12px;
-  padding:8px 10px;
-  border-radius:6px;
-  animation:${fadeIn} .16s ease-out;
-
-  &:hover{
-    background:rgba(255,255,255,0.03);
-  }
+  display:grid; grid-template-columns: 40px 1fr; gap:12px;
+  padding:8px 10px; border-radius:6px; animation:${fadeIn} .16s ease-out;
+  &:hover{ background:rgba(255,255,255,0.03); }
 `
 
-const Avatar = styled.div<{ bg: string }>`
-  width: 40px; height: 40px; border-radius: 50%;
-  background-color: ${p => p.bg};
-  color:#fff; display:flex; align-items:center; justify-content:center;
-  font-weight:700; letter-spacing:.2px;
-  border: 2px solid rgba(255,255,255,0.15);
-  user-select:none;
+const AvatarImg = styled.img`
+  width:40px; height:40px; border-radius:50%;
+  object-fit:cover; border:2px solid rgba(255,255,255,0.15);
+  background:#3a3c43;
+`
+
+const FallbackAvatar = styled.div<{ bg: string }>`
+  width:40px; height:40px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-weight:700; border:2px solid rgba(255,255,255,0.15);
+  background:${p => p.bg};
 `
 
 const Head = styled.div`
@@ -159,8 +143,7 @@ const Head = styled.div`
 `
 
 const Username = styled.strong<{ userColor:string }>`
-  color:${p => p.userColor};
-  font-weight:600; font-size:14px;
+  color:${p => p.userColor}; font-weight:600; font-size:14px;
 `
 
 const Timestamp = styled.span`
@@ -168,21 +151,16 @@ const Timestamp = styled.span`
 `
 
 const MessageText = styled.div`
-  margin-top:2px;
-  color:#dbdee1;
-  white-space:pre-wrap; word-break:break-word; line-height:1.35;
+  margin-top:2px; color:#dbdee1; white-space:pre-wrap; word-break:break-word; line-height:1.35;
 `
 
 const InputWrap = styled.div`
-  border-top:1px solid #1f2124;
-  background:#313338;
-  padding:12px;
+  border-top:1px solid #1f2124; background:#313338; padding:12px;
 `
 
 const InputRow = styled.div`
   display:flex; align-items:center; gap:8px;
-  background:#383a40; border:1px solid #1f2124; border-radius:8px;
-  padding:6px 8px 6px 12px;
+  background:#383a40; border:1px solid #1f2124; border-radius:8px; padding:6px 8px 6px 12px;
 `
 
 const TextInput = styled.input`
@@ -298,9 +276,7 @@ export default function TrollBox() {
 
       <ContentContainer $isMinimized={isMinimized}>
         <Header onClick={toggleMinimize}>
-          <HeaderTitle>
-            #bana-chat <OnlineStatus />
-          </HeaderTitle>
+          <HeaderTitle>#fronk-chat <OnlineStatus /></HeaderTitle>
           <HeaderStatus>{messages.length ? `${messages.length} msgs` : 'Connecting…'}</HeaderStatus>
           <MinimizeButton><MinimizeIcon /></MinimizeButton>
         </Header>
@@ -309,20 +285,40 @@ export default function TrollBox() {
           {!messages.length && !error && <LoadingText>Loading messages…</LoadingText>}
           {error && <LoadingText style={{ color: '#ff8080' }}>Error loading chat.</LoadingText>}
 
-          {messages.map((m, i) => (
-            <Row key={m.ts || i}>
-              <Avatar bg={userColors[m.user]}>{m.user[0]}</Avatar>
+          {messages.map((m, i) => {
+            const src = getAvatar(m.user)
+            const color = userColors[m.user]
+            return (
+              <Row key={m.ts || i}>
+                {src ? (
+                  <AvatarImg
+                    src={src}
+                    alt={m.user}
+                    onError={(e) => {
+                      // Si falta la imagen, muestra fallback de color
+                      const target = e.currentTarget as HTMLImageElement
+                      target.style.display = 'none'
+                      const next = target.nextElementSibling as HTMLDivElement | null
+                      if (next) next.style.display = 'flex'
+                    }}
+                  />
+                ) : null}
+                {/* Fallback oculto por defecto, se usa si falla la imagen */}
+                <FallbackAvatar bg={color} style={{ display: 'none' }}>
+                  {m.user[0] || '?'}
+                </FallbackAvatar>
 
-              <div>
-                <Head>
-                  <Username userColor={userColors[m.user]}>{m.user.slice(0, 6)}</Username>
-                  <VerifiedIcon />
-                  <Timestamp>{fmtTime(m.ts)}</Timestamp>
-                </Head>
-                <MessageText>{m.text}</MessageText>
-              </div>
-            </Row>
-          ))}
+                <div>
+                  <Head>
+                    <Username userColor={color}>{m.user.slice(0, 6)}</Username>
+                    <VerifiedIcon />
+                    <Timestamp>{fmtTime(m.ts)}</Timestamp>
+                  </Head>
+                  <MessageText>{m.text}</MessageText>
+                </div>
+              </Row>
+            )
+          })}
         </Log>
 
         <InputWrap>
@@ -330,7 +326,7 @@ export default function TrollBox() {
             <TextInput
               ref={inputRef}
               value={text}
-              placeholder={connected ? 'Message #bana-chat' : 'Connect wallet to chat'}
+              placeholder={connected ? 'Message #fronk-chat' : 'Connect wallet to chat'}
               onChange={e => setText(e.target.value)}
               onClick={() => !connected && walletModal.setVisible(true)}
               onKeyDown={e => {
