@@ -1,4 +1,4 @@
-// TrollBox.tsx — Reacciones per-user + notificaciones mínimas (sin GIFs)
+// TrollBox.tsx — Reacciones per-user + notificaciones de título (sin sonido, sin GIFs)
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import styled, { keyframes } from 'styled-components'
 import useSWR from 'swr'
@@ -23,6 +23,7 @@ const stringToHslColor = (str: string, s: number, l: number): string => {
   for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash)
   return `hsl(${hash % 360}, ${s}%, ${l}%)`
 }
+
 // avatares en /public/avatars/1.png, 2.png, ...
 const AVATAR_COUNT = 12
 function getAvatar(user: string, total = AVATAR_COUNT) {
@@ -32,6 +33,7 @@ function getAvatar(user: string, total = AVATAR_COUNT) {
   const index = Math.abs(hash) % total
   return `/avatars/${index + 1}.png`
 }
+
 const urlRegex = /(https?:\/\/[^\s]+)/gi
 const mentionRegex = /(^|[\s])@([a-zA-Z0-9_.\-]{2,})/g
 const FIXED_EMOJIS = ['👍','🔥','🍌'] as const
@@ -57,6 +59,7 @@ const VerifiedIcon = () => (
 /** ========= Estilos ========= **/
 const fadeIn = keyframes`from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}`
 const ExpandIconWrapper = styled.div`display:flex;align-items:center;justify-content:center;`
+
 const Wrapper = styled.div<{ $isMinimized: boolean }>`
   position:fixed; bottom:20px; right:20px; z-index:998;
   border-radius:${p=>p.$isMinimized?'50%':'12px'};
@@ -77,38 +80,47 @@ const Wrapper = styled.div<{ $isMinimized: boolean }>`
     ${({$isMinimized})=>$isMinimized?``:`width:calc(100% - 32px);max-width:360px;max-height:70vh;`}
   }
 `
+
 const ContentContainer = styled.div<{ $isMinimized: boolean }>`
   display:flex; flex-direction:column; flex-grow:1; min-height:0;
   opacity:${p=>p.$isMinimized?0:1}; transition:opacity .18s; pointer-events:${p=>p.$isMinimized?'none':'auto'};
 `
+
 const Header = styled.div`
   padding:12px 16px; display:flex; align-items:center; justify-content:space-between;
   background:#1e1f22; color:#fff; border-bottom:1px solid #1f2124; user-select:none; cursor:pointer;
 `
+
 const HeaderTitle = styled.span`flex:1; font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;`
 const OnlineStatus = styled.div`width:8px; height:8px; border-radius:50%; background:#23a55a;`
 const HeaderStatus = styled.span`font-size:12px; color:#a3a6aa; margin:0 8px;`
+
 const MinimizeButton = styled.button`
   background:none; border:none; color:#a3a6aa; padding:6px; cursor:pointer; border-radius:6px;
   &:hover{ background:#2b2d31; color:#fff; }
 `
+
 const Log = styled.div`
   flex:1; overflow-y:auto; padding:10px 8px 14px 8px; display:flex; flex-direction:column;
   min-height:220px; background:#2b2d31;
   &::-webkit-scrollbar{width:8px} &::-webkit-scrollbar-thumb{background:#1f2124;border-radius:4px}
 `
+
 const Row = styled.div`
   display:grid; grid-template-columns: 40px 1fr; gap:12px;
   padding:8px 10px; border-radius:6px; animation:${fadeIn} .16s ease-out;
   &:hover{ background:rgba(255,255,255,0.03); }
 `
+
 const AvatarImg = styled.img`
   width:40px; height:40px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,0.15); background:#3a3c43;
 `
+
 const HeadLine = styled.div`display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;`
 const Username = styled.strong<{ userColor:string }>`color:${p=>p.userColor}; font-weight:600; font-size:14px;`
 const Timestamp = styled.span`font-size:12px; color:#a3a6aa;`
 const MessageText = styled.div`margin-top:2px; color:#dbdee1; white-space:pre-wrap; word-break:break-word; line-height:1.35;`
+
 /* Badge BANA CSS */
 const Badge = styled.span`
   display:inline-flex; align-items:center; gap:6px; padding:2px 8px; height:20px; border-radius:999px;
@@ -164,6 +176,7 @@ const SendBtn = styled.button`
   background:#5865f2; border:none; color:#fff; font-weight:700; font-size:13px; padding:8px 12px; border-radius:6px; cursor:pointer;
   &:disabled{ opacity:.5; cursor:not-allowed; } &:not(:disabled):hover{ filter:brightness(1.05); }
 `
+
 const LoadingText = styled.div`text-align:center; color:#a3a6aa; padding:1rem 0; font-style:italic; font-size:13px;`
 
 /** ========= Helpers de UI ========= **/
@@ -205,7 +218,7 @@ export default function TrollBox() {
 
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const logRef = useRef<HTMLDivElement>(null)
-  const soundRef = useRef<HTMLAudioElement | null>(null)
+  const originalTitleRef = useRef<string>('')     // << guarda el título original
   const prevLenRef = useRef<number>(0)
 
   // Reacciones locales (toggle por usuario, sin backend)
@@ -306,19 +319,17 @@ export default function TrollBox() {
     return () => clearTimeout(t)
   }, [cooldown])
 
-  /** ===== Notificaciones mínimas ===== */
+  /** ===== Notificaciones de título (sin sonido) ===== */
   useEffect(() => {
-    // Pre-carga audio
-    if (!soundRef.current) {
-      soundRef.current = new Audio('/ping.mp3')
-      soundRef.current.volume = 0.6
+    // Guarda el título original una sola vez
+    if (typeof document !== 'undefined' && !originalTitleRef.current) {
+      originalTitleRef.current = document.title
     }
-    // Base title
-    if (typeof document !== 'undefined') {
-      document.title = '#bana-chat'
-    }
+    // Al volver al tab, restaura el título original
     const onVis = () => {
-      if (!document.hidden) document.title = '#bana-chat'
+      if (!document.hidden && originalTitleRef.current) {
+        document.title = originalTitleRef.current
+      }
     }
     document.addEventListener('visibilitychange', onVis)
     return () => document.removeEventListener('visibilitychange', onVis)
@@ -330,8 +341,9 @@ export default function TrollBox() {
     if (currLen > prevLen && currLen > 0) {
       const last = messages[currLen - 1]
       if (last.user !== userName) {
-        try { soundRef.current?.play().catch(()=>{}) } catch {}
-        if (document.hidden) document.title = '(1) #bana-chat'
+        if (document.hidden && originalTitleRef.current) {
+          document.title = `(1) ${originalTitleRef.current}`
+        }
       }
     }
     prevLenRef.current = currLen
@@ -386,6 +398,7 @@ export default function TrollBox() {
           {messages.map((m, i) => {
             const color = m.user === 'system' ? '#ffd66e' : userColors[m.user]
             const avatar = getAvatar(m.user)
+
             const url = m.text ? firstUrl(m.text) : null
             const host = url ? hostFromUrl(url) : ''
             const fav = host ? `https://www.google.com/s2/favicons?domain=${host}` : ''
@@ -434,8 +447,7 @@ export default function TrollBox() {
 
                     {/* Quick-add SOLO si:
                         1) ese emoji aún no existe como chip en el mensaje, y
-                        2) tú no lo has usado (redundante, pero explícito).
-                        Al reaccionar, el botón desaparece para ti y aparece el chip. */}
+                        2) tú no lo has usado. */}
                     {FIXED_EMOJIS.map(e => {
                       if (existingEmojiSet.has(e)) return null
                       if (userEmojis.has(e)) return null
