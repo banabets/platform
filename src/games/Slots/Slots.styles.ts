@@ -103,4 +103,34 @@ export const StyledSlots = styled.div`
     animation: confetti-fall 1100ms ease-out 1;
   }
   @keyframes confetti-fall { from { transform: translateY(-12%); opacity: 0; } to { transform: translateY(0%);  opacity: .6; } }
+
+  /* === Responsive grid for reels === */
+  .reels-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)); /* default 3 reels */
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  /* Mobile: 2 reels side by side */
+  @media (max-width: 640px) {
+    .reels-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+  }
+
+  /* Desktop/wide: allow 4 reels layout if there are 4 items */
+  @media (min-width: 1024px) {
+    .reels-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  /* Make each slot stretch within its grid cell */
+  .reels-grid .slot {
+    display: flex;
+    align-items: stretch;
+  }
+
 `
