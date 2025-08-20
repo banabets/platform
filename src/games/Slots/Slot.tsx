@@ -1,7 +1,7 @@
 import React from 'react'
 import { SLOT_ITEMS, SlotItem } from './constants'
 import styled, { css, keyframes } from 'styled-components'
-import { StyledSpinner } from './Slot.styles'
+import { StyledSpinner, SlotRoot } from './Slot.styles'
 
 interface SlotProps {
   revealed: boolean
@@ -63,7 +63,7 @@ export function Slot({ item = SLOT_ITEMS[0], revealed, index, good }: SlotProps)
   const speedClass = index % 3 === 0 ? 'fast' : index % 3 === 1 ? '' : 'slow'
 
   return (
-    <StyledSlot className="slot" $good={revealed && good}>
+    <SlotRoot className="slot" $good={revealed && good}>
       {!revealed ? (
         <StyledSpinner
           className={speedClass}
@@ -97,6 +97,6 @@ export function Slot({ item = SLOT_ITEMS[0], revealed, index, good }: SlotProps)
           />
         </Revealed>
       )}
-    </StyledSlot>
+    </SlotRoot>
   )
 }

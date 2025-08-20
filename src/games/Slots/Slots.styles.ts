@@ -133,4 +133,25 @@ export const StyledSlots = styled.div`
     align-items: stretch;
   }
 
+
+  /* Responsive grid for slots and reels-grid */
+  .slots, .reels-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  @media (max-width: 640px) {
+    .slots, .reels-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .slots, .reels-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
 `
