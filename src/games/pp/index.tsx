@@ -20,7 +20,7 @@ const responsiveMobileStyles = `
   /* móviles comunes en vertical ≈ iPhone 12-15, Pixel, etc */
   @media (max-width: 430px){
     .pp-cards { gap: 10px !important; margin: 14px 0 8px 0 !important; }
-    .pp-card  { width: 60px !important; height: 88px !important; }
+    .pp-card  { width: 45px !important; height: 68px !important; }
   }
 
   /* móviles muy estrechos */
