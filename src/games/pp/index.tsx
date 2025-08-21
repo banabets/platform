@@ -306,7 +306,7 @@ export default function ProgressivePowerPoker() {
                         </div>
                         <div style={{
                           position: 'absolute', inset: 0, display: 'grid', placeItems: 'center',
-                          background: 'url("https://i.ibb.co/sLVkbpv/card.png") center/cover no-repeat',
+                          background: 'url("https://i.ibb.co/BVV3pYfW/card-min.png") center/cover no-repeat',
                           borderRadius: 12, transform: `rotateY(${showFace ? 180 : 0}deg)`, backfaceVisibility: 'hidden',
                           transition: 'transform .35s',
                         }}>
