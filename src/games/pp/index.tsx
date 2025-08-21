@@ -14,10 +14,16 @@ const pulseFadeStyle = `
 
 /** ===== Responsive solo móvil para cartas ===== */
 const responsiveMobileStyles = `
-  @media (max-width: 480px){
+  /* Tamaño base por clase en desktop */
+  .pp-card { width: 92px; height: 132px; }
+
+  /* móviles comunes en vertical ≈ iPhone 12-15, Pixel, etc */
+  @media (max-width: 430px){
     .pp-cards { gap: 10px !important; margin: 14px 0 8px 0 !important; }
-    .pp-card  { width: 70px !important; height: 100px !important; }
+    .pp-card  { width: 60px !important; height: 88px !important; }
   }
+
+  /* móviles muy estrechos */
   @media (max-width: 360px){
     .pp-card  { width: 50px !important; height: 76px !important; }
   }
@@ -275,7 +281,7 @@ export default function ProgressivePowerPoker() {
                 const showFace = !!(hand && cardRevealed[i])
                 return (
                   <div key={i} className="pp-card" style={{
-                    position: 'relative', width: 92, height: 132,
+                    position: 'relative',
                     perspective: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
                     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
