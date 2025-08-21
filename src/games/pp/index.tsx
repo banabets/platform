@@ -19,7 +19,7 @@ const responsiveMobileStyles = `
     .pp-card  { width: 70px !important; height: 100px !important; }
   }
   @media (max-width: 360px){
-    .pp-card  { width: 58px !important; height: 84px !important; }
+    .pp-card  { width: 50px !important; height: 76px !important; }
   }
 `
 
