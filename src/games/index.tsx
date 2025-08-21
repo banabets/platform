@@ -1,4 +1,3 @@
-
 import { GameBundle } from 'gamba-react-ui-v2'
 import React from 'react'
 
@@ -30,7 +29,18 @@ export const GAMES: GameBundle[] = [
     },
     app: React.lazy(() => import('./PlinkoRace')),
   },
-{
+
+  {
+    id: 'pp',
+    meta: {
+      background: '#004aad',
+      image: '/games/pp.png',
+      name: 'Progressive Power Poker',
+      description: `Un clásico reinventado: combina la emoción del poker con apuestas progresivas. Forma tu mejor mano y gana recompensas crecientes.`,
+    },
+    app: React.lazy(() => import('./pp')),
+  },
+  {
     id: 'dice',
     meta: {
       background: '#ffffffdf',
@@ -131,8 +141,4 @@ export const GAMES: GameBundle[] = [
     app: React.lazy(() => import('./CryptoChartGame')),
   },
 
-
-
 ]
-
-
