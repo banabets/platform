@@ -234,7 +234,7 @@ export default function ProgressivePowerPoker() {
           {/* Left: Main stage */}
           <div style={{ 
             flex: '1 1 0%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            background: `url("/public/tablenew.png") center/cover no-repeat`,
+            background: `url(".../public/tablenew.png") center/cover no-repeat`,
             borderRadius: 14, padding: '16px 18px', margin: '8px auto', width: '100%' 
           }}>
             <h3 style={{ margin: 4, fontSize: 18, opacity: .9 }}>Progressive Power Poker</h3>
