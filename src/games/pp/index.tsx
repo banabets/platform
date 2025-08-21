@@ -97,19 +97,21 @@ function getPokerHandCards(type: HandType) {
 
 export default function ProgressivePowerPoker() {
   React.useEffect(() => {
-    if (!document.getElementById('pulse-fade-style')) {
-      const style = document.createElement('style')
-      style.id = 'pulse-fade-style'
-      style.innerHTML = pulseFadeStyle
-      document.head.appendChild(style)
+  const upsertStyle = (id: string, css: string) => {
+    let el = document.getElementById(id) as HTMLStyleElement | null
+    if (!el) {
+      el = document.createElement('style')
+      el.id = id
+      document.head.appendChild(el)
     }
-    if (!document.getElementById('pp-responsive-style')) {
-      const style2 = document.createElement('style')
-      style2.id = 'pp-responsive-style'
-      style2.innerHTML = responsiveMobileStyles
-      document.head.appendChild(style2)
-    }
-  }, [])
+    // siempre actualiza el contenido (soluciona HMR que “congela” el CSS anterior)
+    el.innerHTML = css
+  }
+
+  upsertStyle('pulse-fade-style', pulseFadeStyle)
+  upsertStyle('pp-responsive-style', responsiveMobileStyles)
+}, [])
+
 
   const [wager, setWager] = useWagerInput()
   const game = GambaUi.useGame()
