@@ -12,6 +12,17 @@ const pulseFadeStyle = `
   @keyframes pulseFade { 0% { opacity: .3 } 50% { opacity: 1 } 100% { opacity: .3 } }
 `
 
+/** ===== Responsive solo móvil para cartas ===== */
+const responsiveMobileStyles = `
+  @media (max-width: 480px){
+    .pp-cards { gap: 10px !important; margin: 14px 0 8px 0 !important; }
+    .pp-card  { width: 70px !important; height: 100px !important; }
+  }
+  @media (max-width: 360px){
+    .pp-card  { width: 62px !important; height: 88px !important; }
+  }
+`
+
 import { Paytable } from './Paytable'
 import { PokerCard } from './PokerCard'
 import { JACKS_OR_BETTER_BET_ARRAY, HAND_BY_INDEX } from './betArray'
@@ -85,6 +96,12 @@ export default function ProgressivePowerPoker() {
       style.id = 'pulse-fade-style'
       style.innerHTML = pulseFadeStyle
       document.head.appendChild(style)
+    }
+    if (!document.getElementById('pp-responsive-style')) {
+      const style2 = document.createElement('style')
+      style2.id = 'pp-responsive-style'
+      style2.innerHTML = responsiveMobileStyles
+      document.head.appendChild(style2)
     }
   }, [])
 
@@ -253,11 +270,11 @@ export default function ProgressivePowerPoker() {
             )}
 
             {/* Cards */}
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 14, margin: '22px 0 12px 0' }}>
+            <div className="pp-cards" style={{ display: 'flex', justifyContent: 'center', gap: 14, margin: '22px 0 12px 0' }}>
               {(hand ? getPokerHandCards(hand.type) : Array(5).fill(null)).map((card, i) => {
                 const showFace = !!(hand && cardRevealed[i])
                 return (
-                  <div key={i} style={{
+                  <div key={i} className="pp-card" style={{
                     position: 'relative', width: 92, height: 132,
                     perspective: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
