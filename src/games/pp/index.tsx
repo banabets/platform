@@ -20,7 +20,7 @@ const responsiveMobileStyles = `
   /* Móviles comunes (<= 480px) */
   @media (max-width: 480px){
     .pp-root .pp-cards { gap: 10px !important; margin: 14px 0 8px 0 !important; }
-    .pp-root .pp-card  { width: 52px !important; height: 76px !important; }
+    .pp-root .pp-card  { width: 56px !important; height: 80px !important; }
   }
 
   /* Móviles muy estrechos (<= 360px) */
