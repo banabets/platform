@@ -12,9 +12,9 @@ const pulseFadeStyle = `
   @keyframes pulseFade { 0% { opacity: .3 } 50% { opacity: 1 } 100% { opacity: .3 } }
 `
 
-/** ===== Responsive SOLO para cartas (se inyecta dentro del Portal) ===== */
+/** ===== Responsive dentro del Portal ===== */
 const responsiveMobileStyles = `
-  /* Desktop por defecto */
+  /* ---- Cartas (desktop por defecto) ---- */
   .pp-root .pp-card { width: 92px; height: 132px; }
 
   /* Móviles comunes (<= 480px) */
@@ -26,6 +26,13 @@ const responsiveMobileStyles = `
   /* Móviles muy estrechos (<= 360px) */
   @media (max-width: 360px){
     .pp-root .pp-card  { width: 46px !important; height: 68px !important; }
+  }
+
+  /* ---- Layout: ocultar sidebar en móvil y expandir juego ---- */
+  @media (max-width: 768px){
+    .pp-root .pp-layout { flex-direction: column !important; align-items: center !important; gap: 12px !important; }
+    .pp-root .pp-sidebar { display: none !important; }
+    .pp-root .pp-game { width: 100% !important; max-width: 100% !important; }
   }
 `
 
@@ -249,13 +256,14 @@ export default function ProgressivePowerPoker() {
   return (
     <>
       <GambaUi.Portal target="screen">
-        {/* ✅ CSS responsive dentro del árbol del juego */}
+        {/* CSS responsive dentro del árbol del juego */}
         <div className="pp-root">
           <style id="pp-responsive-inline">{responsiveMobileStyles}</style>
 
-          <div style={{ display: 'flex', flexDirection: 'row', gap: 24, padding: 24, alignItems: 'stretch', minHeight: 480 }}>
+          {/* Layout principal */}
+          <div className="pp-layout" style={{ display: 'flex', flexDirection: 'row', gap: 24, padding: 24, alignItems: 'stretch', minHeight: 480 }}>
             {/* Left: Main stage */}
-            <div style={{ 
+            <div className="pp-game" style={{ 
               flex: '1 1 0%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
               background: `url("https://i.ibb.co/4ZyRRsBb/tablenew.png") center/cover no-repeat`,
               borderRadius: 14, padding: '16px 18px', margin: '8px auto', width: '100%' 
@@ -357,7 +365,7 @@ export default function ProgressivePowerPoker() {
             </div>
 
             {/* Sidebar */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, background: '#111', padding: 16, borderRadius: 12, width: 280 }}>
+            <div className="pp-sidebar" style={{ display: 'flex', flexDirection: 'column', gap: 12, background: '#111', padding: 16, borderRadius: 12, width: 280 }}>
               {/* Token card */}
               <div style={{
                 background: 'linear-gradient(135deg, #1b5e20, #388e3c 60%, #fdd835)',
