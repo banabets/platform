@@ -310,7 +310,7 @@ export default function ProgressivePowerPoker() {
                           borderRadius: 12, transform: `rotateY(${showFace ? 180 : 0}deg)`, backfaceVisibility: 'hidden',
                           transition: 'transform .35s',
                         }}>
-                          BANABETS
+                          
                         </div>
                       </div>
                     </div>
