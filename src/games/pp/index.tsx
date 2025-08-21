@@ -12,20 +12,20 @@ const pulseFadeStyle = `
   @keyframes pulseFade { 0% { opacity: .3 } 50% { opacity: 1 } 100% { opacity: .3 } }
 `
 
-/** ===== Responsive solo móvil para cartas ===== */
+/** ===== Responsive SOLO para cartas (se inyecta dentro del Portal) ===== */
 const responsiveMobileStyles = `
-  /* Tamaño base por clase en desktop */
-  .pp-card { width: 92px; height: 132px; }
+  /* Desktop por defecto */
+  .pp-root .pp-card { width: 92px; height: 132px; }
 
-  /* móviles comunes en vertical ≈ iPhone 12-15, Pixel, etc */
-  @media (max-width: 430px){
-    .pp-cards { gap: 10px !important; margin: 14px 0 8px 0 !important; }
-    .pp-card  { width: 45px !important; height: 68px !important; }
+  /* Móviles comunes (<= 480px) */
+  @media (max-width: 480px){
+    .pp-root .pp-cards { gap: 10px !important; margin: 14px 0 8px 0 !important; }
+    .pp-root .pp-card  { width: 52px !important; height: 76px !important; }
   }
 
-  /* móviles muy estrechos */
+  /* Móviles muy estrechos (<= 360px) */
   @media (max-width: 360px){
-    .pp-card  { width: 50px !important; height: 76px !important; }
+    .pp-root .pp-card  { width: 46px !important; height: 68px !important; }
   }
 `
 
@@ -96,22 +96,16 @@ function getPokerHandCards(type: HandType) {
 }
 
 export default function ProgressivePowerPoker() {
+  // Solo inyecta el efecto de pulso al <head>
   React.useEffect(() => {
-  const upsertStyle = (id: string, css: string) => {
-    let el = document.getElementById(id) as HTMLStyleElement | null
+    let el = document.getElementById('pulse-fade-style') as HTMLStyleElement | null
     if (!el) {
       el = document.createElement('style')
-      el.id = id
+      el.id = 'pulse-fade-style'
       document.head.appendChild(el)
     }
-    // siempre actualiza el contenido (soluciona HMR que “congela” el CSS anterior)
-    el.innerHTML = css
-  }
-
-  upsertStyle('pulse-fade-style', pulseFadeStyle)
-  upsertStyle('pp-responsive-style', responsiveMobileStyles)
-}, [])
-
+    el.innerHTML = pulseFadeStyle
+  }, [])
 
   const [wager, setWager] = useWagerInput()
   const game = GambaUi.useGame()
@@ -255,133 +249,138 @@ export default function ProgressivePowerPoker() {
   return (
     <>
       <GambaUi.Portal target="screen">
-        <div style={{ display: 'flex', flexDirection: 'row', gap: 24, padding: 24, alignItems: 'stretch', minHeight: 480 }}>
-          {/* Left: Main stage */}
-          <div style={{ 
-            flex: '1 1 0%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            background: `url("https://i.ibb.co/4ZyRRsBb/tablenew.png") center/cover no-repeat`,
-            borderRadius: 14, padding: '16px 18px', margin: '8px auto', width: '100%' 
-          }}>
-            <h3 style={{ margin: 4, fontSize: 18, opacity: .9 }}>Progressive Power Poker</h3>
+        {/* ✅ CSS responsive dentro del árbol del juego */}
+        <div className="pp-root">
+          <style id="pp-responsive-inline">{responsiveMobileStyles}</style>
 
-            {showWin && hand && hand.type !== 'Bust' && (
-              <div style={{
-                marginTop: 8,
-                background: 'linear-gradient(135deg, rgba(40,200,120,.15), rgba(40,200,120,.35))',
-                border: '1px solid rgba(40,200,120,.45)',
-                borderRadius: 10,
-                padding: '8px 12px',
-                fontWeight: 700,
-              }}>
-                You won with: <span style={{ color: '#aaffcc' }}>{hand.type}</span> • +{prettySessionTokens(hand.payoutAtomic)} {sessionTokenSymbol}
-              </div>
-            )}
+          <div style={{ display: 'flex', flexDirection: 'row', gap: 24, padding: 24, alignItems: 'stretch', minHeight: 480 }}>
+            {/* Left: Main stage */}
+            <div style={{ 
+              flex: '1 1 0%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              background: `url("https://i.ibb.co/4ZyRRsBb/tablenew.png") center/cover no-repeat`,
+              borderRadius: 14, padding: '16px 18px', margin: '8px auto', width: '100%' 
+            }}>
+              <h3 style={{ margin: 4, fontSize: 18, opacity: .9 }}>Progressive Power Poker</h3>
 
-            {/* Cards */}
-            <div className="pp-cards" style={{ display: 'flex', justifyContent: 'center', gap: 14, margin: '22px 0 12px 0' }}>
-              {(hand ? getPokerHandCards(hand.type) : Array(5).fill(null)).map((card, i) => {
-                const showFace = !!(hand && cardRevealed[i])
-                return (
-                  <div key={i} className="pp-card" style={{
-                    position: 'relative',
-                    perspective: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-                      <div style={{
-                        position: 'absolute', inset: 0, backfaceVisibility: 'hidden',
-                        transform: `rotateY(${showFace ? 0 : 180}deg)`,
-                        transition: 'transform .35s',
-                      }}>
-                        {hand ? <PokerCard rank={(card as any).rank} suit={(card as any).suit} /> :
-                          <div className="pulse-fade" style={{
-                            width: '100%', height: '100%', borderRadius: 12, border: '1px dashed #fff2',
-                            display: 'grid', placeItems: 'center', fontSize: 26, color: '#fff7'
-                          }}>?</div>}
-                      </div>
-                      <div style={{
-                        position: 'absolute', inset: 0, display: 'grid', placeItems: 'center',
-                        background: 'url("https://i.ibb.co/sLVkbpv/card.png") center/cover no-repeat',
-                        borderRadius: 12, transform: `rotateY(${showFace ? 180 : 0}deg)`, backfaceVisibility: 'hidden',
-                        transition: 'transform .35s',
-                      }}>
-                        BANABETS
+              {showWin && hand && hand.type !== 'Bust' && (
+                <div style={{
+                  marginTop: 8,
+                  background: 'linear-gradient(135deg, rgba(40,200,120,.15), rgba(40,200,120,.35))',
+                  border: '1px solid rgba(40,200,120,.45)',
+                  borderRadius: 10,
+                  padding: '8px 12px',
+                  fontWeight: 700,
+                }}>
+                  You won with: <span style={{ color: '#aaffcc' }}>{hand.type}</span> • +{prettySessionTokens(hand.payoutAtomic)} {sessionTokenSymbol}
+                </div>
+              )}
+
+              {/* Cards */}
+              <div className="pp-cards" style={{ display: 'flex', justifyContent: 'center', gap: 14, margin: '22px 0 12px 0' }}>
+                {(hand ? getPokerHandCards(hand.type) : Array(5).fill(null)).map((card, i) => {
+                  const showFace = !!(hand && cardRevealed[i])
+                  return (
+                    <div key={i} className="pp-card" style={{
+                      position: 'relative',
+                      perspective: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+                        <div style={{
+                          position: 'absolute', inset: 0, backfaceVisibility: 'hidden',
+                          transform: `rotateY(${showFace ? 0 : 180}deg)`,
+                          transition: 'transform .35s',
+                        }}>
+                          {hand ? <PokerCard rank={(card as any).rank} suit={(card as any).suit} /> :
+                            <div className="pulse-fade" style={{
+                              width: '100%', height: '100%', borderRadius: 12, border: '1px dashed #fff2',
+                              display: 'grid', placeItems: 'center', fontSize: 26, color: '#fff7'
+                            }}>?</div>}
+                        </div>
+                        <div style={{
+                          position: 'absolute', inset: 0, display: 'grid', placeItems: 'center',
+                          background: 'url("https://i.ibb.co/sLVkbpv/card.png") center/cover no-repeat',
+                          borderRadius: 12, transform: `rotateY(${showFace ? 180 : 0}deg)`, backfaceVisibility: 'hidden',
+                          transition: 'transform .35s',
+                        }}>
+                          BANABETS
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )
-              })}
-            </div>
-
-            {/* Profit */}
-            <div style={{ marginTop: 8, width: '100%' }}>
-              <p style={{ fontWeight: 600, fontSize: 18, textAlign: 'center', margin: 0 }}>
-                {(() => {
-                  const p = profitAtomic
-                  if (p === 0) return <>Currently: <span style={{ color: '#ffe082' }}>EVEN</span></>
-                  if (p < 0) return <>Current Loss: <span style={{ color: '#ff7f7f' }}>{prettySessionTokens(-p)} {sessionTokenSymbol}</span></>
-                  return <>Current Profit: <span style={{ color: '#7fff7f' }}>{prettySessionTokens(p)} {sessionTokenSymbol}</span></>
-                })()}
-              </p>
-            </div>
-
-            {/* Buttons */}
-            <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
-              {!inProgress && (
-                <GambaUi.PlayButton onClick={handleStart} disabled={revealing || !wager}>
-                  <span style={{ fontSize: 18 }}>Start Progressive</span>
-                </GambaUi.PlayButton>
-              )}
-              {inProgress && (
-                <>
-                  <GambaUi.PlayButton
-                    onClick={handleContinue}
-                    disabled={revealing}
-                    style={{
-                      background: '#FDD835', color: '#111',
-                      border: '1px solid #00000022', boxShadow: '0 2px 0 #CEB52C',
-                    }}
-                  >
-                    <span style={{ fontSize: 18 }}>Continue</span>
-                  </GambaUi.PlayButton>
-                  <GambaUi.PlayButton
-                    onClick={handleCashOut}
-                    disabled={revealing}
-                    style={{
-                      background: '#FDD835', color: '#111',
-                      border: '1px solid #00000022', boxShadow: '0 2px 0 #CEB52C',
-                    }}
-                  >
-                    <span style={{ fontSize: 18 }}>Cash Out</span>
-                  </GambaUi.PlayButton>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Sidebar */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, background: '#111', padding: 16, borderRadius: 12, width: 280 }}>
-            {/* Token card */}
-            <div style={{
-              background: 'linear-gradient(135deg, #1b5e20, #388e3c 60%, #fdd835)',
-              border: '2px solid #ffeb3b55',
-              borderRadius: 14,
-              padding: '12px 14px',
-              boxShadow: '0 0 12px rgba(0,0,0,.4) inset, 0 0 8px rgba(255,235,59,.3)',
-            }}>
-              <div style={{ fontSize: 12, opacity: .9, color: '#fff' }}>Token</div>
-              <div style={{ fontWeight: 700, fontSize: 16, marginTop: 2, color: '#fff' }}>
-                {token?.symbol ?? '...'}
+                  )
+                })}
               </div>
-              <div style={{ fontSize: 13, marginTop: 4, color: '#ffee58' }}>
-                Balance: <b>{prettyToken(Number(balance ?? 0))} {token?.symbol}</b>
+
+              {/* Profit */}
+              <div style={{ marginTop: 8, width: '100%' }}>
+                <p style={{ fontWeight: 600, fontSize: 18, textAlign: 'center', margin: 0 }}>
+                  {(() => {
+                    const p = profitAtomic
+                    if (p === 0) return <>Currently: <span style={{ color: '#ffe082' }}>EVEN</span></>
+                    if (p < 0) return <>Current Loss: <span style={{ color: '#ff7f7f' }}>{prettySessionTokens(-p)} {sessionTokenSymbol}</span></>
+                    return <>Current Profit: <span style={{ color: '#7fff7f' }}>{prettySessionTokens(p)} {sessionTokenSymbol}</span></>
+                  })()}
+                </p>
+              </div>
+
+              {/* Buttons */}
+              <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
+                {!inProgress && (
+                  <GambaUi.PlayButton onClick={handleStart} disabled={revealing || !wager}>
+                    <span style={{ fontSize: 18 }}>Start Progressive</span>
+                  </GambaUi.PlayButton>
+                )}
+                {inProgress && (
+                  <>
+                    <GambaUi.PlayButton
+                      onClick={handleContinue}
+                      disabled={revealing}
+                      style={{
+                        background: '#FDD835', color: '#111',
+                        border: '1px solid #00000022', boxShadow: '0 2px 0 #CEB52C',
+                      }}
+                    >
+                      <span style={{ fontSize: 18 }}>Continue</span>
+                    </GambaUi.PlayButton>
+                    <GambaUi.PlayButton
+                      onClick={handleCashOut}
+                      disabled={revealing}
+                      style={{
+                        background: '#FDD835', color: '#111',
+                        border: '1px solid #00000022', boxShadow: '0 2px 0 #CEB52C',
+                      }}
+                    >
+                      <span style={{ fontSize: 18 }}>Cash Out</span>
+                    </GambaUi.PlayButton>
+                  </>
+                )}
               </div>
             </div>
 
-            <div><Paytable /></div>
+            {/* Sidebar */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, background: '#111', padding: 16, borderRadius: 12, width: 280 }}>
+              {/* Token card */}
+              <div style={{
+                background: 'linear-gradient(135deg, #1b5e20, #388e3c 60%, #fdd835)',
+                border: '2px solid #ffeb3b55',
+                borderRadius: 14,
+                padding: '12px 14px',
+                boxShadow: '0 0 12px rgba(0,0,0,.4) inset, 0 0 8px rgba(255,235,59,.3)',
+              }}>
+                <div style={{ fontSize: 12, opacity: .9, color: '#fff' }}>Token</div>
+                <div style={{ fontWeight: 700, fontSize: 16, marginTop: 2, color: '#fff' }}>
+                  {token?.symbol ?? '...'}
+                </div>
+                <div style={{ fontSize: 13, marginTop: 4, color: '#ffee58' }}>
+                  Balance: <b>{prettyToken(Number(balance ?? 0))} {token?.symbol}</b>
+                </div>
+              </div>
 
-            {/* WagerInput con contenedor estilizado */}
-            <div style={{ background: '#2C2541', borderRadius: 12, padding: 6 }}>
-              <GambaUi.WagerInput value={wager} onChange={setWager} />
+              <div><Paytable /></div>
+
+              {/* WagerInput con contenedor estilizado */}
+              <div style={{ background: '#2C2541', borderRadius: 12, padding: 6 }}>
+                <GambaUi.WagerInput value={wager} onChange={setWager} />
+              </div>
             </div>
           </div>
         </div>
