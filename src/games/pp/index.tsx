@@ -25,7 +25,7 @@ const responsiveMobileStyles = `
 
   /* Móviles muy estrechos (<= 360px) */
   @media (max-width: 360px){
-    .pp-root .pp-card  { width: 46px !important; height: 68px !important; }
+    .pp-root .pp-card  { width: 50px !important; height: 72px !important; }
   }
 
   /* ---- Layout: ocultar sidebar en móvil y expandir juego ---- */
