@@ -9,7 +9,7 @@ const images = [
   'https://i.ibb.co/hJdCLX3X/20250504-0528-Casino-On-Chain-Colorido-remix-01jtd9y2khe4mv2ezp31n5d7h8-min.png',
  'https://i.ibb.co/RVL7hgK/20250504-0532-Banner-Casino-y-Bananas-remix-01jtda67f2ed293kxf2tgp2dew-min.png',
  'https://i.ibb.co/pvWmcCLQ/20250811-2318-Personajes-Creativos-Banadegens-remix-01k2e4ddzee8sa4775g3dk98hx-1.png',
-'https://i.ibb.co/ZzgRGzWL/20250821-2310-Dundies-Brillando-Radiante-remix-01k37w048tf8ftgz6bt4q33st9-min.png',
+'https://i.ibb.co/mVLZ8Yy4/92-min.png',
 
 ]
 
