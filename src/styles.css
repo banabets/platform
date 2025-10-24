@@ -1,9 +1,9 @@
+@import './styles/animations.css';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Russo+One&display=swap');
+
 * {
   box-sizing: border-box;
 }
-
-@import './styles/animations.css';
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Russo+One&display=swap');
 
 /* ===== MEJORAS VISUALES PARA JUEGOS ===== */
 
