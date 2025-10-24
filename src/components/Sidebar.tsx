@@ -6,12 +6,14 @@ import { Modal } from './Modal'
 import TokenSelect from '../sections/TokenSelect'
 import { UserButton } from '../sections/UserButton'
 import { PLATFORM_JACKPOT_FEE } from '../constants'
+import { useAudioContext } from '../contexts/AudioContext'
 
 // Componente para el header superior
 export const TopHeader = () => {
   const pool = useCurrentPool()
   const context = useGambaPlatformContext()
   const balance = useUserBalance()
+  const { isAudioEnabled, enableAudio } = useAudioContext()
   const [prices, setPrices] = useState({
     solana: { price: null, change: null },
     jupiter: { price: null, change: null },
@@ -151,6 +153,13 @@ export const TopHeader = () => {
             <RightGroup>
               <SocialIcons />
               <TokenSelect />
+              <AudioIndicator
+                $enabled={isAudioEnabled}
+                onClick={() => !isAudioEnabled && enableAudio()}
+                title={isAudioEnabled ? 'Audio enabled' : 'Click to enable audio'}
+              >
+                {isAudioEnabled ? '🔊' : '🔇'}
+              </AudioIndicator>
               <UserButton />
             </RightGroup>
       </HeaderContainer>
@@ -863,6 +872,55 @@ const SocialIcon = styled.a`
   @media (max-width: 768px) {
     width: 28px;
     height: 28px;
+  }
+`
+
+const AudioIndicator = styled.button<{ $enabled: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: ${({ $enabled }) => $enabled ? 'default' : 'pointer'};
+  background: ${({ $enabled }) =>
+    $enabled
+      ? 'rgba(34, 197, 94, 0.2)'
+      : 'rgba(239, 68, 68, 0.2)'
+  };
+  color: ${({ $enabled }) =>
+    $enabled
+      ? '#22c55e'
+      : '#ef4444'
+  };
+  border: 1px solid ${({ $enabled }) =>
+    $enabled
+      ? 'rgba(34, 197, 94, 0.3)'
+      : 'rgba(239, 68, 68, 0.3)'
+  };
+  transition: all 0.3s ease;
+  margin-right: 8px;
+
+  &:hover {
+    ${({ $enabled }) => !$enabled && `
+      background: rgba(239, 68, 68, 0.3);
+      border-color: rgba(239, 68, 68, 0.5);
+      transform: translateY(-2px);
+    `}
+  }
+
+  &:active {
+    ${({ $enabled }) => !$enabled && `
+      transform: translateY(0);
+    `}
+  }
+
+  @media (max-width: 768px) {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
   }
 `
 

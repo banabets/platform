@@ -65,7 +65,7 @@ export const Container2 = styled.div`
   display: grid;
   grid-template-rows: auto auto 1fr;
   height: 100%;
-  background-image: url('https://img.freepik.com/premium-vector/enchanting-ancient-mystical-ruins-lush-jungle_1316704-38332.jpg?semt=ais_hybrid&w=740&q=80');
+  background-image: url('https://i.ibb.co/21bPppZd/231-min.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

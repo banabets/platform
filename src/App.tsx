@@ -18,6 +18,7 @@ import LeaderboardsModal from './components/LeaderboardsModal'
 import Sidebar, { TopHeader } from './components/Sidebar'
 // import { InstallPrompt } from './components/InstallPrompt'
 import { AnimatedBackground } from './components/AnimatedBackground'
+import { AudioProvider } from './contexts/AudioContext'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -72,7 +73,8 @@ export default function App() {
   const user = useUserStore()
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <AudioProvider>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <AnimatedBackground />
 
       {/* Leaderboards Modal */}
@@ -128,5 +130,6 @@ export default function App() {
       </div>
       <TrollBox />
     </div>
+    </AudioProvider>
   )
 }
