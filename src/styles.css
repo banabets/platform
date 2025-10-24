@@ -1,0 +1,884 @@
+* {
+  box-sizing: border-box;
+}
+
+@import './styles/animations.css';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Russo+One&display=swap');
+
+/* ===== MEJORAS VISUALES PARA JUEGOS ===== */
+
+/* WagerInput mejorado */
+.wager-input {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)) !important;
+  border: 2px solid rgba(255, 228, 45, 0.3) !important;
+  border-radius: 12px !important;
+  backdrop-filter: blur(10px) !important;
+  box-shadow:
+    0 4px 15px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+.wager-input:hover {
+  border-color: rgba(255, 228, 45, 0.6) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08)) !important;
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  transform: translateY(-1px) !important;
+}
+
+.wager-input:focus {
+  border-color: #ffe42d !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1)) !important;
+  box-shadow:
+    0 0 25px rgba(255, 228, 45, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+/* PlayButton mejorado */
+.play-button {
+  background: linear-gradient(135deg, #ffe42d 0%, #ffb300 50%, #ff8c00 100%) !important;
+  border: 2px solid rgba(255, 215, 0, 0.8) !important;
+  border-radius: 12px !important;
+  color: #000 !important;
+  font-weight: 900 !important;
+  font-size: 16px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  box-shadow:
+    0 0 20px rgba(255, 191, 36, 0.6),
+    0 0 40px rgba(245, 158, 11, 0.3),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.play-button::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: -100% !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important;
+  transition: left 0.6s ease !important;
+}
+
+.play-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ffd700 0%, #ff8c00 50%, #ff6b00 100%) !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow:
+    0 0 30px rgba(255, 191, 36, 0.9),
+    0 0 60px rgba(245, 158, 11, 0.5),
+    0 8px 20px rgba(0, 0, 0, 0.3),
+    inset 0 2px 4px rgba(255, 255, 255, 0.4) !important;
+}
+
+.play-button:hover:not(:disabled)::before {
+  left: 100% !important;
+}
+
+.play-button:active:not(:disabled) {
+  transform: translateY(0) scale(0.98) !important;
+  transition: all 0.1s ease !important;
+}
+
+.play-button:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  box-shadow:
+    0 0 10px rgba(255, 191, 36, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Portal targets mejorados */
+.game-portal-screen {
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+  background: linear-gradient(135deg, rgba(24, 25, 28, 0.9), rgba(32, 34, 37, 0.8)) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.game-portal-controls {
+  background: linear-gradient(135deg, rgba(40, 43, 48, 0.9), rgba(32, 34, 37, 0.7)) !important;
+  backdrop-filter: blur(20px) !important;
+  border-radius: 16px !important;
+  padding: 24px !important;
+  gap: 20px !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  border: 2px solid rgba(255, 228, 45, 0.1) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.game-portal-controls::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, transparent, rgba(255, 228, 45, 0.3), transparent) !important;
+}
+
+.game-portal-controls::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 2px !important;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.2), transparent) !important;
+  border-radius: 0 0 14px 14px !important;
+}
+
+/* Animaciones de fade in para juegos */
+@keyframes gameFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.game-container {
+  animation: gameFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Mejorar botones de opciones en juegos */
+.game-option-button {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 8px !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.game-option-button:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08)) !important;
+  border-color: rgba(255, 228, 45, 0.4) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.game-option-button.active {
+  background: linear-gradient(135deg, rgba(255, 228, 45, 0.2), rgba(255, 215, 0, 0.1)) !important;
+  border-color: #ffe42d !important;
+  box-shadow: 0 0 15px rgba(255, 228, 45, 0.3) !important;
+}
+
+/* Sliders mejorados */
+.game-slider {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  height: 8px !important;
+  border-radius: 4px !important;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), rgba(255, 228, 45, 0.4)) !important;
+  outline: none !important;
+  transition: all 0.3s ease !important;
+}
+
+.game-slider::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #ffe42d, #ffb300) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+.game-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1) !important;
+  box-shadow: 0 4px 12px rgba(255, 228, 45, 0.4) !important;
+}
+
+.game-slider::-moz-range-thumb {
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #ffe42d, #ffb300) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Mejorar textos de resultado */
+.game-result {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+  animation: resultGlow 0.5s ease-out !important;
+}
+
+@keyframes resultGlow {
+  0% {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.game-result.win {
+  color: #42ff78 !important;
+  text-shadow: 0 0 20px rgba(66, 255, 120, 0.6) !important;
+}
+
+.game-result.lose {
+  color: #ff6b6b !important;
+  text-shadow: 0 0 20px rgba(255, 107, 107, 0.6) !important;
+}
+
+/* ===== CONTROLES AVANZADOS DE JUEGOS ===== */
+
+/* Separadores visuales entre controles */
+.control-separator {
+  height: 1px !important;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent) !important;
+  margin: 8px 0 !important;
+  position: relative !important;
+}
+
+.control-separator::before {
+  content: '' !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 4px !important;
+  height: 4px !important;
+  background: rgba(255, 228, 45, 0.4) !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 6px rgba(255, 228, 45, 0.3) !important;
+}
+
+/* Grupos de controles con mejor jerarquía */
+.control-group {
+  position: relative !important;
+  padding: 16px !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  margin-bottom: 8px !important;
+  backdrop-filter: blur(5px) !important;
+}
+
+.control-group::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 16px !important;
+  right: 16px !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, rgba(255, 228, 45, 0.2), rgba(0, 255, 136, 0.2)) !important;
+  border-radius: 1px !important;
+}
+
+.control-group-primary {
+  background: linear-gradient(135deg, rgba(255, 228, 45, 0.05), rgba(255, 215, 0, 0.03)) !important;
+  border: 1px solid rgba(255, 228, 45, 0.15) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 228, 45, 0.1) !important;
+}
+
+.control-group-secondary {
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.03), rgba(0, 196, 107, 0.02)) !important;
+  border: 1px solid rgba(0, 255, 136, 0.1) !important;
+  box-shadow: inset 0 1px 0 rgba(0, 255, 136, 0.08) !important;
+}
+
+/* Etiquetas de control mejoradas */
+.control-label {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  margin-bottom: 8px !important;
+  text-align: center !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+.control-label-primary {
+  color: #ffe42d !important;
+  text-shadow: 0 0 8px rgba(255, 228, 45, 0.5) !important;
+}
+
+.control-label-secondary {
+  color: #00ff88 !important;
+  text-shadow: 0 0 8px rgba(0, 255, 136, 0.5) !important;
+}
+
+/* Indicadores de estado mejorados */
+.status-indicator {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 4px 8px !important;
+  border-radius: 12px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.status-indicator.ready {
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 196, 107, 0.1)) !important;
+  color: #00ff88 !important;
+  border: 1px solid rgba(0, 255, 136, 0.3) !important;
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.2) !important;
+}
+
+.status-indicator.waiting {
+  background: linear-gradient(135deg, rgba(255, 228, 45, 0.2), rgba(255, 193, 7, 0.1)) !important;
+  color: #ffe42d !important;
+  border: 1px solid rgba(255, 228, 45, 0.3) !important;
+  box-shadow: 0 0 8px rgba(255, 228, 45, 0.2) !important;
+}
+
+.status-indicator.error {
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(220, 53, 69, 0.1)) !important;
+  color: #ff6b6b !important;
+  border: 1px solid rgba(255, 107, 107, 0.3) !important;
+  box-shadow: 0 0 8px rgba(255, 107, 107, 0.2) !important;
+}
+
+/* Layout mejorado para controles */
+.controls-layout {
+  display: grid !important;
+  gap: 16px !important;
+  grid-template-columns: 1fr !important;
+}
+
+.controls-layout-compact {
+  gap: 12px !important;
+}
+
+.controls-layout-wide {
+  grid-template-columns: 1fr 1fr !important;
+  gap: 16px !important;
+}
+
+/* Efectos de foco mejorados */
+.control-focus-ring {
+  position: relative !important;
+}
+
+.control-focus-ring:focus-within::after {
+  content: '' !important;
+  position: absolute !important;
+  top: -2px !important;
+  left: -2px !important;
+  right: -2px !important;
+  bottom: -2px !important;
+  border-radius: 14px !important;
+  background: linear-gradient(45deg, rgba(255, 228, 45, 0.3), rgba(0, 255, 136, 0.3)) !important;
+  z-index: -1 !important;
+  animation: focusPulse 2s ease-in-out infinite !important;
+}
+
+@keyframes focusPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+/* Tooltips mejorados para controles */
+.control-tooltip {
+  position: relative !important;
+}
+
+.control-tooltip::before {
+  content: attr(data-tooltip) !important;
+  position: absolute !important;
+  bottom: 100% !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  background: rgba(0, 0, 0, 0.9) !important;
+  color: #ffffff !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition: all 0.3s ease !important;
+  z-index: 1000 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.control-tooltip:hover::before {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateX(-50%) translateY(-4px) !important;
+}
+
+.control-tooltip::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: calc(100% - 4px) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  border: 4px solid transparent !important;
+  border-top-color: rgba(0, 0, 0, 0.9) !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition: all 0.3s ease !important;
+}
+
+.control-tooltip:hover::after {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+
+/* Tema oscuro (por defecto) */
+:root {
+  --background-color: #121724;
+  --background-secondary: #1a1b2e;
+  --background-tertiary: #2a2d3a;
+  --text-color: #ffffff;
+  --text-secondary: #b0b3c1;
+  --text-muted: #6c7293;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(255, 255, 255, 0.2);
+  --gamba-ui-primary-color: #ffe42d;
+  --gamba-ui-border-radius: 10px;
+  --gamba-ui-button-main-background: #ff3fdd;
+  --gamba-ui-button-main-color: black;
+  --gamba-ui-button-main-background-hover: #ff3fdd;
+  --gamba-ui-input-background: #ff3fdd;
+  --gamba-ui-input-color: #ffffff;
+  --gamba-ui-input-background-hover: #11111d;
+  --card-background: rgba(255, 255, 255, 0.05);
+  --card-hover: rgba(255, 255, 255, 0.08);
+  --shadow: rgba(0, 0, 0, 0.3);
+}
+
+/* Tema claro */
+[data-theme="light"] {
+  --background-color: #f8fafc;
+  --background-secondary: #ffffff;
+  --background-tertiary: #f1f5f9;
+  --text-color: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --border-color: rgba(0, 0, 0, 0.1);
+  --border-hover: rgba(0, 0, 0, 0.15);
+  --gamba-ui-primary-color: #1e40af;
+  --gamba-ui-button-main-background: #3b82f6;
+  --gamba-ui-button-main-color: white;
+  --gamba-ui-button-main-background-hover: #2563eb;
+  --gamba-ui-input-background: #f1f5f9;
+  --gamba-ui-input-color: #1e293b;
+  --gamba-ui-input-background-hover: #e2e8f0;
+  --card-background: rgba(255, 255, 255, 0.8);
+  --card-hover: rgba(255, 255, 255, 0.9);
+  --shadow: rgba(0, 0, 0, 0.1);
+}
+
+/* Importar Google Fonts para mejor tipografía */
+
+/* Animaciones del Banner */
+@keyframes overlayPulse {
+  0%, 100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-10px) rotate(120deg);
+  }
+  66% {
+    transform: translateY(5px) rotate(240deg);
+  }
+  100% {
+    transform: translateY(0) rotate(360deg);
+  }
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body, input, button, textarea, pre {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+/* Jerarquía tipográfica moderna */
+h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+h2 {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 700;
+  color: var(--text-color, #ffffff);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h3 {
+  font-size: clamp(1.25rem, 3vw, 2rem);
+  font-weight: 600;
+  color: var(--text-color, #ffffff);
+}
+
+h4 {
+  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+  font-weight: 600;
+  color: var(--text-secondary, #b0b3c1);
+}
+
+h5 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text-secondary, #b0b3c1);
+}
+
+h6 {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--text-muted, #6c7293);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Texto del cuerpo */
+p {
+  margin: 0 0 1rem 0;
+  color: var(--text-color, #ffffff);
+  line-height: 1.7;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.7;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.6;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 1.5;
+}
+
+/* Texto con peso */
+.font-light { font-weight: 300; }
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+.font-extrabold { font-weight: 800; }
+
+/* Estilos de texto especiales */
+.text-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 600;
+}
+
+.text-glow {
+  text-shadow: 0 0 10px rgba(102, 126, 234, 0.5), 0 0 20px rgba(102, 126, 234, 0.3);
+}
+
+/* Monospace para código */
+.font-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Monaco', 'Cascadia Code', monospace;
+  font-weight: 500;
+}
+
+body {
+  background: transparent;
+  color: var(--text-color);
+  cursor: default;
+  margin: 0;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+body::-webkit-scrollbar {
+  width: 4px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: var(--gamba-ui-primary-color);
+}
+
+/* ===== WALLET MODAL CUSTOM STYLES ===== */
+
+/* Wallet Modal Overlay */
+.wallet-adapter-modal-wrapper {
+  background: rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(15px) !important;
+  -webkit-backdrop-filter: blur(15px) !important;
+  z-index: 9999 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 20px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Wallet Modal Container */
+.wallet-adapter-modal-container {
+  background: linear-gradient(135deg, rgba(24, 25, 28, 0.95), rgba(32, 34, 37, 0.9)) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 20px !important;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  max-width: 500px !important;
+  width: 90vw !important;
+  max-height: calc(100vh - 40px) !important;
+  overflow: hidden !important;
+  position: relative !important;
+  z-index: 10000 !important;
+  margin: auto !important;
+  flex-shrink: 0 !important;
+}
+
+/* Wallet Modal Content */
+.wallet-adapter-modal-content {
+  padding: 30px !important;
+  background: transparent !important;
+  max-height: calc(100vh - 80px) !important;
+  overflow-y: auto !important;
+}
+
+/* Wallet Modal Title */
+.wallet-adapter-modal-title {
+  color: #ffe42d !important;
+  font-family: 'Russo One', sans-serif !important;
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+  margin-bottom: 20px !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Wallet Modal List */
+.wallet-adapter-modal-list {
+  display: grid !important;
+  gap: 12px !important;
+  max-height: 400px !important;
+  overflow-y: auto !important;
+  padding: 10px !important;
+}
+
+/* Wallet Modal List Item */
+.wallet-adapter-modal-list-item {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  padding: 16px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  position: relative !important;
+  z-index: 10001 !important;
+  pointer-events: auto !important;
+}
+
+.wallet-adapter-modal-list-item:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.08)) !important;
+  border-color: rgba(255, 228, 45, 0.3) !important;
+  transform: translateY(-2px) !important;
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.2),
+    0 0 15px rgba(255, 228, 45, 0.1) !important;
+}
+
+/* Wallet Modal List Item Icon */
+.wallet-adapter-modal-list-item-icon {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 10px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Wallet Modal List Item Name */
+.wallet-adapter-modal-list-item-name {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Wallet Modal Close Button */
+.wallet-adapter-modal-button-close {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 50% !important;
+  width: 32px !important;
+  height: 32px !important;
+  color: #ffffff !important;
+  position: absolute !important;
+  top: 15px !important;
+  right: 15px !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 10002 !important;
+  pointer-events: auto !important;
+}
+
+.wallet-adapter-modal-button-close:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  transform: rotate(90deg) !important;
+}
+
+/* Custom Scrollbar for Modal */
+.wallet-adapter-modal-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.wallet-adapter-modal-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.wallet-adapter-modal-list::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ffe42d, #ffb300);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .wallet-adapter-modal-container {
+    width: 95vw !important;
+    max-height: 85vh !important;
+    margin: 10px !important;
+  }
+
+  .wallet-adapter-modal-content {
+    padding: 20px !important;
+  }
+
+  .wallet-adapter-modal-title {
+    font-size: 20px !important;
+  }
+}
+
+/* Wallet Button Trigger */
+.wallet-adapter-button.wallet-adapter-button-trigger {
+  height: 40px;
+  line-height: 40px;
+  font-weight: normal;
+  background: rgb(55, 57, 82);
+  border-radius: 10px;
+}
+@media (max-width: 768px) {
+  .wallet-adapter-button.wallet-adapter-button-trigger {
+    display: none;
+  }
+}

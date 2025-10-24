@@ -1,0 +1,10 @@
+/* src/styles/candy-theme.css */
+html, body, #root { height: 100%; }
+body {
+  background:
+    radial-gradient(1400px 900px at 70% -10%, rgba(255, 120, 180, .20), transparent 40%),
+    url('/assets/candy/background-lollipop.png') center/cover no-repeat,
+    #0f0a1f;
+  color: #fff;
+}
+.candy-board-clip { position: relative; overflow: hidden; }

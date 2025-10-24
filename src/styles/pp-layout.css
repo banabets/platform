@@ -1,0 +1,80 @@
+
+/* src/styles/pp-layout.css
+   Center the game vertically and horizontally, lower it a bit,
+   and make the right panel drop below on small screens.
+*/
+
+:root {
+  /* tweak this to push the table a bit lower without hard margins */
+  --pp-vertical-offset: 24px;
+  --pp-max-stage-width: 980px;
+  --pp-side-width: 360px;
+  --pp-gap: 24px;
+}
+
+/* Ensure the app can take full height */
+html, body, #root {
+  height: 100%;
+}
+
+/* Optional wrapper for the whole page that holds game + sidebar */
+.pp-layout {
+  display: grid;
+  grid-template-columns: 1fr var(--pp-side-width);
+  gap: var(--pp-gap);
+  align-items: center;          /* vertical alignment for the two columns */
+  min-height: 100vh;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+/* On narrow screens stack the sidebar under the game */
+@media (max-width: 1024px) {
+  .pp-layout {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    min-height: 100dvh;
+  }
+}
+
+/* Shell that centers the game canvas/table */
+.pp-game-shell {
+  width: 100%;
+  display: grid;
+  place-items: center;
+  transform: translateY(var(--pp-vertical-offset)); /* pushes it slightly down */
+}
+
+/* Stage limits the game width and keeps aspect */
+.pp-game-stage {
+  width: min(100%, var(--pp-max-stage-width));
+  aspect-ratio: 16 / 9;         /* keep the stage proportionate */
+  display: grid;
+  place-items: center;
+}
+
+/* Make the inner game responsive by forcing its root to scale */
+.pp-game-stage > * {
+  width: 100%;
+  height: 100%;
+}
+
+/* Right panel basic responsiveness */
+.pp-right-panel {
+  max-width: var(--pp-side-width);
+  width: 100%;
+  margin-inline: auto;
+}
+
+@media (max-width: 1024px) {
+  .pp-right-panel {
+    max-width: 560px;
+  }
+}
+
+/* Optional: tighten the card table on very small phones */
+@media (max-width: 420px) {
+  :root {
+    --pp-vertical-offset: 8px;
+  }
+}

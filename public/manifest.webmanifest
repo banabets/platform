@@ -1,0 +1,65 @@
+{
+	"name": "Banabets - Casino Web3 en Solana",
+	"short_name": "Banabets",
+	"start_url": "/",
+	"display": "standalone",
+	"background_color": "#121724",
+	"theme_color": "#ff3fdd",
+	"lang": "es",
+	"dir": "ltr",
+	"scope": "/",
+	"description": "Juega casino blockchain en Solana. Jackpot, dados, slots y más juegos con criptomonedas.",
+	"categories": ["games", "entertainment", "finance"],
+	"orientation": "portrait-primary",
+	"prefer_related_applications": false,
+	"shortcuts": [
+		{
+			"name": "Jackpot",
+			"short_name": "Jackpot",
+			"description": "Juega al jackpot multiplayer",
+			"url": "/jackpot",
+			"icons": [{ "src": "/games/jackpot.webp", "sizes": "96x96" }]
+		},
+		{
+			"name": "Slots",
+			"short_name": "Slots",
+			"description": "Juega a las máquinas tragamonedas",
+			"url": "/slots",
+			"icons": [{ "src": "/games/slots.png", "sizes": "96x96" }]
+		},
+		{
+			"name": "Dados",
+			"short_name": "Dados",
+			"description": "Juega al juego de dados",
+			"url": "/dice",
+			"icons": [{ "src": "/games/dice.png", "sizes": "96x96" }]
+		}
+	],
+	"icons": [
+		{
+			"src": "/icon-192.png",
+			"sizes": "192x192",
+			"type": "image/png",
+			"purpose": "any maskable"
+		},
+		{
+			"src": "/icon-512.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "any maskable"
+		},
+		{
+			"src": "/favicon.png",
+			"sizes": "32x32",
+			"type": "image/png"
+		}
+	],
+	"screenshots": [
+		{
+			"src": "/games/app.png",
+			"sizes": "1280x720",
+			"type": "image/png",
+			"form_factor": "wide"
+		}
+	]
+}

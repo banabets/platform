@@ -1,0 +1,5 @@
+/* overrides/candy-overrides.css */
+/* Desactiva cualquier animación de flash radial que manche el tablero */
+.result-flash-2, .reveal-glow { background: none !important; animation: none !important; }
+/* Evita que texto accidental se vea detrás del tablero */
+.candy-board-clip { position: relative; overflow: hidden; }
